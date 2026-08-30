@@ -51,6 +51,7 @@
     "θ":"\\theta","φ":"\\phi","ω":"\\omega","η":"\\eta","τ":"\\tau",
     "Σ":"\\sum","Δ":"\\Delta","Ω":"\\Omega","∂":"\\partial","√":"\\surd",   /* not \\sqrt: there is no radicand to brace */
     "≈":"\\approx","≠":"\\neq","≤":"\\leq","≥":"\\geq","±":"\\pm",
+    "≫":"\\gg","≪":"\\ll",
     "⟹":"\\Rightarrow","⇒":"\\Rightarrow","→":"\\to","←":"\\leftarrow",
     "×":"\\times","·":"\\cdot","∼":"\\sim","∞":"\\infty","≡":"\\equiv",
     "∈":"\\in","∀":"\\forall","∫":"\\int","…":"\\dots","⋯":"\\cdots",

@@ -2599,6 +2599,359 @@
     draw();
   });
 
+  /* ============================================================
+     Unit 2B — Figure 1: perfect collinearity leaves a LINE of answers
+
+     The algebra says β̂2 comes out 0/0. This is what that means when
+     you are holding the data. With X3 = 2X2 exactly, every pair
+     (β̂2, β̂3) satisfying β̂2 + 2β̂3 = c fits the sample identically —
+     same fitted values, same residuals, same RSS to the last decimal.
+     OLS does not have a hard time choosing; it has nothing to choose
+     between.
+
+     The deviates are written out rather than drawn at load, so the
+     numbers a student reads are the numbers anyone else reads.
+     ============================================================ */
+  VIZ.register("perfect-collinearity-ridge", function (host) {
+    var A2 = 2;                                  /* X3 = 2·X2, exactly */
+    var E = [3.1, -2.4, 1.8, -0.6, 4.2, -3.3, 0.9, 2.7, -1.5, -4.0,
+             2.2, -0.8, 3.6, -2.9, 1.1, 0.4, -3.7, 2.0, -1.2, 1.6];
+    var X2 = [], X3 = [], Y = [], pts = [], i;
+    for (i = 0; i < E.length; i++) {
+      var v2 = 10 + i;
+      X2.push(v2);
+      X3.push(A2 * v2);
+      Y.push(5 + 3 * v2 + E[i]);
+      pts.push({ x: v2, y: 5 + 3 * v2 + E[i] });
+    }
+
+    /* The one thing the sample identifies: the combined effect of a
+       one-unit rise in X2, which drags X3 up by A2 alongside it. */
+    var C = ols(pts).b2;
+    var d = 0;                                   /* how far along the ridge */
+
+    var c = chart({ w: 640, h: 340, pad: { t: 24, r: 20, b: 46, l: 54 },
+                    xd: [C - 3, C + 3], yd: [-1.7, 1.7] });
+    c.axes("β̂₂ — the coefficient on X₂", "β̂₃ — on X₃");
+
+    /* the ridge itself: β̂3 = (C − β̂2) / A2 */
+    function b3of(b2) { return (C - b2) / A2; }
+    c.plot.appendChild(s("line", {
+      x1: c.x(C - 3), y1: c.y(b3of(C - 3)), x2: c.x(C + 3), y2: c.y(b3of(C + 3)),
+      stroke: P.accent, "stroke-width": 2.5
+    }));
+    c.plot.appendChild(s("line", {
+      x1: c.x(C - 3), y1: c.y(0), x2: c.x(C + 3), y2: c.y(0),
+      stroke: P.ruleSoft, "stroke-width": 1, "stroke-dasharray": "3 3"
+    }));
+
+    var note = s("text", { x: c.x(C - 3) + 10, y: c.y(-1.4),
+                           "font-size": 11.5, fill: P.accent });
+    note.textContent = "every point on this line fits the sample identically";
+    c.plot.appendChild(note);
+
+    var dot = s("circle", { r: 6, fill: P.accent2, stroke: P.paper, "stroke-width": 1.5 });
+    c.plot.appendChild(dot);
+
+    function draw() {
+      var b2 = C + d, b3 = b3of(b2), m2 = 0, m3 = 0, my = 0, k;
+      for (k = 0; k < X2.length; k++) { m2 += X2[k]; m3 += X3[k]; my += Y[k]; }
+      m2 /= X2.length; m3 /= X3.length; my /= Y.length;
+      var b1 = my - b2 * m2 - b3 * m3;
+
+      /* recomputed from scratch every time, so the invariance is shown
+         rather than asserted */
+      var rss = 0;
+      for (k = 0; k < X2.length; k++) {
+        var e = Y[k] - (b1 + b2 * X2[k] + b3 * X3[k]);
+        rss += e * e;
+      }
+
+      dot.setAttribute("cx", c.x(b2));
+      dot.setAttribute("cy", c.y(b3));
+
+      coefs.textContent = "β̂₁ = " + b1.toFixed(3)
+                        + "    β̂₂ = " + b2.toFixed(3)
+                        + "    β̂₃ = " + b3.toFixed(3);
+      fixed.textContent = "β̂₂ + 2β̂₃ = " + (b2 + A2 * b3).toFixed(4)
+                        + "    RSS = " + rss.toFixed(6);
+      c.svg.setAttribute("aria-label",
+        "A downward-sloping line of admissible coefficient pairs; the marked pair is "
+        + "β̂2 = " + b2.toFixed(2) + ", β̂3 = " + b3.toFixed(2) + ".");
+    }
+
+    var controls = h("div", "viz-controls");
+    var lab = h("label", null, "slide β̂₂ anywhere along the ridge");
+    var rng = document.createElement("input");
+    rng.type = "range"; rng.min = "-3"; rng.max = "3"; rng.step = "0.05"; rng.value = "0";
+    rng.addEventListener("input", function () { d = +rng.value; draw(); });
+    lab.appendChild(rng);
+    controls.appendChild(lab);
+    var coefs = h("span", "viz-readout");
+    var fixed = h("span", "viz-readout");
+    controls.appendChild(coefs);
+    controls.appendChild(fixed);
+
+    host.appendChild(c.svg);
+    host.appendChild(controls);
+    host.appendChild(h("p", "viz-caption",
+      "Twenty observations in which X₃ is exactly twice X₂. The axes are not the data — they "
+      + "are the two coefficients, and the line is the set of answers OLS cannot choose "
+      + "between. Move the slider: β̂₂ swings from strongly negative to strongly positive, "
+      + "β̂₃ moves the opposite way to compensate, and the sum β̂₂ + 2β̂₃ and the residual sum "
+      + "of squares do not budge in the sixth decimal place. The intercept does not move "
+      + "either. This is the 0/0 of the algebra seen from the other side: the data pin down "
+      + "the combined effect and say nothing whatever about the split."));
+
+    draw();
+  });
+
+  /* ============================================================
+     Unit 2B — Figure 2: what the variance inflation factor inflates
+
+     VIF = 1/(1 − R²j) is exact, so this figure is drawn from the
+     formula rather than simulated. The number worth carrying away is
+     not VIF but its square root, which is the factor the standard
+     error is multiplied by — and therefore the factor the t-ratio is
+     divided by.
+     ============================================================ */
+  VIZ.register("vif-curve", function (host) {
+    var LO = 0, HI = 0.95, YMAX = 20, CLEAN_T = 4;
+    var r2 = 0.5;
+
+    var c = chart({ w: 640, h: 340, pad: { t: 20, r: 20, b: 46, l: 54 },
+                    xd: [LO, HI], yd: [0, YMAX] });
+    c.axes("R²ⱼ — fit of the auxiliary regression of Xⱼ on the other regressors", "VIF");
+
+    /* rule of thumb: VIF = 10, which is R²j = 0.9 */
+    c.plot.appendChild(s("line", { x1: c.x(LO), y1: c.y(10), x2: c.x(HI), y2: c.y(10),
+                                   stroke: P.inkFaint, "stroke-width": 1,
+                                   "stroke-dasharray": "4 3" }));
+    c.plot.appendChild(s("line", { x1: c.x(0.9), y1: c.y(0), x2: c.x(0.9), y2: c.y(YMAX),
+                                   stroke: P.inkFaint, "stroke-width": 1,
+                                   "stroke-dasharray": "4 3" }));
+    var rt = s("text", { x: c.x(LO) + 8, y: c.y(10) - 6, "font-size": 11.5, fill: P.inkSoft });
+    rt.textContent = "VIF = 10 — the usual rule of thumb, reached at R²ⱼ = 0.9";
+    c.plot.appendChild(rt);
+
+    var pathD = "", k;
+    for (k = 0; k <= 240; k++) {
+      var v = LO + (HI - LO) * k / 240;
+      var vif = 1 / (1 - v);
+      pathD += (k ? " L " : "M ") + c.x(v) + " " + c.y(Math.min(vif, YMAX));
+    }
+    c.plot.appendChild(s("path", { d: pathD, fill: "none",
+                                   stroke: P.accent, "stroke-width": 2.5 }));
+
+    var dot = s("circle", { r: 6, fill: P.accent2, stroke: P.paper, "stroke-width": 1.5 });
+    c.plot.appendChild(dot);
+
+    function draw() {
+      var vif = 1 / (1 - r2), root = Math.sqrt(vif);
+      dot.setAttribute("cx", c.x(r2));
+      dot.setAttribute("cy", c.y(Math.min(vif, YMAX)));
+      left.textContent = "R²ⱼ = " + r2.toFixed(2)
+                       + "    VIF = " + vif.toFixed(2)
+                       + "    √VIF = " + root.toFixed(2);
+      right.textContent = "a t-ratio of " + CLEAN_T.toFixed(2)
+                        + " with no collinearity becomes t = " + (CLEAN_T / root).toFixed(2)
+                        + (CLEAN_T / root < 2 ? "  — no longer significant" : "");
+      c.svg.setAttribute("aria-label",
+        "The variance inflation factor rising steeply towards infinity as the auxiliary "
+        + "R-squared approaches one; at R-squared " + r2.toFixed(2) + " it is "
+        + vif.toFixed(2) + ".");
+    }
+
+    var controls = h("div", "viz-controls");
+    var lab = h("label", null, "R²ⱼ — how well the other regressors explain Xⱼ");
+    var rng = document.createElement("input");
+    rng.type = "range"; rng.min = "0"; rng.max = "0.95"; rng.step = "0.01"; rng.value = "0.5";
+    rng.addEventListener("input", function () { r2 = +rng.value; draw(); });
+    lab.appendChild(rng);
+    controls.appendChild(lab);
+    var left = h("span", "viz-readout");
+    var right = h("span", "viz-readout");
+    controls.appendChild(left);
+    controls.appendChild(right);
+
+    host.appendChild(c.svg);
+    host.appendChild(controls);
+    host.appendChild(h("p", "viz-caption",
+      "The curve is the formula itself, not a simulation. What makes VIF worth reading is how "
+      + "flat it is for most of its range and how late it turns: at R²ⱼ = 0.5 the standard "
+      + "error is only 41% larger, and even at 0.8 it has merely doubled. The damage arrives "
+      + "in the last stretch. Note also that the harm has begun long before the rule of thumb "
+      + "fires — a t-ratio that would have been 4.00 has already fallen below 2 by R²ⱼ ≈ 0.75, "
+      + "while VIF is still only 4. Rules of thumb are a summary of the curve, not a "
+      + "substitute for looking at it."));
+
+    draw();
+  });
+
+  /* ============================================================
+     Unit 2B — Figure 3: the classic symptom, assembled
+
+     A high R², an F-test that rejects overwhelmingly, and individual
+     t-ratios that cannot clear the 5% bar. The three facts look
+     contradictory and are not: F asks whether the regressors matter
+     TOGETHER, and each t asks whether one of them matters once the
+     others are already in — which is the question collinear data
+     cannot answer.
+
+     X4 is uncorrelated with the other two and is what keeps R² high.
+     Watching its t-ratio sit still while the other two collapse is
+     the deck's point that non-collinear coefficients are unaffected.
+
+     The standard errors are built from the unit's own formula,
+     var(β̂j) = σ̂² / [Σxj²(1 − R²j)], with each R²j taken from a real
+     auxiliary regression — so the figure and the algebra cannot drift
+     apart.
+     ============================================================ */
+  VIZ.register("high-r2-low-t", function (host) {
+    var N = 30, B2 = 0.55, B3 = 0.45, B4 = 2.0, SX = 15, SU = 11, K = 4;
+    var DF = N - K;                              /* 26 */
+    var TC = tCrit(0.975, DF);                   /* two-tailed 5% */
+    var FCRIT = 2.98;                            /* F(3, 26) at 5% is 2.975 */
+    var HI = 0.98;
+    var rho = 0.90;
+
+    /* A seeded stream rather than Math.random: every reader should see
+       the same sample, and so should the tutorial answer. MINSTD, whose
+       products stay well inside exact double arithmetic. */
+    var seed = 1387;
+    function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+    function gauss() {
+      var u = 1 - rnd(), v = rnd();
+      return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+    }
+    var A = [], B = [], D = [], U = [], i;
+    for (i = 0; i < N; i++) { A.push(gauss()); B.push(gauss()); D.push(gauss()); U.push(gauss()); }
+
+    function fit(r) {
+      var mix = Math.sqrt(1 - r * r), x2 = [], x3 = [], x4 = [], y = [], X = [], j;
+      for (j = 0; j < N; j++) {
+        var v2 = 50 + SX * A[j];
+        var v3 = 50 + SX * (r * A[j] + mix * B[j]);
+        var v4 = 50 + SX * D[j];
+        x2.push(v2); x3.push(v3); x4.push(v4);
+        y.push(20 + B2 * v2 + B3 * v3 + B4 * v4 + SU * U[j]);
+      }
+      for (j = 0; j < N; j++) X.push([1, x2[j], x3[j], x4[j]]);
+      var m = olsk(X, y);
+      if (!m) return null;
+      var s2 = m.rss / DF;
+
+      function stderr(col, o1, o2) {
+        var mn = 0, ss = 0, q;
+        for (q = 0; q < N; q++) mn += col[q];
+        mn /= N;
+        for (q = 0; q < N; q++) ss += (col[q] - mn) * (col[q] - mn);
+        var tol = 1 - ols3(o1, o2, col).r2;      /* 1 − R²j, the auxiliary fit */
+        if (!(ss > 0) || !(tol > 1e-9)) return null;
+        return Math.sqrt(s2 / (ss * tol));
+      }
+      var e2 = stderr(x2, x3, x4), e3 = stderr(x3, x2, x4), e4 = stderr(x4, x2, x3);
+      if (!e2 || !e3 || !e4) return null;
+      return { r2: m.r2,
+               f: (m.r2 / (K - 1)) / ((1 - m.r2) / DF),
+               t2: m.beta[1] / e2, t3: m.beta[2] / e3, t4: m.beta[3] / e4 };
+    }
+
+    var c = chart({ w: 640, h: 350, pad: { t: 28, r: 20, b: 46, l: 50 },
+                    xd: [0, HI], yd: [0, 16] });
+    c.axes("correlation between X₂ and X₃", "|t|");
+
+    c.plot.appendChild(s("line", { x1: c.x(0), y1: c.y(TC), x2: c.x(HI), y2: c.y(TC),
+                                   stroke: P.inkFaint, "stroke-width": 1,
+                                   "stroke-dasharray": "4 3" }));
+    var tl = s("text", { x: c.x(HI) - 6, y: c.y(TC) - 6, "font-size": 11.5,
+                         fill: P.inkSoft, "text-anchor": "end" });
+    tl.textContent = "5% critical t = " + TC.toFixed(2);
+    c.plot.appendChild(tl);
+
+    /* traced once: the deviates are fixed, so only the correlation moves */
+    var series = [{ key: "t2", colour: P.accent,  label: "X₂ — collinear" },
+                  { key: "t3", colour: P.accent2, label: "X₃ — collinear" },
+                  { key: "t4", colour: P.good,    label: "X₄ — not collinear" }];
+    var grid = [], k;
+    for (k = 0; k <= 49; k++) {
+      var r = HI * k / 49, res = fit(r);
+      if (res) grid.push({ r: r, res: res });
+    }
+    series.forEach(function (sr) {
+      var dpath = "";
+      grid.forEach(function (g, n) {
+        var v = Math.min(Math.abs(g.res[sr.key]), 16);
+        dpath += (n ? " L " : "M ") + c.x(g.r) + " " + c.y(v);
+      });
+      c.plot.appendChild(s("path", { d: dpath, fill: "none",
+                                     stroke: sr.colour, "stroke-width": 2.2 }));
+      sr.dot = s("circle", { r: 5, fill: sr.colour, stroke: P.paper, "stroke-width": 1.5 });
+      c.plot.appendChild(sr.dot);
+    });
+    series.forEach(function (sr, n) {
+      var t = s("text", { x: c.x([0, 0.30, 0.62][n]), y: 17,
+                          "font-size": 11.5, fill: sr.colour });
+      t.textContent = sr.label;
+      c.plot.appendChild(t);
+    });
+
+    function draw() {
+      var res = fit(rho);
+      if (!res) return;
+      series.forEach(function (sr) {
+        sr.dot.setAttribute("cx", c.x(rho));
+        sr.dot.setAttribute("cy", c.y(Math.min(Math.abs(res[sr.key]), 16)));
+      });
+      var sig2 = Math.abs(res.t2) > TC, sig3 = Math.abs(res.t3) > TC;
+      left.textContent = "r₂₃ = " + rho.toFixed(2)
+                       + "    R² = " + res.r2.toFixed(3)
+                       + "    F = " + res.f.toFixed(1) + " against " + FCRIT.toFixed(2);
+      right.textContent = "t₂ = " + res.t2.toFixed(2)
+                        + "    t₃ = " + res.t3.toFixed(2)
+                        + "    t₄ = " + res.t4.toFixed(2);
+      verdict.textContent = (sig2 && sig3)
+        ? "F rejects, and both collinear regressors are individually significant too"
+        : (!sig2 && !sig3)
+          ? "F rejects overwhelmingly, yet neither X₂ nor X₃ is individually significant"
+          : "F rejects, but one of the two collinear regressors has lost its significance";
+      c.svg.setAttribute("aria-label",
+        "Three t-ratio curves against the correlation of X2 and X3: the two collinear ones "
+        + "fall below the critical value while the third stays flat.");
+    }
+
+    var controls = h("div", "viz-controls");
+    var lab = h("label", null, "correlation between X₂ and X₃");
+    var rng = document.createElement("input");
+    rng.type = "range"; rng.min = "0"; rng.max = "0.98"; rng.step = "0.02"; rng.value = "0.9";
+    rng.addEventListener("input", function () { rho = +rng.value; draw(); });
+    lab.appendChild(rng);
+    controls.appendChild(lab);
+    var left = h("span", "viz-readout");
+    var right = h("span", "viz-readout");
+    var verdict = h("span", "viz-readout");
+    controls.appendChild(left);
+    controls.appendChild(right);
+    controls.appendChild(verdict);
+
+    host.appendChild(c.svg);
+    host.appendChild(controls);
+    host.appendChild(h("p", "viz-caption",
+      "One sample of thirty, one true model, and only the correlation between X₂ and X₃ "
+      + "changing. All three variables genuinely belong, so nothing here is misspecified: "
+      + "the estimator stays unbiased at every setting. Past about 0.85 both collinear "
+      + "t-ratios sink under the bar while R² and F, if anything, improve — the "
+      + "high-R²-few-significant-t symptom, manufactured on demand. X₄ is the control. It is "
+      + "uncorrelated with the other two, and its t-ratio does not move at all. "
+      + "Multicollinearity is local damage, not a sickness of the whole equation. Watch the "
+      + "two collinear coefficients themselves as well: unbiasedness is a statement about "
+      + "the average over many samples, and in this one sample the estimates wander a long "
+      + "way as the correlation tightens. That wandering is the reason such results are so "
+      + "sensitive to adding or dropping a handful of observations."));
+
+    draw();
+  });
+
   /* ---------- boot ---------- */
   function boot() {
     palette();

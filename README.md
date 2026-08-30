@@ -99,8 +99,15 @@ a unit the glossary forgot, missing back-links, figures that render `NaN`, and
 has been checked by driving its controls from jsdom and comparing the readouts
 with the closed-form result — the omitted-variable figure against
 β₃δ̃₁, the variance-inflation figure against √(1/(1 − R²₂₃)), the t-distribution
-against printed tables, the Chow figure against F(2, 96) = 3.09. Two figures were
-wrong in ways that only showed up that way.
+against printed tables, the Chow figure against F(2, 96) = 3.09, the 2B ridge
+against the invariance of RSS along β̂₂ + α₂β̂₃ = c, and the VIF curve against
+1/(1 − R²ⱼ) = 10 at R²ⱼ = 0.9. Two figures were wrong in ways that only showed up
+that way.
+
+Figures that simulate should draw from a **seeded** generator rather than
+`Math.random`, so that every reader sees the same sample and a tutorial answer
+can quote it. `high-r2-low-t` uses MINSTD, whose products stay inside exact
+double arithmetic.
 
 ## Adding or changing a unit
 
@@ -236,9 +243,9 @@ through on every navigation.
 | LaTeX | DOM walk, real `\beta` / `_{}` / `\hat{}` | Compiles under pdfLaTeX; equations want a read-through |
 
 `check-site.mjs` verifies that every page exports, that Markdown retains at
-least 60% of the visible text, and that **no unconverted Greek or combining
-marks survive into the LaTeX** — a `.tex` that will not compile is worse than
-no `.tex` at all. To check that claim properly, compile them:
+least 60% of the visible text, and that **no unconverted Greek, combining mark
+or maths operator survives into the LaTeX** — a `.tex` that will not compile is
+worse than no `.tex` at all. To check that claim properly, compile them:
 
 ```sh
 node dev/check-site.mjs      # catches unconverted characters
@@ -246,10 +253,12 @@ node dev/check-site.mjs      # catches unconverted characters
 pdflatex -interaction=nonstopmode <unit>.tex
 ```
 
-All ten pages currently compile. Five of them did not on the first attempt,
+All eleven pages currently compile. Five of them did not on the first attempt,
 and the failures were only visible by actually running `pdflatex` — bare
 Greek inside `<sub>`, stacked accents (Y with *two* combining marks), and
-`\sqrt` emitted with no radicand.
+`\sqrt` emitted with no radicand. Unit 2B added a sixth: a `≫` that no range
+in the checker was watching. Compile after writing a unit even when the suite
+is green — the character class can only catch what someone has thought of.
 
 ## House conventions
 
@@ -290,8 +299,8 @@ the repository private would have hidden nothing that is not already served.
 
 Progress is recorded in the manifest, not here — `status: "ready"` is the
 authority, and `node dev/check-site.mjs` prints every written unit. As of the
-last session: **Unit 1 complete (1A–1F), Unit 2A complete (both parts)**, with
-2B, 2C, 2D and all of Unit 3 still `"planned"`.
+last session: **Unit 1 complete (1A–1F), Unit 2A complete (both parts), Unit 2B
+complete**, with 2C, 2D and all of Unit 3 still `"planned"`.
 
 Three things are deliberately unfinished, and all three need input rather than
 writing:

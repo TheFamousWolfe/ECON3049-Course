@@ -9,13 +9,13 @@ try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
 z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
 if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
 <title>Glossary · ECON 3049</title>
-<link rel="stylesheet" href="../assets/lesson.css?v=5ed93599">
-<link rel="stylesheet" href="../assets/course.css?v=5ed93599">
-<script src="../assets/course.js?v=5ed93599"></script>
-<script src="../assets/nav.js?v=5ed93599" defer></script>
-<script src="../assets/export.js?v=5ed93599" defer></script>
-<script src="../assets/reader.js?v=5ed93599" defer></script>
-<script src="../assets/glossary.js?v=5ed93599" defer></script>
+<link rel="stylesheet" href="../assets/lesson.css?v=9b6e433d">
+<link rel="stylesheet" href="../assets/course.css?v=9b6e433d">
+<script src="../assets/course.js?v=9b6e433d"></script>
+<script src="../assets/nav.js?v=9b6e433d" defer></script>
+<script src="../assets/export.js?v=9b6e433d" defer></script>
+<script src="../assets/reader.js?v=9b6e433d" defer></script>
+<script src="../assets/glossary.js?v=9b6e433d" defer></script>
 </head>
 <body>
 <div class="masthead">
@@ -37,7 +37,7 @@ if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
   Each entry ends with the unit that introduces the term — follow it to see the term in
   context, with the derivation or the figure that goes with it. This page is a reminder of
   what a word means, not a substitute for the unit that explains it. Terms are added as each
-  unit is written; this covers <strong>Units 1A to 1C</strong>.
+  unit is written; this covers <strong>Units 1A to 2B</strong>.
 </div>
 
 <h2 id="notation">Notation</h2>
@@ -101,8 +101,8 @@ variance formulae understate the true uncertainty. Remedies are Unit 2D.</dd>
 <dd>A regression run not for its own sake but to obtain a quantity needed elsewhere. In
 omitted variable bias it is the regression of the <em>omitted</em> variable on the
 <em>included</em> one, whose slope δ̃<sub>1</sub> is half of the bias formula. Auxiliary
-regressions reappear throughout Unit 2 — in the RESET test, and in the diagnostic tests for
-heteroscedasticity and autocorrelation.</dd>
+regressions reappear throughout Unit 2 — in the RESET test, in the <a href="#vif">VIF</a>,
+and in the diagnostic tests for heteroscedasticity and autocorrelation.</dd>
 
 </dl>
 
@@ -352,6 +352,14 @@ correct, which is why economists say "do not reject" rather than "accept" the
 
 <dl>
 
+<dt id="imperfect-multicollinearity" data-match="imperfect multicollinearity, high multicollinearity">Imperfect multicollinearity <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></dt>
+<dd>X<sub>3</sub> = α<sub>1</sub> + α<sub>2</sub>X<sub>2</sub> + ε with ε ≠ 0: a linear
+relationship among regressors that is strong but not exact. Estimation is still possible —
+the denominator of β̂<sub>2</sub> reduces to (Σx<sub>2</sub><sup>2</sup>)(Σε<sup>2</sup>), so
+everything rests on the variation in X<sub>3</sub> that X<sub>2</sub> cannot explain. This is
+what econometricians mean by "the problem of multicollinearity"; contrast
+<a href="#perfect-multicollinearity">perfect multicollinearity</a>.</dd>
+
 <dt id="independent-variable">Independent variable <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
 <dd>X — also explanatory, control or predictor variable, or <em>regressor</em>. As with
 "dependent", the name is positional and carries no causal claim.</dd>
@@ -431,11 +439,22 @@ recorded. One of the four sources of the disturbance.</dd>
 <dd>An estimator that sets sample moments equal to their population counterparts. Named in
 Unit 1B as one of the three estimators in this course.</dd>
 
-<dt id="multicollinearity">Multicollinearity <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dt id="micronumerosity">Micronumerosity <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></dt>
+<dd>Goldberger's term for the problem of small sample size, coined to mock the profession's
+preoccupation with multicollinearity. A sample whose size barely exceeds the number of
+parameters has the same symptoms and the same cause: too little information in the data to
+estimate the coefficients precisely. Both are shortages of information, not defects of the
+model — which is why enlarging the sample is a remedy for either.</dd>
+
+<dt id="multicollinearity">Multicollinearity <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></dt>
 <dd>Regressors that move together, so the data cannot say how much of the movement in Y
-belongs to each. <em>Perfect</em> collinearity — one regressor an exact function of another —
-violates assumption 7 and makes estimation impossible. The imperfect, everyday version
-inflates standard errors: Unit 2B.</dd>
+belongs to each. Named in Unit 1C, where assumption 7 rules out the perfect case; derived here.
+It is a property of the <em>sample</em> rather than of the model, which is why its severity
+changes from sample to sample, why there is no true statistical test for it, and why the only
+real cure is different or better data. See
+<a href="#perfect-multicollinearity">perfect</a> and
+<a href="#imperfect-multicollinearity">imperfect</a> multicollinearity, and
+<a href="#vif">VIF</a>.</dd>
 
 <dt id="multiple-r2" data-match="multiple coefficient of determination">Multiple coefficient of determination (R<sup>2</sup>) <a class="g-unit" href="../units/1d-multiple-regression.html">Unit 1D</a></dt>
 <dd>The share of the variation in Y explained by all the regressors <em>jointly</em>:
@@ -524,6 +543,14 @@ meaning, so a partial coefficient can only be read alongside the list of what el
 model. Contrast the simple-regression slope, which lets everything correlated with the
 regressor move too.</dd>
 
+<dt id="perfect-multicollinearity">Perfect multicollinearity <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></dt>
+<dd>One regressor an exact linear function of the others, as in X<sub>3</sub> = α<sub>1</sub> +
+α<sub>2</sub>X<sub>2</sub>. Assumption 7 fails outright: β̂<sub>2</sub> comes out 0/0 and its
+variance is infinite, because only the combination β̂<sub>2</sub> + α<sub>2</sub>β̂<sub>3</sub>
+is identified and nothing determines how to split it. Not a matter of imprecision — the
+estimates do not exist. Easy to avoid, since you have to build it yourself; the usual culprits
+are a variable entered twice in different units and the dummy variable trap.</dd>
+
 <dt id="prf" data-match="population regression function, PRF">Population regression function (PRF) <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
 <dd>E(Y<sub>i</sub> | X<sub>i</sub>) = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub>. Fixed,
 unknown, and never observed. Contrast <a href="#srf">SRF</a>.</dd>
@@ -550,6 +577,13 @@ and Ŷ³ added, and <a href="#f-test">F-test</a> whether their coefficients are 
 H<sub>0</sub> is that the model is correctly specified. Powers of Ŷ stand in for non-linear
 functions of all the regressors at once, so no data on the omitted variable is needed — but a
 rejection says only that something is wrong, not what.</dd>
+
+<dt id="redundant-variable">Redundant variable <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></dt>
+<dd>Two or more regressors measuring essentially the same thing. Dropping one is the second
+remedy for multicollinearity, and the only deletion that is free: it is not creating a
+specification error but repairing one, since including two measures of a single concept is
+<a href="#overfitting">overfitting</a>. Whether a pair is redundant is a question of economics,
+not of correlation — two distinct forces can move together closely and still both belong.</dd>
 
 <dt id="regression" data-match="regression analysis">Regression analysis <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
 <dd>Explaining movements in a dependent variable as a function of movements in one or more
@@ -692,6 +726,15 @@ looks more precise than it is.</dd>
 <h2 id="g-v">V</h2>
 
 <dl>
+
+<dt id="vif" data-match="variance inflation factor, VIF">Variance inflation factor (VIF) <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></dt>
+<dd>VIF(β̂<sub>j</sub>) = 1/(1 − R<sub>j</sub><sup>2</sup>), where R<sub>j</sub><sup>2</sup> is
+from the <a href="#auxiliary-regression">auxiliary regression</a> of X<sub>j</sub> on all the
+other regressors. It is the factor by which collinearity multiplies var(β̂<sub>j</sub>), since
+var(β̂<sub>j</sub>) = (σ<sup>2</sup>/Σx<sub>j</sub><sup>2</sup>) · VIF. Report
+<strong>√VIF</strong> alongside it: that is what multiplies the standard error and divides the
+t-ratio. Rule of thumb VIF &gt; 10, reached at R<sub>j</sub><sup>2</sup> = 0.9 — a convention,
+not a critical value.</dd>
 
 <dt id="variance-of-the-estimator" data-match="variance of the OLS estimator">Variance of the OLS estimator <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
 <dd>var(β̂<sub>2</sub>) = σ<sup>2</sup>/Σx<sub>i</sub><sup>2</sup>. It falls when the

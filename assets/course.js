@@ -127,7 +127,7 @@ window.COURSE = {
       title: "Multicollinearity",
       blurb: "When regressors move together, and why the standard errors blow up.",
       wooldridge: "Ch. 3", gujarati: "Ch. 10", slides: 22,
-      deck: "UNIT 2B - Multicollinearity.pdf", status: "planned" },
+      deck: "UNIT 2B - Multicollinearity.pdf", status: "ready" },
 
     { unit: "2C", part: "2", week: null, slug: "2c-heteroscedasticity",
       title: "Heteroscedasticity",

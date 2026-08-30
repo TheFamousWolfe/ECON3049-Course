@@ -243,10 +243,15 @@ for (const f of ["index.html", ...live.map(u => `units/${u.slug}.html`),
          `${out.length} chars vs ${visible} visible`);
     }
   }
-  /* a LaTeX file that will not compile is worse than none: no bare Greek
-     or combining marks may survive the converter */
+  /* a LaTeX file that will not compile is worse than none: no bare Greek,
+     combining mark, sub/superscript, arrow or maths operator may survive the
+     converter. The operator range was added after a stray U+226B reached a
+     page and compiled to a fatal error the earlier ranges could not see;
+     Latin-1 and Latin Extended-A are deliberately not listed, since pdfLaTeX
+     reads e.g. "e-circumflex" and "one-half" without help. */
   const tex = w.EXPORT.build("tex");
-  const stray = [...new Set((tex.match(/[\u0300-\u036f\u0370-\u03ff\u2070-\u209f]/g) || []))];
+  const stray = [...new Set((tex.match(
+    /[\u0300-\u036f\u0370-\u03ff\u2070-\u209f\u2190-\u22ff\u27f0-\u27ff]/g) || []))];
   ok(stray.length === 0, at("LaTeX has no unconverted Unicode"), stray.join(" "));
 }
 

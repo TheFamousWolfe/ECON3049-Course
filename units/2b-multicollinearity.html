@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>/* Apply saved reader preferences before first paint, so a reader who
+chose dark does not get a white flash on every navigation. */
+try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
+z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
+if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
+<title>Unit 2B — Multicollinearity · ECON 3049</title>
+<link rel="stylesheet" href="../assets/lesson.css?v=9b6e433d">
+<link rel="stylesheet" href="../assets/course.css?v=9b6e433d">
+<script src="../assets/course.js?v=9b6e433d"></script>
+<script src="../assets/nav.js?v=9b6e433d" defer></script>
+<script src="../assets/export.js?v=9b6e433d" defer></script>
+<script src="../assets/reader.js?v=9b6e433d" defer></script>
+<script src="../assets/quiz.js?v=9b6e433d" defer></script>
+<script src="../assets/viz.js?v=9b6e433d" defer></script>
+</head>
+<body>
+<div class="masthead" data-unit="2B"></div>
+<div class="wrap">
+
+<div class="reader-bar"></div>
+
+<h1>Multicollinearity</h1>
+<p class="subtitle">When regressors move together, and why the standard errors blow up.</p>
+<p class="unit-meta" data-unit="2B"></p>
+
+<div class="box key">
+  <span class="box-label">By the end of this unit you should be able to</span>
+  <ul style="margin:0.3rem 0 0; padding-left:1.1rem;">
+    <li>state the assumption multicollinearity violates, and distinguish the perfect case from the imperfect one;</li>
+    <li>show algebraically why β̂<sub>2</sub> comes out 0/0 under perfect multicollinearity;</li>
+    <li>explain why the variances and standard errors become infinite in the same situation;</li>
+    <li>list the consequences of high but imperfect multicollinearity, and say which properties of OLS survive;</li>
+    <li>recognise the classic symptom — a high R<sup>2</sup> alongside few significant t-ratios;</li>
+    <li>calculate a variance inflation factor, interpret it, and say what the rule of thumb is worth;</li>
+    <li>choose between the three remedies, and state what each one costs.</li>
+  </ul>
+</div>
+
+<div class="box refresh">
+  <span class="box-label">Where this sits</span>
+  Unit 2A dealt with getting the model right — which variables belong, and what shape the
+  relationship takes. This unit assumes the model <em>is</em> right and asks a different
+  question: can the sample you happen to have actually estimate it? Multicollinearity is not a
+  mistake in the specification. It is a property of the data, and it is why a perfectly
+  well-specified equation can still come back with nothing significant in it.
+</div>
+
+<h2>1 · Perfect multicollinearity</h2>
+
+<p><a class="gt" href="../reference/glossary.html#perfect-multicollinearity">Perfect multicollinearity</a> is a violation of the classical assumptions — assumption 7 of Unit
+1C, which requires that there be <strong>no perfect linear relationship between the <a class="gt" href="../reference/glossary.html#independent-variable">independent
+variables</a></strong>. Consider the three-variable regression:</p>
+
+<p class="math">Y = β<sub>1</sub> + β<sub>2</sub>X<sub>2</sub> + β<sub>3</sub>X<sub>3</sub> + u</p>
+
+<p>An example of perfect <a class="gt" href="../reference/glossary.html#multicollinearity">multicollinearity</a> between the two independent variables would be</p>
+
+<p class="math">X<sub>3</sub> = α<sub>1</sub> + α<sub>2</sub>X<sub>2</sub></p>
+
+<p>where the αs are constants. Read the relationship carefully before deciding whether you have
+this problem. It is a <em>linear</em> relationship that is forbidden, so X<sub>3</sub> =
+X<sub>2</sub><sup>2</sup> is not multicollinearity at all — which is why the <a class="gt" href="../reference/glossary.html#turning-point">quadratic</a> and cubic
+specifications of Unit 2A Part 2 are legitimate models rather than broken ones. What is
+forbidden is one regressor being an exact straight-line function of the others.</p>
+
+<h2>2 · The estimator does not exist</h2>
+
+<p>From Unit 1D we know that the <a class="gt" href="../reference/glossary.html#partial-coefficient">partial slope</a> in the three-variable model is</p>
+
+<p class="math">β̂<sub>2</sub> = [ (Σyx<sub>2</sub>)(Σx<sub>3</sub><sup>2</sup>) − (Σyx<sub>3</sub>)(Σx<sub>2</sub>x<sub>3</sub>) ]
+&nbsp;/&nbsp; [ (Σx<sub>2</sub><sup>2</sup>)(Σx<sub>3</sub><sup>2</sup>) − (Σx<sub>2</sub>x<sub>3</sub>)<sup>2</sup> ]</p>
+
+<p>Now assume X<sub>3</sub> = α<sub>2</sub>X<sub>2</sub> with α<sub>2</sub> ≠ 0. Taking
+deviations from means, x<sub>3</sub> = α<sub>2</sub>x<sub>2</sub>, so each of the four sums can be
+rewritten in terms of X<sub>2</sub> alone:</p>
+
+<p class="math">Σyx<sub>3</sub> = α<sub>2</sub>Σyx<sub>2</sub>
+&nbsp;·&nbsp; Σx<sub>3</sub><sup>2</sup> = α<sub>2</sub><sup>2</sup>Σx<sub>2</sub><sup>2</sup>
+&nbsp;·&nbsp; Σx<sub>2</sub>x<sub>3</sub> = α<sub>2</sub>Σx<sub>2</sub><sup>2</sup></p>
+
+<p>Substituting all three into the <a class="gt" href="../reference/glossary.html#estimator">estimator</a>:</p>
+
+<p class="math">β̂<sub>2</sub> = [ (Σyx<sub>2</sub>)(α<sub>2</sub><sup>2</sup>Σx<sub>2</sub><sup>2</sup>) − (α<sub>2</sub>Σyx<sub>2</sub>)(α<sub>2</sub>Σx<sub>2</sub><sup>2</sup>) ]
+&nbsp;/&nbsp; [ (Σx<sub>2</sub><sup>2</sup>)(α<sub>2</sub><sup>2</sup>Σx<sub>2</sub><sup>2</sup>) − (α<sub>2</sub>Σx<sub>2</sub><sup>2</sup>)<sup>2</sup> ]
+&nbsp;=&nbsp; 0 / 0</p>
+
+<p>Both the numerator and the denominator collapse to exactly zero, because both terms in each
+bracket are the same quantity. The result is <strong>indeterminate</strong> — not large, not
+unstable, but undefined. The same thing happens to β̂<sub>3</sub>. So the <a class="gt" href="../reference/glossary.html#ols">OLS</a> estimators have no
+solution in the presence of perfect multicollinearity, and this is a matter of arithmetic rather
+than of insufficient data.</p>
+
+<div class="box warn">
+  <span class="box-label">A note on the α subscripts</span>
+  The lecture slides write X<sub>3</sub> = α<sub>1</sub>X<sub>2</sub> at this point, using
+  α<sub>1</sub> for the slope. Everywhere on this site the subscripts count from the intercept,
+  as Gujarati does, so the intercept of an auxiliary regression is α<sub>1</sub> and its first
+  slope is α<sub>2</sub>. Nothing in the algebra changes; only the label does.
+</div>
+
+<h2>3 · What indeterminacy actually means</h2>
+
+<p>Recall what a partial coefficient is meant to say: the expected change in Y when that
+regressor changes by one unit, <em>holding the other factors constant</em>. Under perfect
+multicollinearity that instruction cannot be carried out. If X<sub>3</sub> =
+α<sub>2</sub>X<sub>2</sub>, then X<sub>3</sub> cannot be held constant while X<sub>2</sub> moves;
+the two variables are, in the sample, the same variable measured on a different scale.</p>
+
+<p>The consequence is visible in the fitted values. Writing the fitted equation out and
+substituting for X<sub>3</sub>:</p>
+
+<p class="math">Ŷ = β̂<sub>1</sub> + β̂<sub>2</sub>X<sub>2</sub> + β̂<sub>3</sub>X<sub>3</sub>
+&nbsp;⟹&nbsp; Ŷ = β̂<sub>1</sub> + β̂<sub>2</sub>X<sub>2</sub> + β̂<sub>3</sub>α<sub>2</sub>X<sub>2</sub>
+&nbsp;=&nbsp; β̂<sub>1</sub> + (β̂<sub>2</sub> + α<sub>2</sub>β̂<sub>3</sub>)X<sub>2</sub></p>
+
+<p>Only the combination β̂<sub>2</sub> + α<sub>2</sub>β̂<sub>3</sub> appears. The data determine
+that combination perfectly well; nothing whatever determines how it should be divided between
+the two coefficients. There is not one best-fitting answer but an entire line of them, and every
+point on that line reproduces the same fitted values, the same <a class="gt" href="../reference/glossary.html#residual">residuals</a> and the same <a class="gt" href="../reference/glossary.html#rss">residual
+sum of squares</a>.</p>
+
+<div class="viz" data-viz="perfect-collinearity-ridge">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It plots the coefficient on X<sub>3</sub> against
+    the coefficient on X<sub>2</sub> for a sample in which X<sub>3</sub> is exactly twice
+    X<sub>2</sub>, and lets you slide along the line of equally good answers while the residual
+    sum of squares is recomputed and does not move.
+  </p>
+</div>
+
+<h2>4 · The variances are infinite</h2>
+
+<p>Consider the same model, with X<sub>3</sub> a perfect linear function of X<sub>2</sub>, and
+ask what happens to the precision of the <a class="gt" href="../reference/glossary.html#estimate">estimates</a> rather than to the estimates themselves.
+Recall from Unit 1D the variance of a partial slope:</p>
+
+<p class="math">var(β̂<sub>2</sub>) = σ<sup>2</sup> / [ Σx<sub>2</sub><sup>2</sup> ( 1 − R<sub>23</sub><sup>2</sup> ) ]</p>
+
+<p>where R<sub>23</sub><sup>2</sup> is the R<sup>2</sup> from the regression of X<sub>3</sub> on
+X<sub>2</sub>. Under perfect multicollinearity that regression fits exactly, so
+R<sub>23</sub><sup>2</sup> = 1, the bracket is zero, and the variance is infinite. So are the
+variances and <a class="gt" href="../reference/glossary.html#standard-error">standard errors</a> of β̂<sub>2</sub> and β̂<sub>3</sub> alike.</p>
+
+<div class="box key">
+  <span class="box-label">Two faces of one failure</span>
+  The point estimate is <strong>0/0</strong> and its variance is <strong>infinite</strong>.
+  These are not two separate problems. Both are the statement that the sample contains no
+  information at all about how to split the effect between the two regressors — and it is worth
+  noticing that the second formula will still be doing its work, more quietly, when
+  R<sub>23</sub><sup>2</sup> is merely close to one rather than equal to it.
+</div>
+
+<h2>5 · High but imperfect multicollinearity</h2>
+
+<p>Perfect multicollinearity is easy to avoid, because you have to put it there yourself. It
+arises from a mistake in constructing the regressors — including a variable in two units at
+once, including a set of shares that sum to one alongside a constant, or the dummy variable trap
+of Unit 3A. Inspect the variables, find the exact relationship, and remove one of them.</p>
+
+<p>When econometricians speak of <em>the problem</em> of multicollinearity, they mean something
+else: <strong>high but <a class="gt" href="../reference/glossary.html#imperfect-multicollinearity">imperfect multicollinearity</a></strong>, a linear relationship between two
+or more independent variables strong enough to affect the estimation of the coefficients
+materially. Two regressors are imperfectly linearly related when</p>
+
+<p class="math">X<sub>3</sub> = α<sub>1</sub> + α<sub>2</sub>X<sub>2</sub> + ε
+&nbsp; with α<sub>2</sub> ≠ 0 and cov(ε, X<sub>2</sub>) = 0</p>
+
+<p>The <a class="gt" href="../reference/glossary.html#stochastic">stochastic</a> term ε is what distinguishes this from the perfect case: X<sub>3</sub> now has
+some movement of its own that X<sub>2</sub> cannot account for, and it is that movement which the
+regression uses to separate the two effects.</p>
+
+<h3>The estimator now exists — but only just</h3>
+
+<p>Substituting x<sub>3</sub> = α<sub>2</sub>x<sub>2</sub> + ε into the same formula, and using
+Σεx<sub>2</sub> = 0, which is what cov(ε, X<sub>2</sub>) = 0 gives us:</p>
+
+<p class="math">β̂<sub>2</sub> = [ (Σyx<sub>2</sub>)(α<sub>2</sub><sup>2</sup>Σx<sub>2</sub><sup>2</sup> + Σε<sup>2</sup>) − (α<sub>2</sub>Σyx<sub>2</sub> + Σyε)(α<sub>2</sub>Σx<sub>2</sub><sup>2</sup>) ]
+&nbsp;/&nbsp; [ (Σx<sub>2</sub><sup>2</sup>)(α<sub>2</sub><sup>2</sup>Σx<sub>2</sub><sup>2</sup> + Σε<sup>2</sup>) − (α<sub>2</sub>Σx<sub>2</sub><sup>2</sup>)<sup>2</sup> ]</p>
+
+<p>The denominator is worth simplifying, because it tells the whole story. Expanding it, the
+term in α<sub>2</sub><sup>2</sup> cancels and what survives is</p>
+
+<p class="math">(Σx<sub>2</sub><sup>2</sup>)(α<sub>2</sub><sup>2</sup>Σx<sub>2</sub><sup>2</sup>) + (Σx<sub>2</sub><sup>2</sup>)(Σε<sup>2</sup>) − α<sub>2</sub><sup>2</sup>(Σx<sub>2</sub><sup>2</sup>)<sup>2</sup>
+&nbsp;=&nbsp; (Σx<sub>2</sub><sup>2</sup>)(Σε<sup>2</sup>)</p>
+
+<div class="box def">
+  <span class="box-label">Everything now rests on Σε<sup>2</sup></span>
+  The whole denominator is the variation in X<sub>2</sub> multiplied by <strong>the variation in
+  X<sub>3</sub> that X<sub>2</sub> does not explain</strong>. Estimation is possible because
+  Σε<sup>2</sup> is not zero. But the smaller ε is — the closer X<sub>3</sub> comes to being an
+  exact function of X<sub>2</sub> — the smaller that denominator, and the closer we get to the
+  0/0 of the perfect case. Perfect and imperfect multicollinearity are not two different
+  phenomena. They are the two ends of one continuous scale, and every result in this unit is
+  about where on that scale a given sample sits.
+</div>
+
+<h2>6 · The consequences</h2>
+
+<p>Begin with the good news, because it is more surprising than the bad news and it is the part
+students most often get wrong in examinations.</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span>
+    <strong>The estimates remain unbiased.</strong> E(β̂<sub>2</sub>) = β<sub>2</sub> still
+    holds. Multicollinearity is not a specification error, so nothing about it puts the
+    estimator off centre.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span>
+    <strong>OLS is still BLUE.</strong> No classical assumption has been broken — assumption 7
+    rules out <em>perfect</em> collinearity only — so the Gauss–Markov theorem still applies and
+    OLS still has the smallest variance in the class of linear unbiased estimators.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">iii</span><span>
+    <strong>But that minimum variance can be very large.</strong> Being the best of the linear
+    unbiased estimators is no guarantee of being any good. If the information needed to separate
+    two effects is not in the sample, no unbiased estimator can conjure it, and OLS is merely the
+    least bad of a bad set.
+  </span></div>
+</div>
+
+<div class="box refresh">
+  <span class="box-label">A picture you have already seen</span>
+  Two sampling distributions, both centred on the true value, one much wider than the other:
+  that is the whole of consequences (i) to (iii) in one figure, and it is the figure in Unit 2A
+  Part 1 that showed what an irrelevant variable costs. The mechanism is identical — a regressor
+  correlated with X<sub>2</sub> inflates the variance of β̂<sub>2</sub> by 1/(1 −
+  R<sub>23</sub><sup>2</sup>). The difference is only in what we conclude. There, the culprit did
+  not belong in the model and dropping it was free. Here it does belong, and dropping it is not.
+</div>
+
+<h3>What the inflated variance does next</h3>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">iv</span><span>
+    <strong>The computed t-statistics fall.</strong> This follows directly from the formula
+    t<sub>k</sub> = (β̂<sub>k</sub> − β<sub>H0</sub>) / se(β̂<sub>k</sub>). As the standard error
+    in the denominator rises, the t-ratio is driven towards zero, and we become less likely to
+    reject the null of no effect — for a variable that may matter a great deal.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">v</span><span>
+    <strong>Estimates and standard errors become very sensitive</strong> to the addition or
+    deletion of a few observations, or to the deletion of a variable. With severe collinearity
+    OLS is forced to lean on small differences between the regressors in order to tell their
+    effects apart, so small changes in the data move those differences a long way.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">vi</span><span>
+    <strong>The overall fit is largely unaffected</strong>, and so are the coefficients of the
+    regressors that are <em>not</em> collinear. The damage is local. An equation can be badly
+    affected in two of its coefficients and perfectly sound in the rest.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">vii</span><span>
+    <strong>A high R<sup>2</sup> can sit alongside t-tests that reject nothing.</strong> And it
+    is quite possible for the F-test of overall significance to reject the null while not one of
+    the individual t-tests does — a combination which looks like a contradiction and is not.
+  </span></div>
+</div>
+
+<div class="box key">
+  <span class="box-label">Why F and t can disagree</span>
+  They are not asking the same question. The <strong>F-test</strong> asks whether the regressors
+  matter <em>together</em>. Each <strong>t-test</strong> asks whether one regressor adds anything
+  <em>once the others are already in the equation</em> — and that is precisely the question
+  collinear data cannot answer, because once X<sub>3</sub> is in, there is almost nothing left in
+  X<sub>2</sub> for the model to use. A joint rejection with no individual ones is the signature
+  of variables that plainly matter as a group but cannot be told apart individually.
+</div>
+
+<h2>7 · Two examples</h2>
+
+<h3>A student consumption function</h3>
+
+<p class="math">CO<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>Yd<sub>i</sub> + β<sub>3</sub>LA<sub>i</sub> + ε<sub>i</sub></p>
+
+<p>where CO<sub>i</sub> is the annual consumption expenditure of the ith student on items other
+than tuition and room and board, Yd<sub>i</sub> is that student's annual disposable income
+including gifts, and LA<sub>i</sub> is their liquid assets — savings and the like. Estimating by
+OLS:</p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>CO&#770;<sub>i</sub> =</span><span>s.e.</span><span>t =</span></span>
+  <span class="er-col"><span>−367.83</span><span></span><span></span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>0.5113 Yd<sub>i</sub></span><span>(1.0307)</span><span>0.496</span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>0.0427 LA<sub>i</sub></span><span>(0.0942)</span><span>0.453</span></span>
+  <span class="er-note">R̄<sup>2</sup> = 0.835</span>
+</div>
+
+<p>On the <a class="gt" href="../reference/glossary.html#t-statistic">t-test</a> both variables are statistically insignificant. Taken at face value, this says
+that a student's income does not affect their spending — which is not a result anybody would
+believe. Now re-estimate including disposable income only:</p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>CO&#770;<sub>i</sub> =</span><span>s.e.</span><span>t =</span></span>
+  <span class="er-col"><span>−417.45</span><span></span><span></span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>0.9714 Yd<sub>i</sub></span><span>(0.157)</span><span>6.187</span></span>
+  <span class="er-note">R̄<sup>2</sup> = 0.861</span>
+</div>
+
+<p>Disposable income is now overwhelmingly significant. Three things in that comparison are
+worth reading off deliberately. The coefficient on income has moved from 0.5113 to 0.9714 —
+nearly doubling on the deletion of one variable, which is consequence (v). Its standard error has
+fallen from 1.0307 to 0.157, a reduction by a factor of about six and a half, which is
+consequence (iv) running in reverse. And the adjusted R<sup>2</sup> has <em>risen</em>, from
+0.835 to 0.861, on dropping a variable — the sign that liquid assets were contributing nothing
+that income had not already contributed.</p>
+
+<p>The economics says the same thing as the arithmetic. Disposable income and liquid assets are
+both measures of how much money a student has available; they are, for this sample, two attempts
+at one variable. That makes liquid assets a candidate for the second remedy in section 9 rather
+than a variable whose deletion should worry us.</p>
+
+<h3>Demand for petrol, by state</h3>
+
+<p class="math">PCON<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>UHM<sub>i</sub> + β<sub>3</sub>TAX<sub>i</sub> + β<sub>4</sub>REG<sub>i</sub> + ε<sub>i</sub></p>
+
+<p>with PCON<sub>i</sub> the petroleum consumption of the ith state in trillions of BTUs,
+UHM<sub>i</sub> the urban highway miles within that state, TAX<sub>i</sub> its gasoline tax in
+cents per gallon, and REG<sub>i</sub> its motor vehicle registrations in thousands. Theory gives
+the expected signs without much argument: more urban highway and more registered vehicles both
+mean more petrol burned, so β<sub>2</sub> and β<sub>4</sub> are expected positive, while a tax
+raises the price at the pump and so β<sub>3</sub> is expected negative.</p>
+
+<p>The difficulty is not in the specification, which is entirely sensible, but in the data.
+Urban highway miles and motor vehicle registrations are both, in large part, measurements of how
+big a state is. A large state has a great many highway miles <em>and</em> a great many registered
+vehicles; a small one has few of each. The two regressors will therefore move together closely
+across the sample, and the equation will struggle to say which of them is doing the work — even
+though both belong in it, and even though the model as a whole may fit very well.</p>
+
+<h2>8 · Detecting multicollinearity</h2>
+
+<p>Some collinearity exists in almost every equation ever estimated; the useful question is
+never whether it is present but <strong>how much of it there is</strong>. Its severity can also
+change from sample to sample for the same specification, which already tells you that it is a
+property of the data rather than of the model. There are no generally accepted statistical tests
+for it, and this is not an oversight — a test needs a <a class="gt" href="../reference/glossary.html#null-hypothesis">null hypothesis</a> about the population, and
+this is a condition of the sample. What researchers do instead is develop a feel for its severity
+by examining a number of characteristics. Three are in common use, and Gujarati and Porter give
+several more.</p>
+
+<h3>1 — A high R<sup>2</sup> with few significant t-ratios</h3>
+
+<p>This is the classic symptom, and consequence (vii) is the reason for it. If the equation as a
+whole explains the <a class="gt" href="../reference/glossary.html#dependent-variable">dependent variable</a> well, and the <a class="gt" href="../reference/glossary.html#f-test">F-test</a> says the regressors jointly matter,
+but scarcely any individual coefficient can clear its own t-test, then the sample is telling you
+that the variables matter but that it cannot apportion the credit.</p>
+
+<div class="viz" data-viz="high-r2-low-t">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It tracks the three t-ratios of a correctly
+    specified model as the correlation between two of the regressors is raised, showing the two
+    collinear t-ratios falling below the 5% critical value while R<sup>2</sup>, F, and the
+    t-ratio of the third regressor are unmoved.
+  </p>
+</div>
+
+<h3>2 — High pairwise correlations</h3>
+
+<p>Inspect the <a class="gt" href="../reference/glossary.html#correlation-coefficient">correlation coefficients</a> between each pair of regressors. A high pairwise
+correlation is a <strong>sufficient but not a necessary</strong> condition for severe
+multicollinearity: finding one is enough to establish a problem, but failing to find one
+establishes nothing.</p>
+
+<p>The reason is the major limitation of this method. Groups of variables acting together can
+produce severe multicollinearity without any single simple correlation coefficient being high.
+Three regressors may be pairwise unremarkable and yet one of them nearly a linear combination of
+the other two, and a table of pairwise correlations has no way of seeing that. This is exactly
+what the third method is built to catch.</p>
+
+<h3>3 — The variance inflation factor</h3>
+
+<p>The <a class="gt" href="../reference/glossary.html#vif">variance inflation factor</a> measures the severity of multicollinearity by asking how much
+of a given explanatory variable can be explained by <em>all</em> the other explanatory variables
+in the equation at once. Suppose a model with k independent variables:</p>
+
+<p class="math">Y = β<sub>1</sub> + β<sub>2</sub>X<sub>2</sub> + β<sub>3</sub>X<sub>3</sub> + ⋯ + β<sub>k</sub>X<sub>k</sub> + ε</p>
+
+<p>A VIF has to be calculated separately for each of the k independent variables.</p>
+
+<ol class="steps">
+  <li>Run an OLS regression with X<sub>j</sub> as a function of all the other explanatory
+    variables in the equation. For X<sub>2</sub> that auxiliary regression is
+    <p class="math">X<sub>2</sub> = α<sub>1</sub> + α<sub>3</sub>X<sub>3</sub> + α<sub>4</sub>X<sub>4</sub> + ⋯ + α<sub>k</sub>X<sub>k</sub> + u</p>
+    Note that Y appears nowhere in it. This diagnostic is entirely about relationships among the
+    regressors.
+  </li>
+  <li>Collect the R<sup>2</sup> from that regression, written R<sub>j</sub><sup>2</sup>.</li>
+  <li>Calculate
+    <p class="math">VIF(β̂<sub>j</sub>) = 1 / ( 1 − R<sub>j</sub><sup>2</sup> )</p>
+  </li>
+</ol>
+
+<p>The name is earned by where the quantity appears. Rewriting the variance of a slope
+coefficient:</p>
+
+<p class="math">var(β̂<sub>j</sub>) = σ<sup>2</sup> / [ Σx<sub>j</sub><sup>2</sup> ( 1 − R<sub>j</sub><sup>2</sup> ) ]
+= ( σ<sup>2</sup> / Σx<sub>j</sub><sup>2</sup> ) · VIF(β̂<sub>j</sub>)</p>
+
+<p>The first factor is the variance the coefficient would have had if X<sub>j</sub> were
+unrelated to every other regressor. The VIF is the multiple by which collinearity inflates it,
+and so it gives the speed with which the variances — and by extension the standard errors —
+increase as collinearity worsens.</p>
+
+<div class="box def">
+  <span class="box-label">Reading a VIF</span>
+  As R<sub>j</sub><sup>2</sup> → 1, VIF → ∞. The higher the VIF, the more severe the effects of
+  multicollinearity.<br>
+  <strong>There are no formal critical values.</strong> The common rule of thumb is that a VIF
+  above 10 indicates severe multicollinearity, which happens when R<sub>j</sub><sup>2</sup>
+  exceeds 0.9; some books use 5 instead. Neither number comes from a distribution.<br>
+  Two cautions go with it. It is possible to have large multicollinearity effects without a large
+  VIF — a coefficient with a small Σx<sub>j</sub><sup>2</sup> can be imprecise at a VIF of 3. And
+  the number worth quoting alongside the VIF is <strong>√VIF</strong>, because that, not the VIF
+  itself, is the factor by which the standard error is multiplied and therefore the factor by
+  which the t-ratio is divided. A VIF of 10 sounds alarming and means the standard error has
+  roughly tripled.
+</div>
+
+<div class="viz" data-viz="vif-curve">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It draws VIF = 1/(1 − R<sub>j</sub><sup>2</sup>)
+    against the auxiliary R<sup>2</sup>, marks the rule-of-thumb threshold, and reports both the
+    standard-error multiplier √VIF and what a t-ratio of 4.00 would be reduced to.
+  </p>
+</div>
+
+<h2>9 · Remedies</h2>
+
+<h3>Remedy 1 — do nothing</h3>
+
+<p>This is a respectable answer, and often the right one. The coefficients may still be
+significant and may still meet expectations, in which case there is nothing to fix. More
+importantly, if you delete a multicollinear variable that belongs in the model, you have caused
+<a class="gt" href="../reference/glossary.html#specification-bias">specification bias</a> — you have traded a variance problem, which leaves the estimator centred on
+the truth, for a bias problem, which does not. Unit 2A Part 1 set out the cost of an omitted
+relevant variable in full, and none of it is undone by the fact that the omission was made for a
+good reason.</p>
+
+<p>There is a second argument for restraint. Every time a regression is rerun on the same
+sample, we risk arriving at a specification that works by accident on that sample — the data
+mining the <a class="gt" href="../reference/glossary.html#general-to-specific">general-to-specific</a> approach of Unit 2A Part 1 warns against. A model reshaped until
+its t-ratios look respectable has t-ratios that no longer mean what they claim to mean.</p>
+
+<div class="box warn">
+  <span class="box-label">Why dropping a variable is harmless in one case and not the other</span>
+  Under <strong>perfect</strong> multicollinearity, X<sub>3</sub> carries no information at all
+  that X<sub>2</sub> does not already carry: it is X<sub>2</sub> on a different scale. Dropping it
+  loses nothing — the fitted values are identical, and section 3 showed why. Under
+  <strong>imperfect</strong> multicollinearity that is no longer true. X<sub>3</sub> has its own
+  variation ε, and if X<sub>3</sub> genuinely belongs in the model, that variation belongs in the
+  explanation. Dropping it now omits a relevant variable and biases everything correlated with
+  it. The very ε that made estimation possible is what makes deletion costly.
+</div>
+
+<h3>Remedy 2 — drop a redundant variable</h3>
+
+<p>Two or more variables in an equation that measure essentially the same thing are
+<strong>redundant</strong>, and the previous warning does not apply to them. Dropping a <a class="gt" href="../reference/glossary.html#redundant-variable">redundant
+variable</a> is not creating a specification error; it is making up for one, since including two
+measures of a single concept is the <a class="gt" href="../reference/glossary.html#overfitting">overfitting</a> of Unit 2A Part 1.</p>
+
+<p>The distinction is a matter of economics rather than statistics, and no diagnostic will make
+it for you. A high correlation between two regressors can arise either from two measures of one
+concept or from two genuinely distinct forces that happen to move together. Disposable income
+and liquid assets in section 7 are plausibly the former; urban highway miles and vehicle
+registrations are plausibly the latter, since a policy could raise one without raising the other.
+Only the first pair should be reduced to one variable.</p>
+
+<h3>Remedy 3 — increase the size of the sample</h3>
+
+<p>A larger sample will normally reduce the variance of the estimated coefficients, and so
+diminish the impact of multicollinearity. The reason is visible in the variance formula: adding
+observations increases Σx<sub>j</sub><sup>2</sup>, which sits in the denominator, and this happens
+whatever the value of R<sub>j</sub><sup>2</sup>. More data does not make the regressors less
+correlated. It buys enough extra variation that the correlation matters less.</p>
+
+<p>The same formula explains a related complaint. Too small a sample — one where the number of
+observations barely exceeds the number of <a class="gt" href="../reference/glossary.html#parameter">parameters</a> to be estimated — produces very similar
+consequences to multicollinearity, for the same reason and with the same symptoms. The
+econometrician Arthur Goldberger, reacting to the profession's preoccupation with
+multicollinearity, coined the term <strong><a class="gt" href="../reference/glossary.html#micronumerosity">micronumerosity</a></strong> for it: the problem of small
+sample size, dressed up in language grand enough to be taken as seriously as its famous cousin.
+The joke has a point. Both conditions are shortages of information in the sample, and neither is
+a flaw in the model.</p>
+
+<p>Unfortunately, while it is a useful alternative to consider, collecting more data is not
+always possible. There are only so many states, so many years of quarterly national accounts, so
+many countries in the region.</p>
+
+<div class="box key">
+  <span class="box-label">The honest summary</span>
+  Multicollinearity is a <strong>data problem, not a model problem</strong>. The specification
+  can be perfect and the theory impeccable, and the sample can still be unable to separate two
+  effects that move together in it. That is why "do nothing" is a serious answer, why the only
+  real cure is different or better data, and why the worst response is to keep deleting variables
+  until the output looks convincing. Report the imprecision; do not estimate it away.
+</div>
+
+<h2>10 · Tutorial</h2>
+
+<p style="font-size:0.85rem; color:var(--ink-soft); font-style:italic;">
+Draft questions, to be replaced by the tutorial sheet issued in class.</p>
+
+<div class="tutorial">
+
+  <div class="tq">
+    <span class="qtext">For the model Y = β<sub>1</sub> + β<sub>2</sub>X<sub>2</sub> +
+    β<sub>3</sub>X<sub>3</sub> + u, suppose X<sub>3</sub> = α<sub>2</sub>X<sub>2</sub> exactly.
+    Show that β̂<sub>2</sub> is indeterminate, and explain in words what the algebra is telling
+    you about the sample.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>The substitutions.</strong> In deviation form x<sub>3</sub> =
+        α<sub>2</sub>x<sub>2</sub>, so Σyx<sub>3</sub> = α<sub>2</sub>Σyx<sub>2</sub>,
+        Σx<sub>3</sub><sup>2</sup> = α<sub>2</sub><sup>2</sup>Σx<sub>2</sub><sup>2</sup> and
+        Σx<sub>2</sub>x<sub>3</sub> = α<sub>2</sub>Σx<sub>2</sub><sup>2</sup>.</p>
+        <p><strong>The numerator.</strong> (Σyx<sub>2</sub>)(α<sub>2</sub><sup>2</sup>Σx<sub>2</sub><sup>2</sup>)
+        − (α<sub>2</sub>Σyx<sub>2</sub>)(α<sub>2</sub>Σx<sub>2</sub><sup>2</sup>). Both terms are
+        α<sub>2</sub><sup>2</sup>(Σyx<sub>2</sub>)(Σx<sub>2</sub><sup>2</sup>), so it is zero.</p>
+        <p><strong>The denominator.</strong> (Σx<sub>2</sub><sup>2</sup>)(α<sub>2</sub><sup>2</sup>Σx<sub>2</sub><sup>2</sup>)
+        − (α<sub>2</sub>Σx<sub>2</sub><sup>2</sup>)<sup>2</sup> =
+        α<sub>2</sub><sup>2</sup>(Σx<sub>2</sub><sup>2</sup>)<sup>2</sup> −
+        α<sub>2</sub><sup>2</sup>(Σx<sub>2</sub><sup>2</sup>)<sup>2</sup> = 0. So β̂<sub>2</sub> =
+        0/0, and by the same steps so is β̂<sub>3</sub>.</p>
+        <p><strong>In words.</strong> Not "the estimate is very large" or "the estimate is
+        unstable" — it does not exist. The fitted equation can be rewritten Ŷ = β̂<sub>1</sub> +
+        (β̂<sub>2</sub> + α<sub>2</sub>β̂<sub>3</sub>)X<sub>2</sub>, so the sample identifies the
+        combination β̂<sub>2</sub> + α<sub>2</sub>β̂<sub>3</sub> and nothing else. Infinitely many
+        pairs give that same combination, and every one of them produces identical fitted values
+        and an identical RSS. Least squares has no basis for preferring any of them.</p>
+        <p>Equivalently, and this is worth being able to say too: the interpretation of a partial
+        coefficient requires holding the other regressors constant, and X<sub>3</sub> cannot be
+        held constant while X<sub>2</sub> moves.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">A model Y = β<sub>1</sub> + β<sub>2</sub>X<sub>2</sub> +
+    β<sub>3</sub>X<sub>3</sub> + β<sub>4</sub>X<sub>4</sub> + u is estimated on 30 observations.
+    The auxiliary regressions give R<sub>2</sub><sup>2</sup> = 0.94, R<sub>3</sub><sup>2</sup> =
+    0.92 and R<sub>4</sub><sup>2</sup> = 0.35. Compute the three VIFs, apply the rule of thumb,
+    and state precisely what the largest of them means for the standard error.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>The calculations.</strong> VIF = 1/(1 − R<sub>j</sub><sup>2</sup>):</p>
+        <p class="math">VIF<sub>2</sub> = 1/0.06 = 16.67 &nbsp;·&nbsp; VIF<sub>3</sub> = 1/0.08 = 12.50 &nbsp;·&nbsp; VIF<sub>4</sub> = 1/0.65 = 1.54</p>
+        <p><strong>The rule of thumb.</strong> Both X<sub>2</sub> and X<sub>3</sub> exceed 10, so
+        both are flagged as severely collinear with the rest of the equation. X<sub>4</sub> at
+        1.54 is unremarkable, and its coefficient should be estimated about as precisely as if
+        the others were not there — consequence (vi), that the damage is local.</p>
+        <p><strong>What 16.67 means.</strong> The <em>variance</em> of β̂<sub>2</sub> is 16.67
+        times what it would have been had X<sub>2</sub> been uncorrelated with X<sub>3</sub> and
+        X<sub>4</sub>. The quantity to report is the square root, since standard errors and not
+        variances are what appear in a t-ratio: √16.67 = 4.08, so the standard error is about four
+        times larger and the t-ratio about four times smaller than it would otherwise have been. A
+        coefficient that would have had t = 6 is reduced to t = 1.5, and would be reported as
+        insignificant.</p>
+        <p>Note what the exercise does <em>not</em> establish. None of these numbers says
+        X<sub>2</sub> should be dropped. They say the sample cannot estimate its coefficient
+        precisely, which is a different and more honest claim.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">An equation with three regressors, estimated on 30 observations, returns
+    R<sup>2</sup> = 0.94 with no individual t-ratio above 1.5. Compute the F-statistic for overall
+    significance and test it at 5%, given that the critical value F<sup>3</sup><sub>26</sub> is
+    2.98. Reconcile the two results, and say what you would look at next.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>The F-statistic.</strong> With k = 4 parameters including the intercept, the
+        numerator has k − 1 = 3 <a class="gt" href="../reference/glossary.html#degrees-of-freedom">degrees of freedom</a> and the denominator n − k = 26:</p>
+        <p class="math">F = [ R<sup>2</sup> / (k − 1) ] / [ (1 − R<sup>2</sup>) / (n − k) ]
+          = (0.94 / 3) / (0.06 / 26) = 0.3133 / 0.002308 = <strong>135.8</strong></p>
+        <p>Since 135.8 ≫ 2.98, reject the null that all the slope coefficients are jointly zero,
+        and by a very wide margin.</p>
+        <p><strong>Reconciling them.</strong> There is no contradiction, because the two tests ask
+        different questions. F asks whether the regressors matter together, and the answer is
+        emphatically yes. Each t asks whether one regressor adds anything given that the others
+        are already in the equation, and with collinear data the answer is no, because by then
+        there is almost nothing left in that regressor that the others have not already supplied.
+        This combination — a high R<sup>2</sup>, a decisive F, and no significant t — is the
+        classic symptom of severe multicollinearity.</p>
+        <p><strong>What next.</strong> Compute the VIFs, which is the diagnostic that identifies
+        <em>which</em> regressors are the collinear ones; pairwise correlations as a supplement,
+        remembering that they can miss a variable that is collinear with a combination of two
+        others. Then decide on economic grounds whether any of the flagged variables are redundant
+        measures of one concept, or whether all of them genuinely belong — because that, and not
+        the size of the VIF, determines whether dropping one is a repair or a new error.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">"Multicollinearity biases the coefficients, so a model suffering from it
+    should not be trusted." Assess this statement. In your answer state which properties of OLS
+    survive high multicollinearity and which do not, and explain why the answer would be different
+    if the collinearity were perfect.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>The statement is wrong on the first clause.</strong> High but imperfect
+        multicollinearity does not bias anything: E(β̂<sub>j</sub>) = β<sub>j</sub> still holds. No
+        classical assumption has been violated — assumption 7 forbids only <em>perfect</em>
+        collinearity — so the <a class="gt" href="../reference/glossary.html#gauss-markov">Gauss–Markov theorem</a> still applies and OLS remains <a class="gt" href="../reference/glossary.html#blue">BLUE</a>. <a class="gt" href="../reference/glossary.html#unbiasedness">Unbiasedness</a>
+        and minimum variance in the class of linear unbiased estimators both survive.</p>
+        <p><strong>What does not survive is usefulness.</strong> Being minimum variance is a
+        statement about the competition, not about the size of the variance. The variances,
+        covariances and standard errors of the collinear coefficients can be enormous, so t-ratios
+        collapse, <a class="gt" href="../reference/glossary.html#confidence-interval">confidence intervals</a> become uninformatively wide, and the estimates jump about
+        when a few observations or a variable are added or removed. A coefficient can be unbiased
+        and still be useless for any decision.</p>
+        <p><strong>So is the conclusion right?</strong> Partly, and for the wrong reason. The
+        model should not be trusted for statements about the <em>individual</em> collinear
+        coefficients. It can still be trusted for the overall fit, for prediction within the range
+        of the data — where the regressors will go on moving together as they did in the sample —
+        and for the coefficients of the regressors that are not collinear, which are unaffected.</p>
+        <p><strong>If the collinearity were perfect</strong>, none of this analysis would apply,
+        because there would be no estimates to have properties. OLS returns 0/0: the coefficients
+        are not biased, not imprecise, but undefined, and their variances are infinite. That is
+        assumption 7 actually failing, rather than being approached.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">A researcher's wage equation includes both years of schooling and years of
+    schooling measured in months, and finds the software refuses to estimate it. A colleague's
+    equation includes both parental income and parental education, and estimates fine but returns
+    two insignificant coefficients with a VIF of 12 on each. Diagnose both, and recommend a course
+    of action for each with reasons.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>The first is perfect multicollinearity.</strong> Months of schooling is exactly
+        12 times years of schooling, so one regressor is an exact linear function of the other,
+        assumption 7 fails, and the cross-product matrix cannot be inverted. The software is not
+        malfunctioning; there is genuinely no unique answer for it to return. The remedy is free
+        and non-negotiable: drop one of the two. Nothing whatever is lost, because the retained
+        variable contains everything the deleted one contained, and the fitted values are
+        identical either way.</p>
+        <p><strong>The second is high but imperfect multicollinearity.</strong> Parental income
+        and parental education are correlated — better-educated parents tend to earn more — but
+        neither is a function of the other, so estimation succeeds and the estimates remain
+        unbiased. A VIF of 12 means each standard error is √12 ≈ 3.5 times what it would have been
+        otherwise, which is easily enough to push a real effect below the 5% bar.</p>
+        <p><strong>What to recommend.</strong> Not deletion. These are two distinct economic
+        forces, not two measures of one thing: a policy could raise parental education without
+        raising parental income, and the two have separate theoretical channels to a child's
+        wage. Dropping either one omits a relevant variable and biases the coefficient on the
+        other, which is a worse error than the one being fixed — a variance problem exchanged for a
+        bias problem. The defensible options are to report the results as they stand while saying
+        plainly that the sample cannot separate the two effects, to note that they are jointly
+        significant by an F-test even though neither is individually so, and, if it is at all
+        possible, to enlarge the sample.</p>
+        <p>The contrast between the two cases is the whole of section 9: what makes deletion safe
+        is not the strength of the correlation but whether the deleted variable belongs in the
+        model.</p>
+      </div>
+    </details>
+  </div>
+
+</div>
+
+<h2>11 · Check yourself</h2>
+
+<div class="quiz" data-answer="1">
+  <div class="q">High but imperfect multicollinearity affects the OLS estimator in that it</div>
+  <button class="opt">biases the coefficients upwards, away from their true values</button>
+  <button class="opt">leaves them unbiased but with much larger standard errors</button>
+  <button class="opt">breaks the Gauss–Markov theorem, so OLS is no longer BLUE</button>
+  <button class="opt">lowers R<sup>2</sup>, since the regressors explain the same thing</button>
+  <div class="feedback right">Correct — no classical assumption is broken, so OLS stays unbiased and stays BLUE. What suffers is precision.</div>
+  <div class="feedback wrong">Nothing here is misspecified, so there is no bias: E(β̂) = β still holds, and since assumption 7 forbids only <em>perfect</em> collinearity, Gauss–Markov still applies and OLS is still BLUE. The overall fit is largely untouched too. What multicollinearity destroys is the precision of the individual collinear coefficients.</div>
+</div>
+
+<div class="quiz" data-answer="0">
+  <div class="q">An auxiliary regression of X<sub>j</sub> on the other regressors gives R<sub>j</sub><sup>2</sup> = 0.90. The VIF is</div>
+  <button class="opt">10, so the standard error is roughly three times larger</button>
+  <button class="opt">0.9, so nine-tenths of the variance has been inflated</button>
+  <button class="opt">1.9, since the VIF adds one to the auxiliary R<sup>2</sup></button>
+  <button class="opt">90, so the standard error is ninety times its usual size</button>
+  <div class="feedback right">Correct — VIF = 1/(1 − 0.90) = 10, and the standard error carries √10 ≈ 3.16, not 10.</div>
+  <div class="feedback wrong">VIF = 1/(1 − R<sub>j</sub><sup>2</sup>) = 1/0.10 = 10, which is exactly where the usual rule of thumb fires. Note the second half: the VIF multiplies the <em>variance</em>, so the standard error is multiplied by √10 ≈ 3.16 and the t-ratio divided by it.</div>
+</div>
+
+<div class="quiz" data-answer="2">
+  <div class="q">The classic symptom of severe multicollinearity is</div>
+  <button class="opt">a low R<sup>2</sup> alongside several strongly significant t-ratios</button>
+  <button class="opt">a low R<sup>2</sup> alongside an F-test that comfortably rejects</button>
+  <button class="opt">a high R<sup>2</sup> alongside few significant individual t-ratios</button>
+  <button class="opt">a high R<sup>2</sup> alongside an F-test that fails to reject at 5%</button>
+  <div class="feedback right">Correct — the regressors clearly matter together, but the sample cannot say which of them is responsible.</div>
+  <div class="feedback wrong">The two tests ask different questions. F asks whether the regressors matter <em>together</em>, and a high R<sup>2</sup> means it will reject. Each t asks whether one regressor adds anything <em>once the others are in</em> — the question collinear data cannot answer. So the signature is a high R<sup>2</sup> and a decisive F with almost no significant t.</div>
+</div>
+
+<div class="quiz" data-answer="1">
+  <div class="q">Dropping a collinear variable that genuinely belongs in the model</div>
+  <button class="opt">removes the collinearity at no cost, so it should always be done</button>
+  <button class="opt">trades an inflated variance for bias in the remaining estimates</button>
+  <button class="opt">is required by convention whenever that variable's VIF exceeds 5</button>
+  <button class="opt">leaves the other coefficients unbiased but rather less precise</button>
+  <div class="feedback right">Correct — omitting a relevant variable is specification bias, and no VIF is large enough to make bias the better option by itself.</div>
+  <div class="feedback wrong">This is the omitted-variable case of Unit 2A Part 1. Because the deleted variable is correlated with the ones that remain, their coefficients pick up its effect and are biased — an estimator that is no longer centred on the truth, which is worse than one that is merely imprecise. Deletion is only safe when the variable is genuinely redundant, and the VIF cannot tell you that.</div>
+</div>
+
+<p class="deck-link" data-unit="2B"></p>
+
+<div class="ask-teacher">
+  <strong>The examinable core here is short: unbiased but imprecise, VIF = 1/(1 − R<sub>j</sub><sup>2</sup>), and the high-R<sup>2</sup>-few-significant-t symptom.</strong>
+  What usually costs marks is the remedies — knowing when dropping a variable repairs a model and when it breaks one. Bring that to the tutorial, or to office hours — <span data-course="officeHours"></span>.
+</div>
+
+<ol class="sources">
+  <li id="s1">Gujarati, D. &amp; Porter, D. (2008), <em>Basic Econometrics</em>, Chapter 10 — the nature of multicollinearity, its theoretical and practical consequences, detection, and the remedial measures. The discussion of micronumerosity is at section 10.5.</li>
+  <li id="s2">Wooldridge, J. (2016), <em>Introductory Econometrics: A Modern Approach</em>, Chapter 3, section 3.4 — the variance of the OLS estimators and the role of the auxiliary R<sup>2</sup>.</li>
+  <li id="s3">Goldberger, A. S. (1991), <em>A Course in Econometrics</em> — the source of micronumerosity, and of the argument that multicollinearity is best understood as a shortage of information rather than a defect of the model.</li>
+</ol>
+
+<div class="lesson-nav" data-unit="2B"></div>
+
+</div>
+</body>
+</html>
