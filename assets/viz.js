@@ -2963,7 +2963,7 @@
      is supposed to confirm. A figure that quietly misses its own
      theory by 4% is worse than no figure.
      ============================================================ */
-  function rng2c(seed) {
+  function rngSeeded(seed) {
     var a = seed | 0;
     function u() {
       a = (a + 0x6D2B79F5) | 0;
@@ -3005,7 +3005,7 @@
     /* seed chosen so the fixed draw is even across the range: with only
        23 observations per third, an unlucky draw can flatten the arch or
        manufacture a slope that the variance form did not put there */
-    var G = grid2c(N), R = rng2c(170), E = [], i;
+    var G = grid2c(N), R = rngSeeded(170), E = [], i;
     for (i = 0; i < N; i++) E.push(R.gauss());
 
     var FORMS = [
@@ -3160,7 +3160,7 @@
      ============================================================ */
   VIZ.register("bp-vs-white", function (host) {
     var N = 60, B1 = 20, B2 = 0.6, S0 = 9, HI = 2.5;
-    var G = grid2c(N), R = rng2c(4242), E = [], i;
+    var G = grid2c(N), R = rngSeeded(4242), E = [], i;
     for (i = 0; i < N; i++) E.push(R.gauss());
     var CHI1 = 3.84, CHI2 = 5.99;
     var lam = 1.2;
@@ -3342,7 +3342,7 @@
     }
 
     function study(L) {
-      var R = rng2c(20250830);              /* common random numbers across λ */
+      var R = rngSeeded(20250830);              /* common random numbers across λ */
       var sum = 0, sq = 0, sa = 0, sr = 0, r, k;
       for (r = 0; r < RUNS; r++) {
         var Y = [], my = 0;
@@ -3461,7 +3461,7 @@
      ============================================================ */
   VIZ.register("log-fixes-heteroscedasticity", function (host) {
     var N = 120, A1 = -1.10, A2 = 1.01, SU = 0.55, logged = false;
-    var R = rng2c(777), LX = [], LY = [], X = [], Y = [], i;
+    var R = rngSeeded(777), LX = [], LY = [], X = [], Y = [], i;
     for (i = 0; i < N; i++) {
       var L = -1.5 + 10.5 * i / (N - 1);
       var ly = A1 + A2 * L + SU * R.gauss();
@@ -3561,6 +3561,512 @@
       + "never really about the errors — it was the model being written in the wrong units, "
       + "which makes this a case of the impure kind from section 3, and the reason the first "
       + "thing to check is always the specification."));
+
+    draw();
+  });
+
+  /* ============================================================
+     Unit 2D — shared setup
+
+     A persistent regressor, because that is what economic time
+     series look like and because the damage autocorrelation does to
+     a standard error depends on it. With X serially uncorrelated the
+     understatement is mild; with X persistent it is severe, and the
+     figures below would understate the problem if X were drawn
+     independently.
+
+     rngSeeded is 2C's mulberry32 — these figures average over
+     samples, so an LCG will not do.
+     ============================================================ */
+  function series2d(seed, r, sd, T) {
+    var R = rngSeeded(seed), X = [], v = 0, t;
+    for (t = 0; t < T; t++) {
+      v = r * v + Math.sqrt(1 - r * r) * R.gauss();
+      X.push(50 + sd * v);
+    }
+    var m = 0;
+    for (t = 0; t < T; t++) m += X[t];
+    m /= T;
+    var x = X.map(function (q) { return q - m; }), sxx = 0;
+    for (t = 0; t < T; t++) sxx += x[t] * x[t];
+    return { X: X, mean: m, x: x, sxx: sxx, T: T };
+  }
+
+  /* OLS on a time series, plus everything the autocorrelation
+     diagnostics need: residuals, ρ̂ from û on û lagged, and DW. */
+  function tsfit(X, Y) {
+    var T = X.length, mx = 0, my = 0, t;
+    for (t = 0; t < T; t++) { mx += X[t]; my += Y[t]; }
+    mx /= T; my /= T;
+    var sxy = 0, sxx = 0;
+    for (t = 0; t < T; t++) { sxy += (X[t] - mx) * (Y[t] - my); sxx += (X[t] - mx) * (X[t] - mx); }
+    var b2 = sxy / sxx, b1 = my - b2 * mx, e = [];
+    for (t = 0; t < T; t++) e.push(Y[t] - b1 - b2 * X[t]);
+    var n1 = 0, d1 = 0, dwn = 0, dwd = 0;
+    for (t = 1; t < T; t++) { n1 += e[t] * e[t - 1]; d1 += e[t - 1] * e[t - 1]; }
+    for (t = 1; t < T; t++) dwn += (e[t] - e[t - 1]) * (e[t] - e[t - 1]);
+    for (t = 0; t < T; t++) dwd += e[t] * e[t];
+    return { b1: b1, b2: b2, e: e, sxx: sxx,
+             rhat: d1 ? n1 / d1 : 0, dw: dwd ? dwn / dwd : 0 };
+  }
+
+  /* ============================================================
+     Unit 2D — Figure 1: what autocorrelated residuals look like
+
+     The deck's informal detection method is to plot the residuals
+     over time and against their own lag. Both views, one slider, and
+     the whole range of ρ from strongly negative to strongly
+     positive — because negative autocorrelation is the case students
+     never recognise, having only ever been shown the positive one.
+     ============================================================ */
+  VIZ.register("autocorrelation-patterns", function (host) {
+    var T = 60, B1 = 20, B2 = 0.6, SE = 6;
+    var G = series2d(99, 0.8, 12, T);
+    var R = rngSeeded(4180), EPS = [], i;
+    for (i = 0; i < T; i++) EPS.push(R.gauss());
+    var rho = 0.8, lagView = false;
+
+    var c = chart({ w: 640, h: 320, pad: { t: 22, r: 20, b: 46, l: 54 },
+                    xd: [0, T], yd: [-1, 1] });
+    var axg = c.axes("time  t", "residual  û");
+    var gfx = s("g");
+    c.plot.appendChild(gfx);
+
+    function build() {
+      var u = [], prev = 0, t;
+      for (t = 0; t < T; t++) { prev = rho * prev + SE * EPS[t]; u.push(prev); }
+      var Y = [];
+      for (t = 0; t < T; t++) Y.push(B1 + B2 * G.X[t] + u[t]);
+      return tsfit(G.X, Y);
+    }
+
+    function draw() {
+      var m = build(), t;
+      while (gfx.firstChild) gfx.removeChild(gfx.firstChild);
+      var top = 0;
+      for (t = 0; t < T; t++) top = Math.max(top, Math.abs(m.e[t]));
+      top = top || 1;
+
+      if (!lagView) {
+        c.xd = null;
+        gfx.appendChild(s("line", { x1: c.x(0), y1: c.y(0), x2: c.x(T), y2: c.y(0),
+                                    stroke: P.ruleSoft, "stroke-width": 1 }));
+        var dpath = "";
+        for (t = 0; t < T; t++) dpath += (t ? " L " : "M ") + c.x(t) + " " + c.y(m.e[t] / top);
+        gfx.appendChild(s("path", { d: dpath, fill: "none",
+                                    stroke: P.accent2, "stroke-width": 1.6 }));
+        for (t = 0; t < T; t++) {
+          gfx.appendChild(s("circle", { cx: c.x(t), cy: c.y(m.e[t] / top), r: 2.6,
+                                        fill: m.e[t] >= 0 ? P.accent : P.good }));
+        }
+        axg.querySelectorAll("text")[0].textContent = "time  t";
+        axg.querySelectorAll("text")[1].textContent = "residual  û";
+      } else {
+        gfx.appendChild(s("line", { x1: c.x(0), y1: c.y(0), x2: c.x(T), y2: c.y(0),
+                                    stroke: P.ruleSoft, "stroke-width": 1 }));
+        gfx.appendChild(s("line", { x1: c.x(T / 2), y1: c.y(-1), x2: c.x(T / 2), y2: c.y(1),
+                                    stroke: P.ruleSoft, "stroke-width": 1 }));
+        /* the line through the lag scatter IS ρ̂ */
+        gfx.appendChild(s("line", {
+          x1: c.x(0), y1: c.y(-m.rhat), x2: c.x(T), y2: c.y(m.rhat),
+          stroke: P.accent, "stroke-width": 2 }));
+        for (t = 1; t < T; t++) {
+          gfx.appendChild(s("circle", {
+            cx: c.x(T / 2 + (T / 2) * m.e[t - 1] / top),
+            cy: c.y(m.e[t] / top), r: 3, fill: P.accent2, opacity: 0.7 }));
+        }
+        axg.querySelectorAll("text")[0].textContent = "lagged residual  û₍ₜ₋₁₎";
+        axg.querySelectorAll("text")[1].textContent = "residual  ûₜ";
+      }
+
+      /* runs: how often the residual changes sign. Few runs is what
+         positive autocorrelation looks like without any arithmetic. */
+      var runs = 1;
+      for (t = 1; t < T; t++) if ((m.e[t] >= 0) !== (m.e[t - 1] >= 0)) runs++;
+
+      left.textContent = "ρ = " + rho.toFixed(2)
+                       + "    ρ̂ from û on its lag = " + m.rhat.toFixed(3)
+                       + "    DW = " + m.dw.toFixed(2);
+      right.textContent = "sign changes: " + runs + " in " + T
+                        + (m.rhat > 0.25 ? "  — long runs on one side: positive"
+                          : m.rhat < -0.25 ? "  — alternating: negative"
+                          : "  — no obvious pattern");
+      c.svg.setAttribute("aria-label", lagView
+        ? "Residuals plotted against their own lag, sloping upward when autocorrelation is positive."
+        : "Residuals over time, staying on one side of zero for long stretches when autocorrelation is positive.");
+    }
+
+    var controls = h("div", "viz-controls");
+    var lab = h("label", null, "ρ — the autocorrelation coefficient");
+    var rn = document.createElement("input");
+    rn.type = "range"; rn.min = "-0.9"; rn.max = "0.9"; rn.step = "0.05"; rn.value = "0.8";
+    rn.addEventListener("input", function () { rho = +rn.value; draw(); });
+    lab.appendChild(rn);
+    controls.appendChild(lab);
+    var tog = h("button", null, "Plot ûₜ against ûₜ₋₁");
+    tog.addEventListener("click", function () {
+      lagView = !lagView;
+      tog.textContent = lagView ? "Back to the time plot" : "Plot ûₜ against ûₜ₋₁";
+      draw();
+    });
+    controls.appendChild(tog);
+    var left = h("span", "viz-readout");
+    var right = h("span", "viz-readout");
+    controls.appendChild(left);
+    controls.appendChild(right);
+
+    host.appendChild(c.svg);
+    host.appendChild(controls);
+    host.appendChild(h("p", "viz-caption",
+      "Sixty periods, one set of underlying shocks, and only ρ moving. At ρ = 0.8 the residuals "
+      + "wander lazily above and below zero, crossing only a handful of times: a shock in one "
+      + "period is still there in the next. Drag ρ negative and the picture inverts into a "
+      + "sawtooth that crosses zero almost every period — equally a violation, and the one "
+      + "students routinely fail to recognise because textbooks illustrate the positive case. "
+      + "At ρ = 0 there is no pattern to see. The lag view is the same information as a "
+      + "scatter, and the line drawn through it is ρ̂ itself."));
+
+    draw();
+  });
+
+  /* ============================================================
+     Unit 2D — Figure 2: the Durbin-Watson decision line
+
+     The deck's slide-15 diagram, made live. The bounds are the
+     tabulated 5% values for T = 60 with one explanatory variable,
+     dL = 1.549 and dU = 1.616. They are bounds rather than a single
+     critical value because the exact distribution of DW depends on
+     the X matrix — which is also why this figure can check them:
+     simulating DW under ρ = 0 for the X used here puts the true 5%
+     critical value at about 1.58, comfortably between the two.
+     ============================================================ */
+  VIZ.register("durbin-watson-ruler", function (host) {
+    var T = 60, B1 = 20, B2 = 0.6, SE = 6, DL = 1.549, DU = 1.616;
+    var G = series2d(99, 0.8, 12, T);
+    var R = rngSeeded(4180), EPS = [], i;
+    for (i = 0; i < T; i++) EPS.push(R.gauss());
+    var rho = 0.5;
+
+    var c = chart({ w: 640, h: 210, pad: { t: 58, r: 24, b: 46, l: 24 },
+                    xd: [0, 4], yd: [0, 1] });
+
+    var ZONES = [
+      { a: 0, b: DL, fill: P.accent, op: 0.30, text: "reject: positive" },
+      { a: DL, b: DU, fill: P.inkFaint, op: 0.22, text: "inconclusive" },
+      { a: DU, b: 4 - DU, fill: P.good, op: 0.24, text: "do not reject" },
+      { a: 4 - DU, b: 4 - DL, fill: P.inkFaint, op: 0.22, text: "inconclusive" },
+      { a: 4 - DL, b: 4, fill: P.accent, op: 0.30, text: "reject: negative" }
+    ];
+    ZONES.forEach(function (z) {
+      c.plot.appendChild(s("rect", { x: c.x(z.a), y: c.y(0.62),
+        width: c.x(z.b) - c.x(z.a), height: c.y(0) - c.y(0.62),
+        fill: z.fill, opacity: z.op }));
+    });
+    /* only the wide zones can carry their label inside the band */
+    [0, 2, 4].forEach(function (k) {
+      var z = ZONES[k];
+      var t = s("text", { x: (c.x(z.a) + c.x(z.b)) / 2, y: c.y(0.28),
+                          "font-size": 11, fill: P.ink, "text-anchor": "middle" });
+      t.textContent = z.text;
+      c.plot.appendChild(t);
+    });
+    [[1, -1], [3, 1]].forEach(function (p) {
+      var z = ZONES[p[0]], mid = (c.x(z.a) + c.x(z.b)) / 2;
+      var t = s("text", { x: mid + p[1] * 34, y: c.y(0.80), "font-size": 10.5,
+                          fill: P.inkSoft, "text-anchor": "middle" });
+      t.textContent = "inconclusive";
+      c.plot.appendChild(t);
+      c.plot.appendChild(s("line", { x1: mid, y1: c.y(0.74), x2: mid, y2: c.y(0.64),
+                                     stroke: P.inkSoft, "stroke-width": 0.8 }));
+    });
+
+    c.plot.appendChild(s("line", { x1: c.x(0), y1: c.y(0), x2: c.x(4), y2: c.y(0),
+                                   stroke: P.ink, "stroke-width": 1 }));
+    [[0, "0"], [DL, "d" + "ₗ"], [DU, "d" + "ᵤ"], [2, "2"],
+     [4 - DU, "4−d" + "ᵤ"], [4 - DL, "4−d" + "ₗ"], [4, "4"]].forEach(function (tk) {
+      c.plot.appendChild(s("line", { x1: c.x(tk[0]), y1: c.y(0), x2: c.x(tk[0]), y2: c.y(-0.06),
+                                     stroke: P.ink, "stroke-width": 1 }));
+      var t = s("text", { x: c.x(tk[0]), y: c.y(0) + 20, "font-size": 11,
+                          fill: P.inkSoft, "text-anchor": "middle" });
+      t.textContent = tk[1];
+      c.plot.appendChild(t);
+    });
+
+    var mark = s("path", { fill: P.accent2, stroke: P.paper, "stroke-width": 1.2 });
+    c.plot.appendChild(mark);
+    var mlab = s("text", { "font-size": 12, fill: P.accent2, "text-anchor": "middle",
+                           "font-weight": "600" });
+    c.plot.appendChild(mlab);
+
+    function decide(dw) {
+      if (dw < DL) return "reject — evidence of positive autocorrelation";
+      if (dw <= DU) return "inconclusive — the test cannot say";
+      if (dw < 4 - DU) return "do not reject — no evidence either way";
+      if (dw <= 4 - DL) return "inconclusive — the test cannot say";
+      return "reject — evidence of negative autocorrelation";
+    }
+
+    function draw() {
+      var u = [], prev = 0, t;
+      for (t = 0; t < T; t++) { prev = rho * prev + SE * EPS[t]; u.push(prev); }
+      var Y = [];
+      for (t = 0; t < T; t++) Y.push(B1 + B2 * G.X[t] + u[t]);
+      var m = tsfit(G.X, Y), px = c.x(Math.max(0, Math.min(4, m.dw))), py = c.y(0.66);
+      mark.setAttribute("d", "M " + px + " " + py + " l 7 -11 l -14 0 Z");
+      mlab.setAttribute("x", px);
+      mlab.setAttribute("y", py - 15);
+      mlab.textContent = "DW = " + m.dw.toFixed(2);
+
+      left.textContent = "ρ = " + rho.toFixed(2)
+                       + "    ρ̂ = " + m.rhat.toFixed(3)
+                       + "    2(1 − ρ̂) = " + (2 * (1 - m.rhat)).toFixed(2)
+                       + "    DW = " + m.dw.toFixed(2);
+      right.textContent = decide(m.dw);
+      c.svg.setAttribute("aria-label",
+        "A nought-to-four scale divided into five decision zones with the Durbin-Watson "
+        + "statistic marked at " + m.dw.toFixed(2) + ": " + decide(m.dw) + ".");
+    }
+
+    var controls = h("div", "viz-controls");
+    var lab = h("label", null, "ρ — the autocorrelation coefficient");
+    var rn = document.createElement("input");
+    rn.type = "range"; rn.min = "-0.9"; rn.max = "0.9"; rn.step = "0.05"; rn.value = "0.5";
+    rn.addEventListener("input", function () { rho = +rn.value; draw(); });
+    lab.appendChild(rn);
+    controls.appendChild(lab);
+    var left = h("span", "viz-readout");
+    var right = h("span", "viz-readout");
+    controls.appendChild(left);
+    controls.appendChild(right);
+
+    host.appendChild(c.svg);
+    host.appendChild(controls);
+    host.appendChild(h("p", "viz-caption",
+      "The bounds are the tabulated 5% values for T = 60 with one explanatory variable. Watch "
+      + "the two readouts move together: DW tracks 2(1 − ρ̂) to within a hundredth all the way "
+      + "across, which is the approximation the derivation promises. Two things are worth "
+      + "noticing. The test is far more sensitive than it looks — ρ̂ only has to reach about "
+      + "0.19 before DW drops past dU. And the grey bands are real: between dL and dU the test "
+      + "returns no verdict at all, which is the limitation that eventually cost the "
+      + "Durbin–Watson test its place as the default and is why Breusch–Godfrey, which has an "
+      + "ordinary rejection region, replaced it."));
+
+    draw();
+  });
+
+  /* ============================================================
+     Unit 2D — Figure 3: the standard error is not merely wrong
+
+     Heteroscedasticity in 2C took the reported standard error down
+     to about three-quarters of the truth. Autocorrelation is far
+     worse: with a persistent regressor and ρ = 0.9 the reported
+     figure is under a third of the truth, so t-ratios are inflated
+     threefold and a 5% test rejects a great deal more often.
+
+     The theoretical curve is Gujarati's expression,
+
+       var(β̂2) = σ²/Σx² · [ 1 + 2Σ ρˢ (Σ xₜxₜ₋ₛ)/Σx² ]
+
+     computed term by term, and the simulation has to land on it.
+     ============================================================ */
+  VIZ.register("autocorrelation-se-bias", function (host) {
+    var T = 60, B1 = 20, B2 = 0.6, SE = 6, RUNS = 400, HI = 0.9;
+    var G = series2d(99, 0.8, 12, T);
+    var rho = 0.6;
+
+    /* the exact finite-sample variance under AR(1) errors */
+    function theory(r) {
+      var sig2 = SE * SE / (1 - r * r), br = 1, sgap, t;
+      for (sgap = 1; sgap < T; sgap++) {
+        var cx = 0;
+        for (t = sgap; t < T; t++) cx += G.x[t] * G.x[t - sgap];
+        br += 2 * Math.pow(r, sgap) * cx / G.sxx;
+      }
+      return Math.sqrt(Math.max(sig2 / G.sxx * br, 0));
+    }
+
+    function study(r) {
+      var R = rngSeeded(20250830), sum = 0, sq = 0, srep = 0, q, t;
+      for (q = 0; q < RUNS; q++) {
+        var prev = 0, Y = [];
+        for (t = 0; t < T; t++) {
+          prev = r * prev + SE * R.gauss();
+          Y.push(B1 + B2 * G.X[t] + prev);
+        }
+        var m = tsfit(G.X, Y), rss = 0;
+        for (t = 0; t < T; t++) rss += m.e[t] * m.e[t];
+        sum += m.b2; sq += m.b2 * m.b2;
+        srep += Math.sqrt((rss / (T - 2)) / m.sxx);
+      }
+      var mean = sum / RUNS;
+      var v = (sq - RUNS * mean * mean) / (RUNS - 1);
+      return { mc: Math.sqrt(Math.max(v, 0)), rep: srep / RUNS,
+               theory: theory(r), mean: mean };
+    }
+
+    var c = chart({ w: 640, h: 350, pad: { t: 30, r: 20, b: 46, l: 62 },
+                    xd: [0, HI], yd: [0, 0.36] });
+    c.axes("ρ — the autocorrelation coefficient", "standard error of β̂₂");
+
+    var grid = [], k;
+    for (k = 0; k <= 30; k++) grid.push({ r: HI * k / 30, v: study(HI * k / 30) });
+    var series = [
+      { key: "theory", colour: P.ink,    label: "true SE, from the AR(1) formula", dash: "5 4" },
+      { key: "mc",     colour: P.good,   label: "spread of β̂₂ over 400 samples",   dash: null },
+      { key: "rep",    colour: P.accent, label: "standard error OLS actually reports", dash: null }
+    ];
+    series.forEach(function (sr, n) {
+      var dp = "";
+      grid.forEach(function (g, m) {
+        dp += (m ? " L " : "M ") + c.x(g.r) + " " + c.y(Math.min(g.v[sr.key], 0.36));
+      });
+      c.plot.appendChild(s("path", { d: dp, fill: "none", stroke: sr.colour,
+                                     "stroke-width": sr.dash ? 2 : 2.4,
+                                     "stroke-dasharray": sr.dash }));
+      sr.dot = s("circle", { r: 4.5, fill: sr.colour, stroke: P.paper, "stroke-width": 1.4 });
+      c.plot.appendChild(sr.dot);
+      var t = s("text", { x: c.x(0.02), y: 15 + n * 14, "font-size": 11, fill: sr.colour });
+      t.textContent = sr.label;
+      c.plot.appendChild(t);
+    });
+
+    function draw() {
+      var v = study(rho);
+      series.forEach(function (sr) {
+        sr.dot.setAttribute("cx", c.x(rho));
+        sr.dot.setAttribute("cy", c.y(Math.min(v[sr.key], 0.36)));
+      });
+      left.textContent = "ρ = " + rho.toFixed(2)
+                       + "    true SE " + v.theory.toFixed(4)
+                       + "    simulated " + v.mc.toFixed(4)
+                       + "    mean β̂₂ = " + v.mean.toFixed(3);
+      right.textContent = "OLS reports " + v.rep.toFixed(4)
+                        + " — " + (100 * v.rep / v.theory).toFixed(0) + "% of the truth"
+                        + ",  so t is inflated " + (v.theory / v.rep).toFixed(1) + "×";
+      c.svg.setAttribute("aria-label",
+        "The reported standard error stays almost flat while the true one climbs steeply with "
+        + "the autocorrelation coefficient.");
+    }
+
+    var controls = h("div", "viz-controls");
+    var lab = h("label", null, "ρ — the autocorrelation coefficient");
+    var rn = document.createElement("input");
+    rn.type = "range"; rn.min = "0"; rn.max = "0.9"; rn.step = "0.05"; rn.value = "0.6";
+    rn.addEventListener("input", function () { rho = +rn.value; draw(); });
+    lab.appendChild(rn);
+    controls.appendChild(lab);
+    var left = h("span", "viz-readout");
+    var right = h("span", "viz-readout");
+    controls.appendChild(left);
+    controls.appendChild(right);
+
+    host.appendChild(c.svg);
+    host.appendChild(controls);
+    host.appendChild(h("p", "viz-caption",
+      "Four hundred samples at each setting, with a regressor that is itself persistent, as "
+      + "economic time series are. The simulated spread sits on the dashed theoretical curve "
+      + "throughout, so the formula in section 4 is confirmed rather than quoted. Now look at "
+      + "what OLS prints: it barely rises at all. By ρ = 0.9 the reported standard error is "
+      + "under a third of the true one, so every t-ratio in the output is roughly three times "
+      + "too big and a nominal 5% test is nothing of the kind. Compare Unit 2C, where "
+      + "heteroscedasticity took the reported figure down to about three-quarters — "
+      + "autocorrelation with a persistent regressor is much the more dangerous of the two. "
+      + "And β̂₂ stays on 0.600 throughout: nothing here is biased except the reported "
+      + "precision."));
+
+    draw();
+  });
+
+  /* ============================================================
+     Unit 2D — Figure 4: what the GLS transformation does
+
+     Section 9 derives Y*ₜ = Yₜ − ρYₜ₋₁ and claims the transformed
+     error is ϵₜ, which is not serially correlated. This is that
+     claim, checked: the same sample before and after, with ρ̂, DW
+     and the slope reported on both sides.
+
+     Seed chosen so the underlying ϵ draw is close to serially
+     uncorrelated — otherwise the "after" picture inherits whatever
+     accidental pattern this particular draw of ϵ happens to have,
+     and the figure demonstrates the draw rather than the method.
+     ============================================================ */
+  VIZ.register("gls-transformation", function (host) {
+    var T = 60, B1 = 20, B2 = 0.6, SE = 6, RHO = 0.8, after = false;
+    var G = series2d(99, 0.8, 12, T);
+    var R = rngSeeded(57), EPS = [], i;
+    for (i = 0; i < T; i++) EPS.push(R.gauss());
+
+    var u = [], prev = 0, Y = [];
+    for (i = 0; i < T; i++) { prev = RHO * prev + SE * EPS[i]; u.push(prev); }
+    for (i = 0; i < T; i++) Y.push(B1 + B2 * G.X[i] + u[i]);
+
+    /* ρ-differenced: one observation is lost, which is what
+       Prais-Winsten exists to recover */
+    var Xs = [], Ys = [];
+    for (i = 1; i < T; i++) { Xs.push(G.X[i] - RHO * G.X[i - 1]); Ys.push(Y[i] - RHO * Y[i - 1]); }
+
+    var RAW = tsfit(G.X, Y), TR = tsfit(Xs, Ys);
+
+    var c = chart({ w: 640, h: 320, pad: { t: 22, r: 20, b: 46, l: 54 },
+                    xd: [0, T], yd: [-1, 1] });
+    c.axes("time  t", "residual  û");
+    var gfx = s("g");
+    c.plot.appendChild(gfx);
+
+    function draw() {
+      var m = after ? TR : RAW, n = m.e.length, t, top = 0;
+      while (gfx.firstChild) gfx.removeChild(gfx.firstChild);
+      for (t = 0; t < n; t++) top = Math.max(top, Math.abs(m.e[t]));
+      top = top || 1;
+      gfx.appendChild(s("line", { x1: c.x(0), y1: c.y(0), x2: c.x(T), y2: c.y(0),
+                                  stroke: P.ruleSoft, "stroke-width": 1 }));
+      var dp = "";
+      for (t = 0; t < n; t++) dp += (t ? " L " : "M ") + c.x(t * T / n) + " " + c.y(m.e[t] / top);
+      gfx.appendChild(s("path", { d: dp, fill: "none",
+                                  stroke: after ? P.good : P.accent, "stroke-width": 1.6 }));
+      for (t = 0; t < n; t++) {
+        gfx.appendChild(s("circle", { cx: c.x(t * T / n), cy: c.y(m.e[t] / top), r: 2.6,
+                                      fill: after ? P.good : P.accent }));
+      }
+      left.textContent = (after ? "transformed:  " : "original:  ")
+                       + "ρ̂ = " + m.rhat.toFixed(3)
+                       + "    DW = " + m.dw.toFixed(2)
+                       + "    β̂₂ = " + m.b2.toFixed(3);
+      right.textContent = after
+        ? "DW back inside the do-not-reject zone; the slope has moved onto the true 0.600"
+        : "DW = " + RAW.dw.toFixed(2) + ", far below d" + "ₗ"
+          + " = 1.549 — strong positive autocorrelation";
+      c.svg.setAttribute("aria-label", after
+        ? "Residuals of the transformed equation, crossing zero frequently with no pattern."
+        : "Residuals of the original equation, drifting on one side of zero for long stretches.");
+    }
+
+    var controls = h("div", "viz-controls");
+    var tog = h("button", null, "Apply Yₜ − ρYₜ₋₁");
+    tog.addEventListener("click", function () {
+      after = !after;
+      tog.textContent = after ? "Back to the original equation" : "Apply Yₜ − ρYₜ₋₁";
+      draw();
+    });
+    controls.appendChild(tog);
+    var left = h("span", "viz-readout");
+    var right = h("span", "viz-readout");
+    controls.appendChild(left);
+    controls.appendChild(right);
+
+    host.appendChild(c.svg);
+    host.appendChild(controls);
+    host.appendChild(h("p", "viz-caption",
+      "One sample generated with ρ = 0.8. Before: the residuals drift on one side of zero for "
+      + "long stretches, ρ̂ is 0.81, DW is 0.39 — well below dₗ — and the slope has landed at "
+      + "0.495 against a true 0.600, which is what an unbiased but badly imprecise estimator "
+      + "looks like on one draw. Press the button and the same data, ρ-differenced, produce "
+      + "residuals that cross zero constantly, ρ̂ near zero, DW near 2, and a slope of 0.601. "
+      + "Note what this is not: a correction applied to the output. The equation has been "
+      + "rewritten in differences and re-estimated, and the price is the first observation, "
+      + "which is what the Prais–Winsten refinement exists to recover. Note also that the "
+      + "transformation used the true ρ, which in practice must be estimated — that gap is "
+      + "the whole of feasible GLS."));
 
     draw();
   });

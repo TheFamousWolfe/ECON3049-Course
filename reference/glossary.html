@@ -9,13 +9,13 @@ try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
 z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
 if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
 <title>Glossary · ECON 3049</title>
-<link rel="stylesheet" href="../assets/lesson.css?v=a210624d">
-<link rel="stylesheet" href="../assets/course.css?v=a210624d">
-<script src="../assets/course.js?v=a210624d"></script>
-<script src="../assets/nav.js?v=a210624d" defer></script>
-<script src="../assets/export.js?v=a210624d" defer></script>
-<script src="../assets/reader.js?v=a210624d" defer></script>
-<script src="../assets/glossary.js?v=a210624d" defer></script>
+<link rel="stylesheet" href="../assets/lesson.css?v=73dd4b83">
+<link rel="stylesheet" href="../assets/course.css?v=73dd4b83">
+<script src="../assets/course.js?v=73dd4b83"></script>
+<script src="../assets/nav.js?v=73dd4b83" defer></script>
+<script src="../assets/export.js?v=73dd4b83" defer></script>
+<script src="../assets/reader.js?v=73dd4b83" defer></script>
+<script src="../assets/glossary.js?v=73dd4b83" defer></script>
 </head>
 <body>
 <div class="masthead">
@@ -37,7 +37,7 @@ if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
   Each entry ends with the unit that introduces the term — follow it to see the term in
   context, with the derivation or the figure that goes with it. This page is a reminder of
   what a word means, not a substitute for the unit that explains it. Terms are added as each
-  unit is written; this covers <strong>Units 1A to 2C</strong>.
+  unit is written; this covers <strong>the whole of Units 1 and 2</strong>.
 </div>
 
 <h2 id="notation">Notation</h2>
@@ -91,11 +91,24 @@ variables v; the first term falls as variables are added, the second rises. Smal
 Penalises extra variables less heavily than the <a href="#schwarz-criterion">Schwarz
 criterion</a>.</dd>
 
-<dt id="autocorrelation">Autocorrelation <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dt id="ar1" data-match="AR(1), first-order autocorrelation">AR(1) — first-order autocorrelation <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></dt>
+<dd>u<sub>t</sub> = ρu<sub>t−1</sub> + ε<sub>t</sub>, where ε is well behaved and ρ is the
+coefficient of autocorrelation at lag 1. Requires |ρ| &lt; 1 for
+<a href="#stationarity">stationarity</a>, and then var(u<sub>t</sub>) =
+σ<sub>ε</sub><sup>2</sup>/(1 − ρ<sup>2</sup>) and corr(u<sub>t</sub>, u<sub>t−s</sub>) =
+ρ<sup>s</sup> — the memory decays geometrically but never quite ends. Higher orders add further
+lags.</dd>
+
+<dt id="autocorrelation">Autocorrelation <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></dt>
 <dd>Correlation between the disturbances of different observations:
-cov(u<sub>i</sub>, u<sub>j</sub>) ≠ 0 for i ≠ j. Assumption 6 rules it out. Common in time
-series, where a shock in one period persists into the next. OLS stays unbiased but the
-variance formulae understate the true uncertainty. Remedies are Unit 2D.</dd>
+cov(u<sub>i</sub>, u<sub>j</sub>) ≠ 0 for i ≠ j. Assumption 6 rules it out; named in Unit 1C and
+derived here. Most common in time series, where a shock in one period persists into the next; the
+same thing between neighbouring units in a cross-section is called <em>spatial</em>
+autocorrelation. OLS stays unbiased but loses <a href="#blue">BLUE</a>, and the reported standard
+error understates the truth — badly, when the regressor is itself persistent. <em>Pure</em>
+autocorrelation is assumption 6 failing alone; <em>impure</em> is an omitted persistent variable
+or a wrong functional form showing through, which is why these tests double as misspecification
+tests.</dd>
 
 <dt id="auxiliary-regression" data-match="auxiliary regression">Auxiliary regression <a class="g-unit" href="../units/2a-part1-specification.html">Unit 2A Part 1</a></dt>
 <dd>A regression run not for its own sake but to obtain a quantity needed elsewhere. In
@@ -109,6 +122,13 @@ and in the diagnostic tests for heteroscedasticity and autocorrelation.</dd>
 <h2 id="g-b">B</h2>
 
 <dl>
+
+<dt id="breusch-godfrey" data-match="Breusch–Godfrey test, Breusch-Godfrey test, Breusch–Godfrey, Breusch-Godfrey">Breusch–Godfrey test <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></dt>
+<dd>The general test for autocorrelation. Regress the OLS residuals on <em>all the original
+regressors</em> and q lags of the residual; the statistic is (n − q)R<sup>2</sup> ~
+χ<sup>2</sup>(q). Unlike <a href="#durbin-watson">Durbin–Watson</a> it handles higher-order
+autocorrelation, tolerates a lagged dependent variable, and has no inconclusive region — but it
+requires you to choose q.</dd>
 
 <dt id="breusch-pagan" data-match="Breusch–Pagan test, Breusch-Pagan test, Breusch–Pagan, Breusch-Pagan">Breusch–Pagan test <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></dt>
 <dd>A test for heteroscedasticity of any <em>linear</em> form. Regress the squared OLS residuals
@@ -161,6 +181,13 @@ u<sub>i</sub> ~ N(0, σ²). Nothing already proved is lost, and the estimators g
 distributions — which is what makes hypothesis testing possible. Under normality, zero
 covariance between disturbances also becomes genuine independence, so
 u<sub>i</sub> ~ NID(0, σ²).</dd>
+
+<dt id="cochrane-orcutt" data-match="Cochrane–Orcutt, Cochrane-Orcutt, Prais–Winsten, Prais-Winsten">Cochrane–Orcutt and Prais–Winsten <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></dt>
+<dd>The two standard iterative implementations of <a href="#fgls">feasible GLS</a> under AR(1)
+errors: estimate ρ̂ from the residuals, ρ-difference, re-estimate, and repeat until ρ̂ settles.
+They differ only in the first observation, which cannot be differenced — Cochrane–Orcutt drops
+it, Prais–Winsten keeps it rescaled by √(1 − ρ<sup>2</sup>). Immaterial in a long sample,
+material in a short one.</dd>
 
 <dt id="coefficient-of-determination" data-match="coefficient of determination">Coefficient of determination (r<sup>2</sup>) <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
 <dd>r<sup>2</sup> = ESS/TSS = 1 − RSS/TSS. The proportion of the total variation in Y
@@ -239,6 +266,15 @@ wrong functional form, and intrinsic randomness.</dd>
 Cobb–Douglas, and delivers coefficients that read directly as
 <a href="#elasticity">elasticities</a>: a 1% rise in X gives a β<sub>2</sub>% change in Y.
 Contrast the <a href="#semi-log">semi-log</a> forms.</dd>
+
+
+<dt id="durbin-watson" data-match="Durbin–Watson test, Durbin-Watson test, Durbin–Watson, Durbin-Watson">Durbin–Watson test <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></dt>
+<dd>DW = Σ(û<sub>t</sub> − û<sub>t−1</sub>)<sup>2</sup>/Σû<sub>t</sub><sup>2</sup> ≈ 2(1 − ρ̂),
+so it runs 0 to 4: near 2 is no autocorrelation, near 0 positive, near 4 negative. Compared
+against <em>two</em> bounds d<sub>L</sub> and d<sub>U</sub> rather than one critical value,
+because the exact distribution depends on the regressor matrix — hence the inconclusive regions.
+Four limitations: first order only, no lagged dependent variable, an intercept required, and
+normal errors assumed.</dd>
 
 </dl>
 
@@ -334,6 +370,14 @@ rather than starting small and adding. Associated with David Hendry and the LSE 
 The argument for it: every test in a bottom-up search is conducted inside a model already known
 to be misspecified, whereas testing down keeps each restriction tested within an adequate
 model.</dd>
+
+<dt id="gls" data-match="generalised least squares, generalized least squares, GLS">GLS — generalised least squares <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></dt>
+<dd>Transforming an equation so that the transformed disturbance satisfies the classical
+assumptions, then applying OLS to it. Under AR(1) the transformation is ρ-differencing:
+Y<sub>t</sub> − ρY<sub>t−1</sub> = β<sub>1</sub>(1 − ρ) + β<sub>2</sub>(X<sub>t</sub> −
+ρX<sub>t−1</sub>) + ε<sub>t</sub>, whose error is ε and so is not serially correlated, and whose
+slope is the one originally wanted. <a href="#wls">WLS</a> is the version for heteroscedastic
+errors. Since ρ is never known, what is actually run is <a href="#fgls">feasible GLS</a>.</dd>
 
 <dt id="goodness-of-fit">Goodness of fit <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
 <dd>How closely the sample regression line fits the observations. Measured by
@@ -493,6 +537,14 @@ added — see <a href="#adjusted-r2">adjusted R<sup>2</sup></a>.</dd>
 <h2 id="g-n">N</h2>
 
 <dl>
+
+<dt id="newey-west" data-match="Newey–West, Newey-West, HAC standard error, HAC">Newey–West (HAC) standard errors <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></dt>
+<dd>Standard errors consistent under both heteroscedasticity <em>and</em> autocorrelation — the
+extension of <a href="#hc-standard-errors">White's correction</a> to serially correlated errors.
+Like that correction they change only the standard errors, leaving the coefficients and the
+inefficiency of OLS alone. They need a judgement about how many lags to allow for and perform
+poorly in small samples, which is a real limitation given how short time series samples usually
+are.</dd>
 
 <dt id="normal-equations">Normal equations <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
 <dd>The two first-order conditions from minimising Σê<sub>i</sub><sup>2</sup>, which solve to
@@ -694,6 +746,13 @@ Margarine consumption and the divorce rate in Maine give r = 0.9926 and r<sup>2<
 <dd>The standard deviation of the sampling distribution of an estimator — the measure of its
 precision. For the slope, se(β̂<sub>2</sub>) = σ̂ / √(Σx<sub>i</sub><sup>2</sup>), reported in
 parentheses beneath its coefficient in the house format.</dd>
+
+<dt id="stationarity" data-match="stationarity, stationary">Stationarity <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></dt>
+<dd>A series whose mean, variance and covariances do not change over time. For an
+<a href="#ar1">AR(1)</a> error process this requires |ρ| &lt; 1, and it is what allows
+var(u<sub>t</sub>) and var(u<sub>t−1</sub>) to be set equal to a single σ<sup>2</sup> and solved
+for — without it the derivation relates two unknowns and goes nowhere, and at |ρ| = 1 the
+variance is not finite at all.</dd>
 
 <dt id="stochastic">Stochastic <a class="g-unit" href="../units/1a-introducing-econometrics.html">Unit 1A</a></dt>
 <dd>Random. The stochastic part of a regression is u<sub>i</sub>; the deterministic part is

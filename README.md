@@ -121,6 +121,13 @@ middle third, which cancelled the arch-shaped variance exactly. The figure was
 drawing the noise, not the form. Drive every control before believing any of
 it.
 
+**Where a deck's formula and the textbook's disagree, simulate before
+printing either.** Unit 2D's slide 9 gives a compressed expression for
+var(β̂₂) under AR(1) that a Monte Carlo does not reproduce; Gujarati's full
+form, with the bracket in ρˢ·Σxₜxₜ₋ₛ/Σxₜ², matches to three decimals at every
+ρ. The unit prints the form that the simulation confirms and flags the
+difference in a box, rather than reproducing a result it cannot verify.
+
 ## Adding or changing a unit
 
 Edit `assets/course.js` and nothing else. The roadmap, the breadcrumb, the
@@ -265,7 +272,7 @@ node dev/check-site.mjs      # catches unconverted characters
 pdflatex -interaction=nonstopmode <unit>.tex
 ```
 
-All twelve pages currently compile. Five of them did not on the first attempt,
+All thirteen pages currently compile. Five of them did not on the first attempt,
 and the failures were only visible by actually running `pdflatex` — bare
 Greek inside `<sub>`, stacked accents (Y with *two* combining marks), and
 `\sqrt` emitted with no radicand. Unit 2B added a sixth: a `≫` that no range
@@ -311,8 +318,8 @@ the repository private would have hidden nothing that is not already served.
 
 Progress is recorded in the manifest, not here — `status: "ready"` is the
 authority, and `node dev/check-site.mjs` prints every written unit. As of the
-last session: **Unit 1 complete (1A–1F), Unit 2A complete (both parts), Units 2B
-and 2C complete**, with 2D and all of Unit 3 still `"planned"`.
+last session: **Units 1 and 2 are complete** — 1A–1F, 2A (both parts), 2B, 2C and 2D — with
+all of Unit 3 still `"planned"`.
 
 Three things are deliberately unfinished, and all three need input rather than
 writing:

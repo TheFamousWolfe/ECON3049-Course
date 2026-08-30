@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>/* Apply saved reader preferences before first paint, so a reader who
+chose dark does not get a white flash on every navigation. */
+try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
+z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
+if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
+<title>Unit 2D — Autocorrelation · ECON 3049</title>
+<link rel="stylesheet" href="../assets/lesson.css?v=73dd4b83">
+<link rel="stylesheet" href="../assets/course.css?v=73dd4b83">
+<script src="../assets/course.js?v=73dd4b83"></script>
+<script src="../assets/nav.js?v=73dd4b83" defer></script>
+<script src="../assets/export.js?v=73dd4b83" defer></script>
+<script src="../assets/reader.js?v=73dd4b83" defer></script>
+<script src="../assets/quiz.js?v=73dd4b83" defer></script>
+<script src="../assets/viz.js?v=73dd4b83" defer></script>
+</head>
+<body>
+<div class="masthead" data-unit="2D"></div>
+<div class="wrap">
+
+<div class="reader-bar"></div>
+
+<h1>Autocorrelation</h1>
+<p class="subtitle">Errors that remember the last period — Durbin–Watson, Breusch–Godfrey and the remedies.</p>
+<p class="unit-meta" data-unit="2D"></p>
+
+<div class="box key">
+  <span class="box-label">By the end of this unit you should be able to</span>
+  <ul style="margin:0.3rem 0 0; padding-left:1.1rem;">
+    <li>state the assumption autocorrelation violates, and write the AR(1) error process;</li>
+    <li>derive var(u<sub>t</sub>) and cov(u<sub>t</sub>, u<sub>t−s</sub>) under AR(1), and say what stationarity is doing in that derivation;</li>
+    <li>list the consequences for OLS, and explain why the reported standard error understates;</li>
+    <li>recognise positive and negative autocorrelation in a residual plot;</li>
+    <li>carry out a Durbin–Watson test, apply the decision rules, and state its four limitations;</li>
+    <li>carry out a Breusch–Godfrey test and say what it can do that Durbin–Watson cannot;</li>
+    <li>distinguish pure from impure autocorrelation, and choose between Newey–West and GLS.</li>
+  </ul>
+</div>
+
+<div class="box refresh">
+  <span class="box-label">The last of the relaxed assumptions</span>
+  Unit 2C broke assumption 5 — the disturbances no longer had a common variance. This unit
+  breaks assumption 6: the disturbances are no longer independent of one another. The two
+  failures rhyme. In both, OLS stays unbiased and loses efficiency, and in both the damage lands
+  on the standard errors rather than the coefficients. What differs is the size of the damage:
+  as section 5 shows, autocorrelation with a persistent regressor is considerably the more
+  dangerous of the two.
+</div>
+
+<h2>1 · The no-autocorrelation assumption</h2>
+
+<p>One of the classical assumptions is that there is no <a class="gt" href="../reference/glossary.html#autocorrelation">autocorrelation</a> between the
+<a class="gt" href="../reference/glossary.html#disturbance">disturbances</a>:</p>
+
+<p class="math">cov(u<sub>i</sub>, u<sub>j</sub> | X) = cov(u<sub>i</sub>, u<sub>j</sub>) = E(u<sub>i</sub>u<sub>j</sub>) = 0 &nbsp; for i ≠ j</p>
+
+<p>The assumption says that the error term associated with any one observation is not
+influenced by, or correlated with, the disturbance term of any other observation. When it is
+violated we have <strong>autocorrelation</strong>, and cov(u<sub>i</sub>, u<sub>j</sub>) ≠ 0.</p>
+
+<p><a class="gt" href="../reference/glossary.html#time-series">Time series data</a> present the most common example of correlated errors. Put the assumption in
+a time series context: if there is some external shock to a model in one period — a hurricane, a
+change of government, an oil price spike — then no autocorrelation implies that this disturbance
+affects that period <em>only</em>. It will not be carried over into another period:</p>
+
+<p class="math">cov(u<sub>t</sub>, u<sub>t+s</sub>) = 0 &nbsp; for s ≠ 0</p>
+
+<p>where u<sub>t</sub> is the error in the current period and u<sub>t+s</sub> the error s periods
+ahead; the same statement is sometimes written with u<sub>t−s</sub> instead. Stated that way the
+assumption is obviously heroic. Very little that happens to an economy is finished within one
+quarter. Autocorrelation can also be found in <a class="gt" href="../reference/glossary.html#cross-sectional">cross-sectional data</a>, where it is called
+<strong>spatial autocorrelation</strong> — neighbouring districts share whatever the model has
+left out — but our focus is the time series case.</p>
+
+<h2>2 · Time series data, and why it is harder</h2>
+
+<p>Time series data involve a single entity — a person, a country, a corporation, a state — over
+multiple points in time, and are used to analyse questions that cross-sectional data cannot
+touch. The notation changes accordingly:</p>
+
+<p class="math">cross-section: Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> + u<sub>i</sub>, &nbsp; i = 1 … N</p>
+<p class="math">time series: Y<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>t</sub> + u<sub>t</sub>, &nbsp; t = 1 … T</p>
+
+<p>Dealing with time series is more difficult than dealing with cross-sections, for four
+reasons that are worth having in mind for the whole unit.</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span>
+    <strong>The order of the observations is fixed.</strong> A cross-section can be shuffled
+    without loss; a time series cannot, because the ordering carries information.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span>
+    <strong>Samples tend to be much smaller.</strong> Forty years of quarterly data is 160
+    observations, and no amount of effort will produce more of them this year.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">iii</span><span>
+    <strong>The underlying theory can be quite complex</strong> — a good deal of it belongs to
+    Forecasting and Econometrics II rather than here.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">iv</span><span>
+    <strong>The disturbance is often affected by events of a previous period.</strong> Which
+    means we often have autocorrelation <em>even when the model is correctly specified</em> —
+    the situation section 3 calls pure.
+  </span></div>
+</div>
+
+<h2>3 · First-order autocorrelation</h2>
+
+<p><strong>Pure autocorrelation</strong> occurs when the classical assumption of no
+autocorrelation is violated in a <a class="gt" href="../reference/glossary.html#specification-bias">correctly specified</a> equation. Its most popular form, and the
+only one this unit works through in full, is <strong>first-order</strong> autocorrelation:</p>
+
+<p class="math">Y<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>t</sub> + u<sub>t</sub></p>
+<p class="math">u<sub>t</sub> = ρ u<sub>t−1</sub> + ε<sub>t</sub></p>
+
+<p>Here ρ is the <strong><a class="gt" href="../reference/glossary.html#ar1">first-order autocorrelation</a> coefficient</strong>, or the coefficient of
+autocorrelation at lag 1. The only violation is autocorrelation itself: ε<sub>t</sub> is assumed
+to have zero mean and constant variance and to be independent over time, and all explanatory
+variables are independent of all error terms. Written out, the assumptions in force are</p>
+
+<p class="math">E(u<sub>t</sub> | X) = E(u) = 0 &nbsp;·&nbsp; var(u<sub>t</sub> | X) = σ<sup>2</sup> &nbsp;·&nbsp; cov(u<sub>t</sub>, u<sub>t−1</sub>) ≠ 0</p>
+<p class="math">E(ε<sub>t</sub> | u<sub>t−1</sub>) = E(ε<sub>t</sub>) = 0 &nbsp;·&nbsp; cov(ε<sub>t</sub>, ε<sub>t−1</sub>) = 0 &nbsp;·&nbsp; var(ε<sub>t</sub>) = σ<sub>ε</sub><sup>2</sup></p>
+
+<div class="box def">
+  <span class="box-label">Reading ρ</span>
+  The magnitude of ρ indicates the strength of the autocorrelation, and ρ = 0 means there is
+  none.<br>
+  If ρ ≠ 0 we require <strong>−1 &lt; ρ &lt; 1</strong>, that is |ρ| &lt; 1. When that holds the
+  first-order autoregressive process is <strong>stationary</strong>: the mean, variance and
+  covariance of u<sub>t</sub> do not change over time. Section 5 cannot be done without this —
+  it is the step that lets us solve for a single σ<sup>2</sup>.<br>
+  <strong>ρ &gt; 0 is positive autocorrelation; ρ &lt; 0 is negative.</strong>
+</div>
+
+<p>Autocorrelation takes other forms. Second-order autocorrelation carries two lags of the error
+term, third-order three, and so on:</p>
+
+<p class="math">u<sub>t</sub> = ρ<sub>1</sub>u<sub>t−1</sub> + ρ<sub>2</sub>u<sub>t−2</sub> + ε<sub>t</sub></p>
+<p class="math">u<sub>t</sub> = ρ<sub>1</sub>u<sub>t−1</sub> + ρ<sub>2</sub>u<sub>t−2</sub> + ρ<sub>3</sub>u<sub>t−3</sub> + ε<sub>t</sub></p>
+
+<div class="viz" data-viz="autocorrelation-patterns">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It generates a regression whose errors follow an
+    AR(1) process and lets ρ be varied from strongly negative to strongly positive, switching
+    between a time-sequence plot of the residuals and a scatter of each residual against its own
+    lag.
+  </p>
+</div>
+
+<h2>4 · The consequences</h2>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span>
+    <strong>No bias in the coefficient estimates.</strong> Unbiasedness does not hinge on the
+    assumption of no autocorrelation, so it survives its failure intact.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span>
+    <strong>We lose the "B" in BLUE.</strong> OLS is no longer the minimum-variance estimator of
+    all the linear unbiased estimators, because the Gauss–Markov theorem needs assumption 6 and
+    no longer has it.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">iii</span><span>
+    <strong>The OLS estimates of the standard errors are biased</strong>, which makes hypothesis
+    tests unreliable — and unreliable <em>even asymptotically</em>, so this is not a defect that
+    a larger sample repairs.
+  </span></div>
+</div>
+
+<p>The last two can both be seen by computing the <a class="gt" href="../reference/glossary.html#variance-of-the-estimator">variance of the OLS estimator</a> in a model where
+the only assumption violated is that of autocorrelation, which is what section 5 does.</p>
+
+<h2>5 · The variance of the OLS estimator under AR(1)</h2>
+
+<p>Take the simple regression with first-order autocorrelated errors and assume |ρ| &lt; 1.
+Start with the mean of the disturbance:</p>
+
+<p class="math">E(u<sub>t</sub>) = ρE(u<sub>t−1</sub>) + E(ε<sub>t</sub>) = 0</p>
+
+<p>Now the variance:</p>
+
+<p class="math">var(u<sub>t</sub>) = var(ρu<sub>t−1</sub> + ε<sub>t</sub>) = var(ρu<sub>t−1</sub>) + var(ε<sub>t</sub>) = ρ<sup>2</sup>var(u<sub>t−1</sub>) + σ<sub>ε</sub><sup>2</sup></p>
+
+<div class="box def">
+  <span class="box-label">Why does the covariance term vanish?</span>
+  The variance of a sum is the sum of the variances <em>plus twice the covariance</em>. Here that
+  covariance is cov(ρu<sub>t−1</sub>, ε<sub>t</sub>), which is zero because ε<sub>t</sub> is
+  independent of everything dated t − 1 and earlier — it is this period's fresh shock. That is
+  exactly what E(ε<sub>t</sub> | u<sub>t−1</sub>) = E(ε<sub>t</sub>) = 0 was assumed for.
+</div>
+
+<p>Under <a class="gt" href="../reference/glossary.html#stationarity">stationarity</a> var(u<sub>t</sub>) = var(u<sub>t−1</sub>) = σ<sup>2</sup>, so the equation
+becomes σ<sup>2</sup> = ρ<sup>2</sup>σ<sup>2</sup> + σ<sub>ε</sub><sup>2</sup>, which solves
+to</p>
+
+<p class="math">var(u<sub>t</sub>) = σ<sup>2</sup> = σ<sub>ε</sub><sup>2</sup> / ( 1 − ρ<sup>2</sup> )</p>
+
+<p>Notice what that says: the disturbance is <em>more</em> variable than the shock that drives
+it, and increasingly so as |ρ| approaches one, because each period inherits a share of every
+shock that came before. Next the covariance:</p>
+
+<p class="math">cov(u<sub>t</sub>, u<sub>t−1</sub>) = E(u<sub>t</sub>u<sub>t−1</sub>) = E([ρu<sub>t−1</sub> + ε<sub>t</sub>]u<sub>t−1</sub>) = ρE(u<sub>t−1</sub><sup>2</sup>) + E(ε<sub>t</sub>u<sub>t−1</sub>)</p>
+
+<p>The second term is zero, for the same reason as before — ε<sub>t</sub> is uncorrelated with
+u<sub>t−1</sub> — so</p>
+
+<p class="math">cov(u<sub>t</sub>, u<sub>t−1</sub>) = ρE(u<sub>t−1</sub><sup>2</sup>) = ρ [ σ<sub>ε</sub><sup>2</sup> / ( 1 − ρ<sup>2</sup> ) ]</p>
+
+<p>and generally, s periods apart,</p>
+
+<p class="math">cov(u<sub>t</sub>, u<sub>t−s</sub>) = ρ<sup>s</sup> [ σ<sub>ε</sub><sup>2</sup> / ( 1 − ρ<sup>2</sup> ) ] &nbsp;·&nbsp; corr(u<sub>t</sub>, u<sub>t−s</sub>) = ρ<sup>s</sup></p>
+
+<p>The correlation result is the memorable one. The influence of a shock decays geometrically:
+with ρ = 0.8 a disturbance is still 64% correlated with the one two periods later and 33% with
+the one five periods later. Nothing about this process is finished quickly.</p>
+
+<h3>What this does to var(β̂<sub>2</sub>)</h3>
+
+<p>If we ignore the autocorrelation, the reported variance of the slope is the familiar</p>
+
+<p class="math">var(β̂<sub>2</sub>) = σ<sup>2</sup> / Σx<sub>t</sub><sup>2</sup></p>
+
+<p>whereas the truth, when the errors follow AR(1), is</p>
+
+<p class="math">var(β̂<sub>2</sub>)<sub>AR1</sub> = ( σ<sup>2</sup> / Σx<sub>t</sub><sup>2</sup> ) ·
+[ 1 + 2ρ ( Σx<sub>t</sub>x<sub>t−1</sub> / Σx<sub>t</sub><sup>2</sup> )
++ 2ρ<sup>2</sup> ( Σx<sub>t</sub>x<sub>t−2</sub> / Σx<sub>t</sub><sup>2</sup> ) + ⋯ ]</p>
+
+<div class="box key">
+  <span class="box-label">Read the bracket</span>
+  The first factor is exactly the conventional formula, so <strong>everything the
+  autocorrelation does is in the bracket</strong>.<br>
+  Set ρ = 0 and every term after the 1 disappears, returning the familiar result — the
+  conventional formula is again a special case rather than a different one.<br>
+  With ρ &gt; 0 <em>and</em> a positively autocorrelated X — which is the normal situation, since
+  economic time series are persistent — every term in the bracket is positive, the bracket
+  exceeds 1, and <strong>the conventional standard error understates the truth</strong>. t-ratios
+  are then too large and tests reject far too often.<br>
+  Note also what the bracket depends on: not only ρ but the serial correlation of the
+  <em>regressor</em>. Autocorrelated errors alongside a regressor that jumps about at random do
+  much less damage than the same errors alongside a trending one.
+</div>
+
+<div class="box warn">
+  <span class="box-label">A note on the slides</span>
+  The lecture slides compress the bracket into a single factor in ρ. The expression above is
+  Gujarati's, which is the one that holds for a general X and the one the figure below confirms
+  against simulation. If you are reproducing this in an examination, the safe answer is the form
+  above together with the sentence that follows it: the conventional formula understates
+  whenever ρ and the regressor's own serial correlation are both positive.
+</div>
+
+<div class="viz" data-viz="autocorrelation-se-bias">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It compares the true standard error of
+    β̂<sub>2</sub> from the formula above, the spread actually observed across 400 simulated
+    samples, and the standard error OLS reports, as ρ is varied.
+  </p>
+</div>
+
+<h2>6 · Impure autocorrelation</h2>
+
+<p><strong>Impure autocorrelation</strong> occurs when the assumption of no autocorrelation is
+violated in an <em>incorrectly specified</em> equation. Incorrect <a class="gt" href="../reference/glossary.html#functional-form">functional forms</a>, <a class="gt" href="../reference/glossary.html#omitted-variable">omitted
+variables</a> and an inadequate dynamic specification of the model all lead to findings of
+autocorrelation. This explains why <strong>tests for autocorrelation are very often used as
+misspecification tests</strong> — a significant <a class="gt" href="../reference/glossary.html#durbin-watson">Durbin–Watson</a> statistic is at least as likely to
+be telling you the model is wrong as telling you the disturbance has a memory.</p>
+
+<h3>A missing variable</h3>
+
+<p>Suppose you are using monthly data to <a class="gt" href="../reference/glossary.html#estimate">estimate</a> a model explaining the demand for ice cream in
+the UK. The weather will obviously be an important factor, but suppose ice cream consumption I is
+modelled as a function of price P and income Y alone:</p>
+
+<p class="math">I<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>P<sub>t</sub> + β<sub>3</sub>Y<sub>t</sub> + u<sub>t</sub></p>
+
+<p>The impact of weather is then hidden in the error term, u<sub>t</sub> =
+β<sub>4</sub>W<sub>t</sub> + ε<sub>t</sub>, and we are thus likely to find a pattern in the
+<a class="gt" href="../reference/glossary.html#residual">residuals</a>. The reason is that <em>weather is itself autocorrelated</em>: a warm July is followed
+by a warm August. The disturbance inherits the serial correlation of the variable that was left
+out of it, which is the whole mechanism of impure autocorrelation in one example.</p>
+
+<h3>The wrong functional form</h3>
+
+<p>Suppose the true equation is <a class="gt" href="../reference/glossary.html#turning-point">quadratic</a> but a linear one is estimated:</p>
+
+<p class="math">true: Y<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>t</sub> + β<sub>3</sub>X<sub>t</sub><sup>2</sup> + u</p>
+<p class="math">run: Y<sub>t</sub> = a<sub>1</sub> + a<sub>2</sub>X<sub>t</sub> + v</p>
+
+<p>The new error term v is a function of the true error term <em>and</em> of the differences
+between the linear and the polynomial functional forms. Those differences are systematic — the
+straight line is above the curve in the middle of the range and below it at both ends — and such
+differences often follow an autoregressive pattern. Again the test will fire, and again the
+remedy is to fix the model rather than the <a class="gt" href="../reference/glossary.html#standard-error">standard errors</a>.</p>
+
+<h2>7 · Detecting it: the informal method</h2>
+
+<p>The informal method is graphical analysis of the residuals. We do not observe u, so we use
+û as a <a class="gt" href="../reference/glossary.html#proxy">proxy</a>, exactly as in Unit 2C. Return to the ice cream example, this time including a
+proxy for weather — temperature:</p>
+
+<p class="math">I<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>P<sub>t</sub> + β<sub>3</sub>Y<sub>t</sub> + β<sub>4</sub>W<sub>t</sub> + u<sub>t</sub></p>
+
+<p>Estimate the regression, collect the <a class="gt" href="../reference/glossary.html#ols">OLS</a> residuals û<sub>t</sub> = I<sub>t</sub> −
+Î<sub>t</sub>, and then look at them two ways. Plot the residuals <strong>over time</strong> — a
+time sequence plot — and look for patterns. And produce a <strong>scatter plot with the current
+residuals û<sub>t</sub> on the vertical axis and the lagged residuals û<sub>t−1</sub> on the
+horizontal</strong>. The figure in section 3 is both of those plots; it is worth returning to it
+now that the AR(1) process behind the shapes has been set out.</p>
+
+<h2>8 · The Durbin–Watson test</h2>
+
+<p>The classic test for autocorrelation, due to James Durbin and Geoffrey Watson, and used to
+detect first-order — AR(1) — autocorrelation. The statistic is based on the OLS residuals:</p>
+
+<p class="math">DW = Σ ( û<sub>t</sub> − û<sub>t−1</sub> )<sup>2</sup> / Σ û<sub>t</sub><sup>2</sup></p>
+
+<p>Simple algebra shows that</p>
+
+<p class="math">DW ≈ 2 ( 1 − ρ̂ )</p>
+
+<p>where ρ̂ is the correlation between û<sub>t</sub> and û<sub>t−1</sub>. Everything about
+reading the statistic follows from that one relation:</p>
+
+<div class="box def">
+  <span class="box-label">The scale</span>
+  <div class="table-scroll"><table class="cal" style="margin-top:0.4rem;">
+    <tr><th>ρ̂ close to 0</th><td class="cov">DW close to 2</td><td class="cov">no autocorrelation</td></tr>
+    <tr><th>ρ̂ &gt; 0</th><td class="cov">DW smaller than 2</td><td class="cov">positive autocorrelation</td></tr>
+    <tr><th>ρ̂ &lt; 0</th><td class="cov">DW larger than 2</td><td class="cov">negative autocorrelation</td></tr>
+    <tr><th>ρ̂ close to 1</th><td class="cov">DW close to 0</td><td class="cov">strong positive</td></tr>
+    <tr><th>ρ̂ close to −1</th><td class="cov">DW close to 4</td><td class="cov">strong negative</td></tr>
+  </table></div>
+  Taken together, <strong>DW ranges from 0 to 4</strong>, with values close to 2 indicating no
+  autocorrelation, close to 0 positive, and close to 4 negative.
+</div>
+
+<p>The test statistic must be compared with <strong>two</strong> sets of <a class="gt" href="../reference/glossary.html#critical-value">critical values</a>, based
+on the number of explanatory variables k and on the sample size, usually labelled
+d<sub>U</sub> for upper and d<sub>L</sub> for lower. Unlike the F, χ<sup>2</sup> and t tests met
+so far, the boundary between reject and do-not-reject is not clear-cut: there is an
+<strong>inconclusive region</strong>.</p>
+
+<div class="box def">
+  <span class="box-label">The decision rules</span>
+  <div class="table-scroll"><table class="cal" style="margin-top:0.4rem;">
+    <tr><th>Null hypothesis</th><td class="cov"><strong>Decision</strong></td><td class="cov"><strong>If</strong></td></tr>
+    <tr><th>No positive autocorrelation</th><td class="cov">Reject</td><td class="cov">0 &lt; d &lt; d<sub>L</sub></td></tr>
+    <tr><th>No positive autocorrelation</th><td class="cov">No decision</td><td class="cov">d<sub>L</sub> ≤ d ≤ d<sub>U</sub></td></tr>
+    <tr><th>No negative autocorrelation</th><td class="cov">Reject</td><td class="cov">4 − d<sub>L</sub> &lt; d &lt; 4</td></tr>
+    <tr><th>No negative autocorrelation</th><td class="cov">No decision</td><td class="cov">4 − d<sub>U</sub> ≤ d ≤ 4 − d<sub>L</sub></td></tr>
+    <tr><th>No autocorrelation, either sign</th><td class="cov">Do not reject</td><td class="cov">d<sub>U</sub> &lt; d &lt; 4 − d<sub>U</sub></td></tr>
+  </table></div>
+</div>
+
+<div class="viz" data-viz="durbin-watson-ruler">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It draws the Durbin–Watson decision line from 0 to
+    4 with its five zones marked, and moves the computed statistic along it as the strength of
+    the autocorrelation is varied.
+  </p>
+</div>
+
+<div class="box warn">
+  <span class="box-label">Four limitations</span>
+  <strong>i.</strong> It can only test for <strong>first-order</strong> autocorrelation.<br>
+  <strong>ii.</strong> The regression must <strong>not include lagged values of the dependent
+  variable</strong> among the explanatory variables — that is, nothing of the form
+  Y<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>t</sub> + β<sub>3</sub>Y<sub>t−1</sub> +
+  u<sub>t</sub>. Such autoregressive models are studied in Forecasting and Econometrics II, and
+  they are extremely common, which is a large hole in the test's coverage.<br>
+  <strong>iii.</strong> The regression must include an <strong>intercept</strong>.<br>
+  <strong>iv.</strong> It assumes the error terms are <strong>normally distributed</strong>.<br>
+  To which the figure adds a fifth in practice: the inconclusive region is wide enough that a
+  real result often lands in it.
+</div>
+
+<h2>9 · The Breusch–Godfrey test</h2>
+
+<p>To avoid some of those pitfalls, Breusch and Godfrey developed a general test of
+autocorrelation. It <strong>allows lagged values of the <a class="gt" href="../reference/glossary.html#dependent-variable">dependent variable</a></strong>, and it
+<strong>allows higher-order autocorrelation</strong> — it can be used to test first order, second
+order, third order and so on. It works by analysing how well the lagged residuals explain the
+residual of the original equation, in an equation that also includes all the original explanatory
+variables. If the lagged residuals are <a class="gt" href="../reference/glossary.html#practical-significance">statistically significant</a>, the null of no serial
+correlation is rejected.</p>
+
+<p>Consider the model and an assumed qth-order error process:</p>
+
+<p class="math">Y<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>2t</sub> + β<sub>3</sub>X<sub>3t</sub> + ⋯ + β<sub>k</sub>X<sub>kt</sub> + u<sub>t</sub></p>
+<p class="math">u<sub>t</sub> = ρ<sub>1</sub>u<sub>t−1</sub> + ρ<sub>2</sub>u<sub>t−2</sub> + ⋯ + ρ<sub>q</sub>u<sub>t−q</sub> + ε<sub>t</sub></p>
+
+<p>If ρ<sub>1</sub> = ρ<sub>2</sub> = ⋯ = ρ<sub>q</sub> = 0 there is no autocorrelation, and that
+is the <a class="gt" href="../reference/glossary.html#null-hypothesis">null hypothesis</a>.</p>
+
+<ol class="steps">
+  <li>Estimate the model and collect the residuals û<sub>t</sub>.</li>
+  <li>Run the auxiliary regression of û<sub>t</sub> on X<sub>2t</sub>, X<sub>3t</sub>, …
+    X<sub>kt</sub>, û<sub>t−1</sub>, û<sub>t−2</sub>, … û<sub>t−q</sub>.
+    <strong>The original regressors stay in.</strong> Leaving them out would attribute to the
+    lagged residuals whatever the regressors could have explained.</li>
+  <li>Obtain the R<sup>2</sup> from the auxiliary regression. The test statistic is
+    <p class="math">(n − q)R<sup>2</sup> &nbsp;~&nbsp; χ<sup>2</sup>(q)</p>
+    with q degrees of freedom — one for each lag being tested.</li>
+</ol>
+
+<h3>Example 1 — the ice cream equation, tested at second order</h3>
+
+<p>With the weather proxy included, the estimated equation on 30 monthly observations is</p>
+
+<p class="math">Î<sub>t</sub> = 0.1973 − 1.044 P + 0.0003 Y + 0.0035 W &nbsp;·&nbsp; n = 30</p>
+
+<p>Collecting the residuals and running the <a class="gt" href="../reference/glossary.html#auxiliary-regression">auxiliary regression</a> with two lags:</p>
+
+<p class="math">û = 0.048 − 0.165 P + 0.000 Y + 0.000 W + 0.468 û<sub>t−1</sub> − 0.128 û<sub>t−2</sub></p>
+<p class="math">n = 30 &nbsp;·&nbsp; R<sup>2</sup> = 0.1496</p>
+
+<p class="math">(n − q)R<sup>2</sup> = (30 − 2)(0.1496) = <strong>4.188</strong></p>
+
+<p>The critical value at α = 0.05 with two <a class="gt" href="../reference/glossary.html#degrees-of-freedom">degrees of freedom</a> is χ<sup>2</sup>(2) = 5.99. Since
+4.188 is below it, we <strong>cannot reject</strong> the null of no autocorrelation. Note the
+coefficient on the first lag, 0.468 — not a small number — and yet the joint test does not
+reject. With n = 30 there is simply not enough information to be confident, which is limitation
+(ii) of section 2 arriving in practice.</p>
+
+<h3>Example 2 — a consumption function, tested at third order</h3>
+
+<p class="math">ln C<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub> ln Y<sub>t</sub> + u<sub>t</sub></p>
+
+<p>Estimating on 46 observations gives ln C<sub>t</sub> = 0.1973 + 1.044 ln Y<sub>t</sub>, and
+the auxiliary regression with three lags is</p>
+
+<p class="math">û = −0.017 + 0.001 ln Y<sub>t</sub> + 0.768 û<sub>t−1</sub> + 0.328 û<sub>t−2</sub> − 0.305 û<sub>t−3</sub></p>
+<p class="math">n = 46 &nbsp;·&nbsp; R<sup>2</sup> = 0.7069</p>
+
+<p class="math">(n − q)R<sup>2</sup> = (46 − 3)(0.7069) = <strong>30.397</strong></p>
+
+<p>Against χ<sup>2</sup>(3) = 7.82 at 5%, we <strong>reject</strong> the null: there is
+autocorrelation. An auxiliary R<sup>2</sup> of 0.71 means the lagged residuals explain
+seven-tenths of the variation in the current one, which is not a subtle finding. A consumption
+function in logs on annual data is exactly where one would expect it, too — consumption is
+smooth, and whatever the model omits persists.</p>
+
+<div class="box warn">
+  <span class="box-label">The drawback: how do we know q?</span>
+  We cannot know the order of autocorrelation a priori and have to experiment to find it. In
+  practice one uses <strong>correlograms</strong>, which belong to Forecasting and Econometrics
+  II, or runs the auxiliary regression at various values of q and chooses the lag length by AIC or SC,
+  both of which were met in Unit 2A Part 1. <strong>In this course you will be told which order
+  to test for.</strong>
+</div>
+
+<h2>10 · Remedies</h2>
+
+<p>In many cases the finding of autocorrelation is an indication that the model is
+misspecified. So the first task is the same as it was in Unit 2C: <strong>try to find out
+whether the autocorrelation is pure, and not due to specification bias</strong>. Section 6 gives
+the two things to look for — a missing variable that is itself persistent, and a functional form
+that does not fit. Only if the autocorrelation is pure should the following remedies be
+considered.</p>
+
+<h3>Remedy 1 — Newey–West standard errors</h3>
+
+<p>Recall that OLS is unbiased, though less precise, in the presence of autocorrelation. So
+instead of re-estimating anything, we can keep OLS and correct only the standard errors, by a
+procedure developed by Newey and West. It is an extension of White's
+heteroscedasticity-consistent standard errors from Unit 2C, and the corrected figures are known
+as <strong><a class="gt" href="../reference/glossary.html#newey-west">HAC</a></strong> — heteroscedasticity- and autocorrelation-consistent — standard errors,
+or simply Newey–West standard errors.</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">+</span><span>
+    <strong>The benefit.</strong> The HAC method handles both problems at once, so an equation
+    suffering from Unit 2C's complaint and this one needs only a single correction. Most modern
+    packages will compute them on request.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">−</span><span>
+    <strong>The drawback.</strong> Newey–West standard errors tend to perform poorly when the
+    sample size is small — and time series samples, as section 2 noted, are usually small. The
+    correction requires a judgement about how many lags of the residual to allow for, and in a
+    short, strongly autocorrelated sample it narrows the gap in section 5 substantially without
+    closing it.
+  </span></div>
+</div>
+
+<h3>Remedy 2 — generalised least squares</h3>
+
+<p><a class="gt" href="../reference/glossary.html#gls">GLS</a> rids an equation of pure first-order serial correlation and <strong>restores the minimum
+variance property</strong> to its estimation. It does this by transforming the equation into one
+that does not have the problem. Start from the simple regression with AR(1) errors and
+substitute the error process in:</p>
+
+<p class="math">Y<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>t</sub> + u<sub>t</sub>
+&nbsp;⟹&nbsp; Y<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>t</sub> + ρu<sub>t−1</sub> + ε<sub>t</sub></p>
+
+<p>Lag the original model by one period and solve it for u<sub>t−1</sub>:</p>
+
+<p class="math">Y<sub>t−1</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>t−1</sub> + u<sub>t−1</sub>
+&nbsp;⟹&nbsp; u<sub>t−1</sub> = Y<sub>t−1</sub> − β<sub>1</sub> − β<sub>2</sub>X<sub>t−1</sub></p>
+
+<p>Substituting that back in:</p>
+
+<p class="math">Y<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>t</sub> + ρ( Y<sub>t−1</sub> − β<sub>1</sub> − β<sub>2</sub>X<sub>t−1</sub> ) + ε<sub>t</sub></p>
+
+<p>and rearranging so that everything in Y is on the left:</p>
+
+<p class="math">Y<sub>t</sub> − ρY<sub>t−1</sub> = β<sub>1</sub> − ρβ<sub>1</sub> + β<sub>2</sub>X<sub>t</sub> − ρβ<sub>2</sub>X<sub>t−1</sub> + ε<sub>t</sub></p>
+
+<p class="math">Y<sub>t</sub> − ρY<sub>t−1</sub> = β<sub>1</sub>(1 − ρ) + β<sub>2</sub>( X<sub>t</sub> − ρX<sub>t−1</sub> ) + ε<sub>t</sub></p>
+
+<p>which we can write as</p>
+
+<p class="math">Y<sub>t</sub>* = β<sub>1</sub>* + β<sub>2</sub>X<sub>t</sub>* + ε<sub>t</sub>
+&nbsp; where Y<sub>t</sub>* = Y<sub>t</sub> − ρY<sub>t−1</sub>, &nbsp; β<sub>1</sub>* = β<sub>1</sub>(1 − ρ), &nbsp; X<sub>t</sub>* = X<sub>t</sub> − ρX<sub>t−1</sub></p>
+
+<div class="box key">
+  <span class="box-label">Two things to notice</span>
+  <strong>The error term is no longer serially correlated.</strong> It is ε<sub>t</sub>, which was
+  assumed independent over time from the start — the transformation has stripped out exactly the
+  part of u<sub>t</sub> that was inherited from last period.<br>
+  <strong>The slope is the same as in the original regression.</strong> β<sub>2</sub> appears
+  untransformed, so what we estimate from the starred equation is the coefficient we actually
+  wanted. Only the intercept is rescaled, by (1 − ρ), and is easily recovered.
+</div>
+
+<div class="viz" data-viz="gls-transformation">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It shows the residuals of a regression whose errors
+    follow an AR(1) process with ρ = 0.8, and the residuals of the same sample after the
+    transformation Y<sub>t</sub> − ρY<sub>t−1</sub>, with ρ̂, the Durbin–Watson statistic and the
+    estimated slope reported for each.
+  </p>
+</div>
+
+<h3>The problem — what is ρ?</h3>
+
+<p>Unfortunately we do not know the value of ρ, so we have to estimate it. This can be done from
+the residuals, by regressing û<sub>t</sub> on û<sub>t−1</sub>:</p>
+
+<p class="math">û<sub>t</sub> = ρ û<sub>t−1</sub> + v<sub>t</sub></p>
+
+<p>But since we then use ρ̂ instead of the true ρ, this is <strong>feasible GLS</strong> — <a class="gt" href="../reference/glossary.html#fgls">FGLS</a>,
+or estimated GLS — the same idea met in Unit 2C, and it carries the same warning: the properties
+are large-sample ones, because the weights were estimated rather than known.</p>
+
+<p>Most practitioners <strong>iterate</strong>. Having obtained the FGLS estimates, compute a new
+value of ρ̂ from the new residuals and redo the FGLS, continuing until the estimate of ρ̂ stops
+changing. The two popular iterative procedures under autocorrelation are the
+<strong><a class="gt" href="../reference/glossary.html#cochrane-orcutt">Cochrane–Orcutt</a></strong> procedure and the <strong>Prais–Winsten</strong> procedure. The
+difference between them is what happens to the first observation: the transformation
+Y<sub>t</sub> − ρY<sub>t−1</sub> cannot be applied at t = 1, since there is no Y<sub>0</sub>.
+Cochrane–Orcutt simply drops it; Prais–Winsten keeps it, rescaled by √(1 − ρ<sup>2</sup>). With
+T = 160 the difference is negligible; with T = 25 it is not.</p>
+
+<h2>11 · Tutorial</h2>
+
+<p style="font-size:0.85rem; color:var(--ink-soft); font-style:italic;">
+Draft questions, to be replaced by the tutorial sheet issued in class.</p>
+
+<div class="tutorial">
+
+  <div class="tq">
+    <span class="qtext">A regression on 40 quarterly observations with two explanatory variables
+    gives Σ(û<sub>t</sub> − û<sub>t−1</sub>)<sup>2</sup> = 38.4 and Σû<sub>t</sub><sup>2</sup> =
+    48.0. Compute the Durbin–Watson statistic, infer ρ̂, and reach a decision at 5% given
+    d<sub>L</sub> = 1.39 and d<sub>U</sub> = 1.60. What would you have concluded had the
+    statistic been 1.50?</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>The statistic.</strong></p>
+        <p class="math">DW = 38.4 / 48.0 = <strong>0.80</strong></p>
+        <p><strong>Inferring ρ̂.</strong> From DW ≈ 2(1 − ρ̂), rearranging gives ρ̂ ≈ 1 − DW/2 =
+        1 − 0.40 = <strong>0.60</strong>. Substantial positive autocorrelation.</p>
+        <p><strong>The decision.</strong> DW = 0.80 falls in the region 0 &lt; d &lt;
+        d<sub>L</sub> = 1.39, so we <strong>reject</strong> the null of no positive
+        autocorrelation. There is evidence of positive first-order autocorrelation.</p>
+        <p><strong>Had DW been 1.50.</strong> That lies between d<sub>L</sub> = 1.39 and
+        d<sub>U</sub> = 1.60, which is the <strong>inconclusive region</strong>: the test returns
+        no verdict at all. This is not the same as failing to reject — one may not report "no
+        evidence of autocorrelation" from an inconclusive result. The sensible response is to run
+        a <a class="gt" href="../reference/glossary.html#breusch-godfrey">Breusch–Godfrey test</a>, which has an ordinary rejection region and no such zone.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">A model with three explanatory variables is estimated on 50 quarterly
+    observations. A Breusch–Godfrey test at second order gives an auxiliary R<sup>2</sup> of
+    0.214. Carry out the test at 5%, given χ<sup>2</sup>(2) = 5.99. Then state two things this
+    test can do that a Durbin–Watson test cannot, and one thing it requires of you that
+    Durbin–Watson does not.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>The test.</strong> With q = 2 lags on 50 observations:</p>
+        <p class="math">(n − q)R<sup>2</sup> = (50 − 2)(0.214) = 48 × 0.214 = <strong>10.27</strong></p>
+        <p>Against χ<sup>2</sup>(2) = 5.99 in the right tail, 10.27 &gt; 5.99, so
+        <strong>reject</strong> the null of no autocorrelation at 5%.</p>
+        <p><strong>Two things it can do.</strong> First, it tests <em>higher-order</em>
+        autocorrelation — here second order, and it extends to any q — whereas Durbin–Watson only
+        ever tests the first. Second, it remains valid when the equation contains
+        <strong>lagged values of the dependent variable</strong>, which invalidate Durbin–Watson
+        entirely and which appear in a great many time series models.</p>
+        <p>One might add a third: it returns a straightforward reject or do-not-reject, with no
+        inconclusive region to fall into.</p>
+        <p><strong>What it requires of you.</strong> A choice of q. Durbin–Watson has no such
+        <a class="gt" href="../reference/glossary.html#parameter">parameter</a>, while Breusch–Godfrey cannot be run until you decide how many lags to include,
+        and that cannot be known a priori. In practice one uses a correlogram, or compares lag
+        lengths by <a class="gt" href="../reference/glossary.html#aic">AIC</a> or <a class="gt" href="../reference/glossary.html#schwarz-criterion">SC</a> — and in this course you will be told which order to test.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">Starting from Y<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>t</sub> +
+    u<sub>t</sub> with u<sub>t</sub> = ρu<sub>t−1</sub> + ε<sub>t</sub>, derive
+    var(u<sub>t</sub>) and cov(u<sub>t</sub>, u<sub>t−1</sub>). State clearly where stationarity
+    is used and where the independence of ε<sub>t</sub> is used.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>The variance.</strong> Taking variances of both sides of the error process:</p>
+        <p class="math">var(u<sub>t</sub>) = var(ρu<sub>t−1</sub> + ε<sub>t</sub>) = ρ<sup>2</sup>var(u<sub>t−1</sub>) + σ<sub>ε</sub><sup>2</sup> + 2ρ·cov(u<sub>t−1</sub>, ε<sub>t</sub>)</p>
+        <p>The covariance term is zero <strong>because ε<sub>t</sub> is independent of everything
+        dated t − 1 and earlier</strong> — this is the first use of the independence assumption.
+        That leaves var(u<sub>t</sub>) = ρ<sup>2</sup>var(u<sub>t−1</sub>) +
+        σ<sub>ε</sub><sup>2</sup>.</p>
+        <p>Now <strong>stationarity</strong> is used: it says var(u<sub>t</sub>) =
+        var(u<sub>t−1</sub>) = σ<sup>2</sup>, one number rather than a sequence. Without it the
+        equation relates two different unknowns and cannot be solved. With it:</p>
+        <p class="math">σ<sup>2</sup> = ρ<sup>2</sup>σ<sup>2</sup> + σ<sub>ε</sub><sup>2</sup>
+        &nbsp;⟹&nbsp; σ<sup>2</sup>(1 − ρ<sup>2</sup>) = σ<sub>ε</sub><sup>2</sup>
+        &nbsp;⟹&nbsp; σ<sup>2</sup> = σ<sub>ε</sub><sup>2</sup> / (1 − ρ<sup>2</sup>)</p>
+        <p>Note this also shows why |ρ| &lt; 1 is required: at |ρ| = 1 the denominator is zero and
+        the variance is not finite, so the process is not stationary and none of this applies.</p>
+        <p><strong>The covariance.</strong></p>
+        <p class="math">cov(u<sub>t</sub>, u<sub>t−1</sub>) = E(u<sub>t</sub>u<sub>t−1</sub>) = E([ρu<sub>t−1</sub> + ε<sub>t</sub>]u<sub>t−1</sub>) = ρE(u<sub>t−1</sub><sup>2</sup>) + E(ε<sub>t</sub>u<sub>t−1</sub>)</p>
+        <p>The second term is zero — the <strong>second use of the independence of
+        ε<sub>t</sub></strong>. And E(u<sub>t−1</sub><sup>2</sup>) is just the variance we have
+        already found, since E(u) = 0. So</p>
+        <p class="math">cov(u<sub>t</sub>, u<sub>t−1</sub>) = ρσ<sub>ε</sub><sup>2</sup>/(1 − ρ<sup>2</sup>),
+        &nbsp; and generally cov(u<sub>t</sub>, u<sub>t−s</sub>) = ρ<sup>s</sup>σ<sub>ε</sub><sup>2</sup>/(1 − ρ<sup>2</sup>)</p>
+        <p>Dividing the covariance by the variance gives the tidiest form of the result:
+        corr(u<sub>t</sub>, u<sub>t−s</sub>) = ρ<sup>s</sup>. The memory decays geometrically but
+        never quite vanishes.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">"Autocorrelation is much like heteroscedasticity — OLS stays unbiased and
+    the standard errors need fixing." Assess. In your answer explain why the reported standard
+    error is biased and in which direction, and say what role the regressor's own behaviour plays
+    in the size of the problem.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>The statement is right as far as it goes.</strong> Both are failures of a
+        classical assumption that leave E(β̂<sub>2</sub>) = β<sub>2</sub> intact, because
+        <a class="gt" href="../reference/glossary.html#unbiasedness">unbiasedness</a> depends on assumptions 3 and 4 rather than on 5 or 6. Both cost the "B" in
+        <a class="gt" href="../reference/glossary.html#blue">BLUE</a>, so OLS is no longer minimum variance. And in both the reported standard error is
+        computed from a formula that no longer applies.</p>
+        <p><strong>Why the standard error is biased.</strong> The reported figure is
+        √(σ̂<sup>2</sup>/Σx<sub>t</sub><sup>2</sup>), which is the correct variance only when the
+        disturbances are uncorrelated. Under AR(1) the truth carries an extra bracket:</p>
+        <p class="math">var(β̂<sub>2</sub>)<sub>AR1</sub> = (σ<sup>2</sup>/Σx<sub>t</sub><sup>2</sup>)
+        [1 + 2ρ(Σx<sub>t</sub>x<sub>t−1</sub>/Σx<sub>t</sub><sup>2</sup>) + 2ρ<sup>2</sup>(Σx<sub>t</sub>x<sub>t−2</sub>/Σx<sub>t</sub><sup>2</sup>) + ⋯]</p>
+        <p><strong>The direction.</strong> When ρ &gt; 0 and X is itself positively
+        autocorrelated, every term in the bracket is positive, the bracket exceeds one, and the
+        reported standard error is <strong>too small</strong>. <a class="gt" href="../reference/glossary.html#t-statistic">t-ratios</a> are inflated, and a
+        nominal 5% test rejects far more often than 5% of the time — the dangerous direction,
+        because it manufactures significance rather than hiding it.</p>
+        <p><strong>The role of the regressor.</strong> This is what the statement misses. The
+        bracket depends not only on ρ but on Σx<sub>t</sub>x<sub>t−s</sub>/Σx<sub>t</sub><sup>2</sup>
+        — the regressor's own serial correlation. Autocorrelated errors alongside a regressor that
+        jumps about at random do relatively little harm; the same errors alongside a trending or
+        persistent regressor, which is the normal case in economics, do a great deal. That is why
+        autocorrelation is the more dangerous of the two problems: <a class="gt" href="../reference/glossary.html#heteroscedasticity">heteroscedasticity</a> in Unit 2C
+        took the reported standard error down to roughly three-quarters of the truth, while
+        autocorrelation with a persistent regressor can take it below a third.</p>
+        <p><strong>One further difference.</strong> The statement's implied remedy — "fix the
+        standard errors" — is weaker here. White's correction works well in moderate samples;
+        Newey–West performs poorly in the small samples that time series work usually provides.
+        And a finding of autocorrelation is more often a symptom of misspecification than a
+        finding of heteroscedasticity is, which is why these tests double as misspecification
+        tests.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">Derive the GLS transformation for a model with AR(1) errors. Explain why
+    the transformed error is not serially correlated, why the slope coefficient is unaffected, and
+    what practical difficulty stands in the way of actually using it.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>The derivation.</strong> Substituting u<sub>t</sub> = ρu<sub>t−1</sub> +
+        ε<sub>t</sub> into Y<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>t</sub> +
+        u<sub>t</sub>, and replacing u<sub>t−1</sub> by Y<sub>t−1</sub> − β<sub>1</sub> −
+        β<sub>2</sub>X<sub>t−1</sub> from the lagged model:</p>
+        <p class="math">Y<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>t</sub> + ρ(Y<sub>t−1</sub> − β<sub>1</sub> − β<sub>2</sub>X<sub>t−1</sub>) + ε<sub>t</sub></p>
+        <p>Collecting the Y terms on the left and factorising:</p>
+        <p class="math">Y<sub>t</sub> − ρY<sub>t−1</sub> = β<sub>1</sub>(1 − ρ) + β<sub>2</sub>(X<sub>t</sub> − ρX<sub>t−1</sub>) + ε<sub>t</sub></p>
+        <p>which is Y* = β<sub>1</sub>* + β<sub>2</sub>X* + ε<sub>t</sub> with Y* = Y<sub>t</sub> −
+        ρY<sub>t−1</sub>, X* = X<sub>t</sub> − ρX<sub>t−1</sub> and β<sub>1</sub>* =
+        β<sub>1</sub>(1 − ρ).</p>
+        <p><strong>Why the error is clean.</strong> The transformed disturbance is ε<sub>t</sub>
+        itself, which was assumed from the outset to have zero mean, constant variance and no
+        serial correlation. The ρ-differencing has removed precisely the part of u<sub>t</sub>
+        that was carried over from the previous period, leaving only this period's fresh
+        shock.</p>
+        <p><strong>Why the slope survives.</strong> β<sub>2</sub> multiplies the transformed
+        regressor without itself being transformed, so estimating the starred equation returns
+        the coefficient we actually wanted. Only the intercept is rescaled, and β<sub>1</sub> =
+        β<sub>1</sub>*/(1 − ρ) recovers it.</p>
+        <p><strong>The practical difficulty.</strong> <strong>ρ is unknown.</strong> The
+        transformation requires the very parameter whose existence we were testing for, so it must
+        be estimated — typically by regressing û<sub>t</sub> on û<sub>t−1</sub> — which makes the
+        procedure <em>feasible</em> GLS rather than GLS, with large-sample rather than exact
+        properties. Practitioners iterate: re-estimate ρ̂ from the new residuals, redo the
+        transformation, and continue until ρ̂ settles. Cochrane–Orcutt and Prais–Winsten are the
+        two standard implementations, differing in whether the first observation is dropped or
+        rescaled by √(1 − ρ<sup>2</sup>) — which matters in a short sample, and time series
+        samples are short.</p>
+      </div>
+    </details>
+  </div>
+
+</div>
+
+<h2>12 · Check yourself</h2>
+
+<div class="quiz" data-answer="0">
+  <div class="q">A Durbin–Watson statistic of 3.6 on a sample where 4 − d<sub>L</sub> = 2.4 indicates</div>
+  <button class="opt">negative autocorrelation, since ρ̂ is roughly −0.8 here</button>
+  <button class="opt">positive autocorrelation, since ρ̂ is roughly +0.8 here</button>
+  <button class="opt">no autocorrelation, since the statistic is far away from 0</button>
+  <button class="opt">an inconclusive result, since it falls between the bounds</button>
+  <div class="feedback right">Correct — DW ≈ 2(1 − ρ̂) gives ρ̂ ≈ 1 − 1.8 = −0.8, and 3.6 exceeds 4 − d<sub>L</sub>, so the null of no negative autocorrelation is rejected.</div>
+  <div class="feedback wrong">Use DW ≈ 2(1 − ρ̂), so ρ̂ ≈ 1 − DW/2 = 1 − 1.8 = −0.8. Values <em>above</em> 2 mean negative autocorrelation, and 3.6 is beyond 4 − d<sub>L</sub> = 2.4, which is the rejection region for the null of no negative autocorrelation.</div>
+</div>
+
+<div class="quiz" data-answer="3">
+  <div class="q">In the presence of pure autocorrelation, OLS estimates of the coefficients are</div>
+  <button class="opt">biased, and the bias grows as the sample size increases further</button>
+  <button class="opt">biased, though the standard errors reported remain trustworthy</button>
+  <button class="opt">unbiased, and still the minimum-variance linear unbiased ones</button>
+  <button class="opt">unbiased, but no longer minimum variance among linear ones</button>
+  <div class="feedback right">Correct — unbiasedness does not rest on assumption 6, but the Gauss–Markov theorem does, so the "B" in BLUE is lost.</div>
+  <div class="feedback wrong">Unbiasedness rests on assumptions 3 and 4, not on the absence of autocorrelation, so the coefficients are fine. What fails is Gauss–Markov, which needs assumption 6 — so OLS is no longer minimum variance — and the standard error formula, which is computed as though the disturbances were uncorrelated.</div>
+</div>
+
+<div class="quiz" data-answer="2">
+  <div class="q">The Durbin–Watson test may not be used when the equation being tested</div>
+  <button class="opt">has more than one explanatory variable on the right-hand side</button>
+  <button class="opt">is estimated on quarterly rather than on annual observations</button>
+  <button class="opt">includes a lagged dependent variable among the regressors</button>
+  <button class="opt">has disturbances suspected of being second-order correlated</button>
+  <div class="feedback right">Correct — an autoregressive model invalidates the test outright, which is one of the reasons Breusch–Godfrey is preferred.</div>
+  <div class="feedback wrong">Several regressors are fine — the bounds are tabulated by k. Data frequency is irrelevant. Second-order correlation is not a prohibition but a blind spot: the test simply will not detect it. The genuine prohibition is a lagged dependent variable, which makes the statistic invalid rather than merely weak.</div>
+</div>
+
+<div class="quiz" data-answer="1">
+  <div class="q">The Breusch–Godfrey auxiliary regression puts on its right-hand side</div>
+  <button class="opt">the lagged residuals alone, with the fitted values of the model</button>
+  <button class="opt">the lagged residuals and all the original explanatory variables</button>
+  <button class="opt">the squared residuals and the squares of every explanatory term</button>
+  <button class="opt">the lagged dependent variable and the original explanatory terms</button>
+  <div class="feedback right">Correct — keeping the original regressors in is what stops the lagged residuals being credited with variation those regressors could explain.</div>
+  <div class="feedback wrong">The dependent variable is û<sub>t</sub>, and the right-hand side carries X<sub>2t</sub> … X<sub>kt</sub> <em>and</em> û<sub>t−1</sub> … û<sub>t−q</sub>. Squares belong to the White test in Unit 2C, which is a test for a different problem. Dropping the original regressors would let the lagged residuals take credit for variation those regressors explain.</div>
+</div>
+
+<p class="deck-link" data-unit="2D"></p>
+
+<div class="ask-teacher">
+  <strong>The examinable core: the AR(1) derivations, DW ≈ 2(1 − ρ̂) with the decision rules and the four limitations, the Breusch–Godfrey steps with (n − q)R<sup>2</sup>, and the GLS transformation.</strong>
+  This unit completes Unit 2, so it is also the point at which the four assumption failures are worth laying side by side. Bring that to the tutorial, or to office hours — <span data-course="officeHours"></span>.
+</div>
+
+<ol class="sources">
+  <li id="s1">Gujarati, D. &amp; Porter, D. (2008), <em>Basic Econometrics</em>, Chapter 12 — the nature and consequences of autocorrelation, the Durbin–Watson and Breusch–Godfrey tests, and the remedial measures including Cochrane–Orcutt and Prais–Winsten.</li>
+  <li id="s2">Wooldridge, J. (2016), <em>Introductory Econometrics: A Modern Approach</em>, Chapter 12 — serial correlation in time series regressions, testing for it, and HAC inference.</li>
+  <li id="s3">Durbin, J. &amp; Watson, G. S. (1950, 1951), <em>Biometrika</em> 37 and 38 — the origin of the test and of the bounds tables, which exist because the exact distribution of the statistic depends on the regressor matrix. Newey, W. &amp; West, K. (1987), <em>Econometrica</em> 55(3), is the source of the HAC standard errors.</li>
+</ol>
+
+<div class="lesson-nav" data-unit="2D"></div>
+
+</div>
+</body>
+</html>

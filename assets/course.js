@@ -139,7 +139,7 @@ window.COURSE = {
       title: "Autocorrelation",
       blurb: "Errors that remember the last period — Durbin–Watson, Breusch–Godfrey and the remedies.",
       wooldridge: "Ch. 12", gujarati: "Ch. 12", slides: 25,
-      deck: "UNIT 2D - Autocorrelation.pdf", status: "planned" },
+      deck: "UNIT 2D - Autocorrelation.pdf", status: "ready" },
 
     { unit: "3A", part: "3", week: null, slug: "3a-qualitative-variables",
       title: "Qualitative Variables",
