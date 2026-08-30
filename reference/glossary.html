@@ -9,13 +9,13 @@ try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
 z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
 if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
 <title>Glossary · ECON 3049</title>
-<link rel="stylesheet" href="../assets/lesson.css?v=9b6e433d">
-<link rel="stylesheet" href="../assets/course.css?v=9b6e433d">
-<script src="../assets/course.js?v=9b6e433d"></script>
-<script src="../assets/nav.js?v=9b6e433d" defer></script>
-<script src="../assets/export.js?v=9b6e433d" defer></script>
-<script src="../assets/reader.js?v=9b6e433d" defer></script>
-<script src="../assets/glossary.js?v=9b6e433d" defer></script>
+<link rel="stylesheet" href="../assets/lesson.css?v=a210624d">
+<link rel="stylesheet" href="../assets/course.css?v=a210624d">
+<script src="../assets/course.js?v=a210624d"></script>
+<script src="../assets/nav.js?v=a210624d" defer></script>
+<script src="../assets/export.js?v=a210624d" defer></script>
+<script src="../assets/reader.js?v=a210624d" defer></script>
+<script src="../assets/glossary.js?v=a210624d" defer></script>
 </head>
 <body>
 <div class="masthead">
@@ -37,7 +37,7 @@ if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
   Each entry ends with the unit that introduces the term — follow it to see the term in
   context, with the derivation or the figure that goes with it. This page is a reminder of
   what a word means, not a substitute for the unit that explains it. Terms are added as each
-  unit is written; this covers <strong>Units 1A to 2B</strong>.
+  unit is written; this covers <strong>Units 1A to 2C</strong>.
 </div>
 
 <h2 id="notation">Notation</h2>
@@ -69,7 +69,7 @@ before trusting them.</p>
   <a href="#g-i">I</a> <span class="off">J</span> <a href="#g-k">K</a> <a href="#g-l">L</a>
   <a href="#g-m">M</a> <a href="#g-n">N</a> <a href="#g-o">O</a> <a href="#g-p">P</a>
   <span class="off">Q</span> <a href="#g-r">R</a> <a href="#g-s">S</a> <a href="#g-t">T</a>
-  <a href="#g-u">U</a> <a href="#g-v">V</a>
+  <a href="#g-u">U</a> <a href="#g-v">V</a> <a href="#g-w">W</a>
 </p>
 
 <section class="gloss">
@@ -109,6 +109,14 @@ and in the diagnostic tests for heteroscedasticity and autocorrelation.</dd>
 <h2 id="g-b">B</h2>
 
 <dl>
+
+<dt id="breusch-pagan" data-match="Breusch–Pagan test, Breusch-Pagan test, Breusch–Pagan, Breusch-Pagan">Breusch–Pagan test <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></dt>
+<dd>A test for heteroscedasticity of any <em>linear</em> form. Regress the squared OLS residuals
+on the original regressors, take the R<sup>2</sup> of that
+<a href="#auxiliary-regression">auxiliary regression</a>, and compare LM = nR<sup>2</sup> with
+χ<sup>2</sup>(d) in the right tail, d being the number of regressors in the auxiliary. H<sub>0</sub>
+is homoscedasticity. Assumes normally distributed errors. Contrast the <a href="#white-test">White
+test</a>.</dd>
 
 <dt id="blue">BLUE <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
 <dd><strong>B</strong>est <strong>L</strong>inear <strong>U</strong>nbiased
@@ -288,6 +296,13 @@ with q restrictions and k from the unrestricted model. Reject if F exceeds the c
 With one restriction F = t², so the two tests coincide; with more, they can disagree — small
 t-statistics alongside a large F is the signature of multicollinearity.</dd>
 
+<dt id="fgls" data-match="feasible generalised least squares, FGLS, EGLS">FGLS — feasible generalised least squares <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></dt>
+<dd><a href="#wls">Weighted least squares</a> with the weights <em>estimated</em> rather than
+known. Regress ln(û<sup>2</sup>) on the regressors, exponentiate the fitted values to get
+ĥ<sub>i</sub> — the log-and-exponentiate round trip is what keeps the fitted variances positive —
+and re-estimate with those as weights. Not BLUE, because the weights were estimated; consistent
+and asymptotically efficient, so its justification is a large-sample one.</dd>
+
 <dt id="fixed-in-repeated-sampling">Fixed in repeated sampling <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
 <dd>The working form of assumption 2. If the sample could be drawn again, the same set of X
 values would be held and only the disturbances allowed to change. This is what licenses
@@ -330,11 +345,21 @@ model.</dd>
 
 <dl>
 
-<dt id="heteroscedasticity">Heteroscedasticity <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
-<dd>Failure of assumption 5: the variance of the disturbance is not constant, typically
-fanning out as X grows. OLS remains unbiased, but every variance formula — and so every
-standard error and t-statistic — becomes wrong. Unit 2C. Spelled with the
-<strong>sc</strong> throughout this course.</dd>
+<dt id="heteroscedasticity">Heteroscedasticity <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></dt>
+<dd>Failure of assumption 5: var(u<sub>i</sub>) = σ<sub>i</sub><sup>2</sup> rather than a
+constant, typically fanning out as X grows. Named in Unit 1C; derived here. OLS stays unbiased
+and consistent, but loses <a href="#blue">BLUE</a>, and
+var(β̂<sub>2</sub>) = Σx<sub>i</sub><sup>2</sup>σ<sub>i</sub><sup>2</sup>/(Σx<sub>i</sub><sup>2</sup>)<sup>2</sup>
+replaces σ<sup>2</sup>/Σx<sub>i</sub><sup>2</sup> — so every printed standard error is wrong.
+Spelled with the <strong>sc</strong> throughout this course; the k spelling is equally standard
+and common in the literature. See <a href="#pure-heteroscedasticity">pure and impure</a>.</dd>
+
+<dt id="hc-standard-errors" data-match="robust standard error, heteroscedasticity-robust standard error, heteroscedasticity-corrected standard error">Heteroscedasticity-corrected standard errors <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></dt>
+<dd>Standard errors computed without assuming a constant error variance, so that t-tests and
+confidence intervals remain usable. Also called robust, or after Huber and White. They change
+<strong>only the standard errors</strong>: the coefficients are untouched, since OLS was never
+biased, and OLS does not become efficient again. Large-sample justification, so the small-sample
+variants HC1 and HC3 exist.</dd>
 
 <dt id="homoscedasticity">Homoscedasticity <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
 <dd>Assumption 5 holding: var(u<sub>i</sub>) = E(u<sub>i</sub><sup>2</sup>) = σ<sup>2</sup>,
@@ -543,6 +568,15 @@ meaning, so a partial coefficient can only be read alongside the list of what el
 model. Contrast the simple-regression slope, which lets everything correlated with the
 regressor move too.</dd>
 
+<dt id="pure-heteroscedasticity" data-match="pure heteroscedasticity, impure heteroscedasticity">Pure and impure heteroscedasticity <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></dt>
+<dd><em>Pure</em>: the disturbance of a correctly specified equation simply has non-constant
+variance — assumption 5 failing on its own. <em>Impure</em>: caused by
+<a href="#specification-bias">specification error</a>, an omitted variable or the wrong functional
+form, so the real breach is E(u | X) = 0 and the pattern in the residuals is the missing piece of
+the model showing through. The distinction decides the remedy: impure heteroscedasticity is fixed
+by repairing the specification, and applying robust standard errors to it would tidy the
+inference on a still-biased model.</dd>
+
 <dt id="perfect-multicollinearity">Perfect multicollinearity <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></dt>
 <dd>One regressor an exact linear function of the others, as in X<sub>3</sub> = α<sub>1</sub> +
 α<sub>2</sub>X<sub>2</sub>. Assumption 7 fails outright: β̂<sub>2</sub> comes out 0/0 and its
@@ -750,6 +784,28 @@ and their covariances off it. Needed whenever a hypothesis involves more than on
 since se(β̂<sub>2</sub> − β̂<sub>3</sub>) = √[var(β̂<sub>2</sub>) + var(β̂<sub>3</sub>) −
 2cov(β̂<sub>2</sub>, β̂<sub>3</sub>)] — <em>not</em> the difference of the standard errors. In
 EViews: View → Covariance Matrix.</dd>
+
+</dl>
+
+<h2 id="g-w">W</h2>
+
+<dl>
+
+<dt id="wls" data-match="weighted least squares, WLS">Weighted least squares (WLS) <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></dt>
+<dd>A special case of generalised least squares for heteroscedastic errors: divide the whole
+equation through by σ<sub>i</sub>, or by √h(X) when the variance is σ<sup>2</sup>h(X), so the
+transformed disturbance is homoscedastic. Observations with a higher variance receive a smaller
+weight. Usually BLUE when the weights are right — but misspecifying h(X) makes WLS
+<strong>biased and inconsistent</strong>, which is worse than the inefficiency it set out to cure.
+See <a href="#fgls">FGLS</a> for the case where h(X) must be estimated.</dd>
+
+<dt id="white-test" data-match="White test">White test <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></dt>
+<dd>A test for heteroscedasticity of <em>any</em> form, linear or not. The
+<a href="#auxiliary-regression">auxiliary regression</a> of the squared residuals carries each
+regressor, its square, and every cross-product — 2k + k(k − 1)/2 terms — and LM = nR<sup>2</sup>
+is again compared with χ<sup>2</sup>. More powerful than <a href="#breusch-pagan">Breusch–Pagan</a>
+against non-linear h(X), but expensive: with five regressors it must clear 31.41 rather than 11.07.
+A degrees-of-freedom-saving variant regresses û<sup>2</sup> on Ŷ and Ŷ<sup>2</sup> alone.</dd>
 
 </dl>
 

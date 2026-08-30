@@ -2952,6 +2952,619 @@
     draw();
   });
 
+  /* ============================================================
+     Unit 2C — shared helpers
+
+     mulberry32 rather than the MINSTD used in 2B. Unit 2C averages
+     over thousands of samples, and a linear congruential generator's
+     lattice shows up in exactly that setting: consecutive pairs feed
+     Box-Muller, the deviates pick up structure, and the Monte Carlo
+     standard deviation lands a few per cent below the closed form it
+     is supposed to confirm. A figure that quietly misses its own
+     theory by 4% is worse than no figure.
+     ============================================================ */
+  function rng2c(seed) {
+    var a = seed | 0;
+    function u() {
+      a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    }
+    return { u: u, gauss: function () {
+      var p = 1 - u(), q = u();
+      return Math.sqrt(-2 * Math.log(p)) * Math.cos(2 * Math.PI * q);
+    } };
+  }
+
+  /* the X grid every 2C figure regresses on, and its Σx² */
+  function grid2c(n) {
+    var X = [], i, m = 0;
+    for (i = 0; i < n; i++) X.push(10 + 80 * i / (n - 1));
+    for (i = 0; i < n; i++) m += X[i];
+    m /= n;
+    var sxx = 0;
+    for (i = 0; i < n; i++) sxx += (X[i] - m) * (X[i] - m);
+    return { X: X, mean: m, sxx: sxx };
+  }
+
+  /* ============================================================
+     Unit 2C — Figure 1: what the squared residuals look like
+
+     The deck's informal detection method is to plot û² against Ŷ and
+     look. That is only useful if you have seen what the shapes are,
+     so this draws the deck's panels from live data: pick a form for
+     the error variance, then switch between the scatter a reader
+     would actually be handed and the diagnostic plot it produces.
+
+     The deviates are fixed, so changing the form changes the
+     variance and nothing else.
+     ============================================================ */
+  VIZ.register("residual-plot-shapes", function (host) {
+    var N = 70, B1 = 20, B2 = 0.6, S0 = 7;
+    /* seed chosen so the fixed draw is even across the range: with only
+       23 observations per third, an unlucky draw can flatten the arch or
+       manufacture a slope that the variance form did not put there */
+    var G = grid2c(N), R = rng2c(170), E = [], i;
+    for (i = 0; i < N; i++) E.push(R.gauss());
+
+    var FORMS = [
+      { key: "const", text: "constant",      f: function () { return 1; },
+        note: "homoscedastic — assumption 5 holds" },
+      { key: "rise",  text: "rising with X", f: function (x) { return 0.25 + 1.6 * x / 100; },
+        note: "the classic funnel: var(u) rising in X" },
+      { key: "arch",  text: "arch",          f: function (x) { return 0.30 + 1.7 * Math.sin(Math.PI * x / 100); },
+        note: "largest in the middle of the range" },
+      { key: "sharp", text: "sharply rising", f: function (x) { return 0.20 + 2.3 * Math.pow(x / 100, 2); },
+        note: "non-linear in Ŷ — what the White test is built for" }
+    ];
+    var form = FORMS[1], resid = false;
+
+    var c = chart({ w: 640, h: 360, pad: { t: 22, r: 20, b: 46, l: 58 },
+                    xd: [0, 100], yd: [0, 100] });
+    var axg = c.axes("X", "Y");
+    var pts = s("g"), line = s("g");
+    c.plot.appendChild(line);
+    c.plot.appendChild(pts);
+
+    function build() {
+      var Y = [], k;
+      for (k = 0; k < N; k++) Y.push(B1 + B2 * G.X[k] + S0 * form.f(G.X[k]) * E[k]);
+      var my = 0;
+      for (k = 0; k < N; k++) my += Y[k];
+      my /= N;
+      var sxy = 0;
+      for (k = 0; k < N; k++) sxy += (G.X[k] - G.mean) * (Y[k] - my);
+      var b2 = sxy / G.sxx, b1 = my - b2 * G.mean;
+      var fit = [], u2 = [];
+      for (k = 0; k < N; k++) {
+        fit.push(b1 + b2 * G.X[k]);
+        u2.push((Y[k] - b1 - b2 * G.X[k]) * (Y[k] - b1 - b2 * G.X[k]));
+      }
+      return { Y: Y, b1: b1, b2: b2, fit: fit, u2: u2 };
+    }
+
+    function draw() {
+      var m = build(), k;
+      while (pts.firstChild) pts.removeChild(pts.firstChild);
+      while (line.firstChild) line.removeChild(line.firstChild);
+
+      if (!resid) {
+        c.plot.removeChild(pts);
+        var ymax = 100;
+        line.appendChild(s("line", { x1: c.x(0), y1: c.y(m.b1),
+          x2: c.x(100), y2: c.y(m.b1 + m.b2 * 100),
+          stroke: P.accent2, "stroke-width": 2.2 }));
+        for (k = 0; k < N; k++) {
+          pts.appendChild(s("circle", { cx: c.x(G.X[k]),
+            cy: c.y(Math.max(0, Math.min(ymax, m.Y[k]))), r: 3.2,
+            fill: P.accent, opacity: 0.72 }));
+        }
+        c.plot.appendChild(pts);
+        axg.querySelectorAll("text")[0].textContent = "X";
+        axg.querySelectorAll("text")[1].textContent = "Y";
+      } else {
+        c.plot.removeChild(pts);
+        var top = 0;
+        for (k = 0; k < N; k++) if (m.u2[k] > top) top = m.u2[k];
+        top = top || 1;
+        var lo = 1e9, hi = -1e9;
+        for (k = 0; k < N; k++) { if (m.fit[k] < lo) lo = m.fit[k]; if (m.fit[k] > hi) hi = m.fit[k]; }
+        for (k = 0; k < N; k++) {
+          pts.appendChild(s("circle", {
+            cx: c.x(100 * (m.fit[k] - lo) / (hi - lo || 1)),
+            cy: c.y(100 * m.u2[k] / top), r: 3.2,
+            fill: P.accent, opacity: 0.72 }));
+        }
+        c.plot.appendChild(pts);
+        axg.querySelectorAll("text")[0].textContent = "fitted Ŷ";
+        axg.querySelectorAll("text")[1].textContent = "û²";
+      }
+
+      /* how much bigger the squared residuals get across the range */
+      var thirds = [0, 0, 0], counts = [0, 0, 0];
+      for (k = 0; k < N; k++) {
+        var b = k < N / 3 ? 0 : k < 2 * N / 3 ? 1 : 2;
+        thirds[b] += m.u2[k]; counts[b]++;
+      }
+      var m1 = thirds[0] / counts[0], m2 = thirds[1] / counts[1], m3 = thirds[2] / counts[2];
+      var big = Math.max(m1, m2, m3), small = Math.min(m1, m2, m3);
+
+      left.textContent = "β̂₂ = " + m.b2.toFixed(3) + "    " + form.note;
+      /* all three thirds, not just the ends: the arch is flat end-to-end and
+         only shows up against its own middle */
+      right.textContent = "mean û² by third of X — " + m1.toFixed(0)
+                        + " · " + m2.toFixed(0) + " · " + m3.toFixed(0)
+                        + "    largest/smallest " + (big / (small || 1)).toFixed(1) + "×";
+      c.svg.setAttribute("aria-label", resid
+        ? "Squared residuals plotted against the fitted values, showing a "
+          + form.text + " pattern."
+        : "Scatter of Y on X with the fitted line, error variance " + form.text + ".");
+    }
+
+    var controls = h("div", "viz-controls");
+    var pick = h("label", null, "var(u):");
+    FORMS.forEach(function (o) {
+      var b = h("button", null, o.text);
+      b.addEventListener("click", function () {
+        form = o;
+        Array.prototype.forEach.call(pick.querySelectorAll("button"), function (n) {
+          n.style.borderColor = "";
+        });
+        b.style.borderColor = P.accent;
+        draw();
+      });
+      if (o === form) b.style.borderColor = P.accent;
+      pick.appendChild(b);
+    });
+    controls.appendChild(pick);
+
+    var tog = h("button", null, "Show û² against Ŷ");
+    tog.addEventListener("click", function () {
+      resid = !resid;
+      tog.textContent = resid ? "Back to the data" : "Show û² against Ŷ";
+      draw();
+    });
+    controls.appendChild(tog);
+
+    var left = h("span", "viz-readout");
+    var right = h("span", "viz-readout");
+    controls.appendChild(left);
+    controls.appendChild(right);
+
+    host.appendChild(c.svg);
+    host.appendChild(controls);
+    host.appendChild(h("p", "viz-caption",
+      "The same seventy disturbances every time — only the variance attached to them changes. "
+      + "In the data view the funnel is easy to miss, especially with a strong slope carrying "
+      + "the eye. Switch to û² against Ŷ and the shape is unmistakable, which is why the "
+      + "diagnostic is worth plotting rather than squinting at the scatter. Note the last two "
+      + "forms: neither is a straight line in Ŷ, so the Breusch–Pagan auxiliary regression, "
+      + "which is linear, is looking for something that is not quite there. That is the gap "
+      + "the White test exists to close."));
+
+    draw();
+  });
+
+  /* ============================================================
+     Unit 2C — Figure 2: Breusch-Pagan against White
+
+     Both tests are nR² from an auxiliary regression, and both are
+     read against χ² in the right tail. What differs is what goes on
+     the right-hand side and therefore how many degrees of freedom
+     are spent — which is exactly the trade the deck flags as White's
+     weakness. Tracing both against the strength of the
+     heteroscedasticity shows the trade being made.
+
+     Critical values are the printed ones: χ²(1) = 3.84, χ²(2) = 5.99.
+     ============================================================ */
+  VIZ.register("bp-vs-white", function (host) {
+    var N = 60, B1 = 20, B2 = 0.6, S0 = 9, HI = 2.5;
+    var G = grid2c(N), R = rng2c(4242), E = [], i;
+    for (i = 0; i < N; i++) E.push(R.gauss());
+    var CHI1 = 3.84, CHI2 = 5.99;
+    var lam = 1.2;
+
+    /* OLS of dep on [1, ...cols] by Gauss-Jordan; returns R² only */
+    function auxR2(dep, cols) {
+      var k = cols.length + 1, X = [], p, j, q;
+      for (p = 0; p < N; p++) {
+        var row = [1];
+        for (j = 0; j < cols.length; j++) row.push(cols[j][p]);
+        X.push(row);
+      }
+      var A = [];
+      for (i = 0; i < k; i++) {
+        A.push(new Array(k + 1).fill(0));
+        for (j = 0; j < k; j++) for (p = 0; p < N; p++) A[i][j] += X[p][i] * X[p][j];
+        for (p = 0; p < N; p++) A[i][k] += X[p][i] * dep[p];
+      }
+      for (i = 0; i < k; i++) {
+        var piv = i;
+        for (q = i + 1; q < k; q++) if (Math.abs(A[q][i]) > Math.abs(A[piv][i])) piv = q;
+        if (Math.abs(A[piv][i]) < 1e-10) return null;
+        var t = A[i]; A[i] = A[piv]; A[piv] = t;
+        var d = A[i][i];
+        for (j = i; j <= k; j++) A[i][j] /= d;
+        for (q = 0; q < k; q++) {
+          if (q === i) continue;
+          var f = A[q][i];
+          for (j = i; j <= k; j++) A[q][j] -= f * A[i][j];
+        }
+      }
+      var beta = [];
+      for (i = 0; i < k; i++) beta.push(A[i][k]);
+      var my = 0;
+      for (p = 0; p < N; p++) my += dep[p];
+      my /= N;
+      var rss = 0, tss = 0;
+      for (p = 0; p < N; p++) {
+        var fit = 0;
+        for (j = 0; j < k; j++) fit += beta[j] * X[p][j];
+        rss += (dep[p] - fit) * (dep[p] - fit);
+        tss += (dep[p] - my) * (dep[p] - my);
+      }
+      return tss <= 0 ? 0 : 1 - rss / tss;
+    }
+
+    function run(L) {
+      var Y = [], k, my = 0;
+      for (k = 0; k < N; k++) {
+        Y.push(B1 + B2 * G.X[k] + S0 * Math.pow(G.X[k] / G.mean, L) * E[k]);
+        my += Y[k];
+      }
+      my /= N;
+      var sxy = 0;
+      for (k = 0; k < N; k++) sxy += (G.X[k] - G.mean) * (Y[k] - my);
+      var b2 = sxy / G.sxx, b1 = my - b2 * G.mean, u2 = [];
+      for (k = 0; k < N; k++) {
+        var e = Y[k] - b1 - b2 * G.X[k];
+        u2.push(e * e);
+      }
+      var sq = G.X.map(function (x) { return x * x; });
+      var rb = auxR2(u2, [G.X]), rw = auxR2(u2, [G.X, sq]);
+      if (rb == null || rw == null) return null;
+      return { bp: N * rb, white: N * rw, r2b: rb, r2w: rw };
+    }
+
+    var c = chart({ w: 640, h: 350, pad: { t: 30, r: 20, b: 46, l: 50 },
+                    xd: [0, HI], yd: [0, 26] });
+    c.axes("λ — how fast var(u) grows with X", "LM = nR²");
+
+    [[CHI1, "χ²(1) = 3.84 — Breusch–Pagan", P.accent],
+     [CHI2, "χ²(2) = 5.99 — White", P.accent2]].forEach(function (cv) {
+      c.plot.appendChild(s("line", { x1: c.x(0), y1: c.y(cv[0]), x2: c.x(HI), y2: c.y(cv[0]),
+                                     stroke: cv[2], "stroke-width": 1,
+                                     "stroke-dasharray": "4 3", opacity: 0.75 }));
+    });
+    var cvl = s("text", { x: c.x(HI) - 6, y: c.y(CHI2) - 7, "font-size": 11,
+                          fill: P.inkSoft, "text-anchor": "end" });
+    cvl.textContent = "5% critical values: 3.84 and 5.99";
+    c.plot.appendChild(cvl);
+
+    var series = [{ key: "bp", colour: P.accent, label: "Breusch–Pagan  (û² on X)" },
+                  { key: "white", colour: P.accent2, label: "White  (û² on X and X²)" }];
+    var grid = [], k;
+    for (k = 0; k <= 50; k++) {
+      var L = HI * k / 50, r = run(L);
+      if (r) grid.push({ lam: L, r: r });
+    }
+    series.forEach(function (sr, n) {
+      var dpath = "";
+      grid.forEach(function (g, m) {
+        dpath += (m ? " L " : "M ") + c.x(g.lam) + " " + c.y(Math.min(g.r[sr.key], 26));
+      });
+      c.plot.appendChild(s("path", { d: dpath, fill: "none",
+                                     stroke: sr.colour, "stroke-width": 2.3 }));
+      sr.dot = s("circle", { r: 5, fill: sr.colour, stroke: P.paper, "stroke-width": 1.5 });
+      c.plot.appendChild(sr.dot);
+      var t = s("text", { x: c.x(n ? 1.05 : 0), y: 18, "font-size": 11.5, fill: sr.colour });
+      t.textContent = sr.label;
+      c.plot.appendChild(t);
+    });
+
+    function draw() {
+      var r = run(lam);
+      if (!r) return;
+      series.forEach(function (sr) {
+        sr.dot.setAttribute("cx", c.x(lam));
+        sr.dot.setAttribute("cy", c.y(Math.min(r[sr.key], 26)));
+      });
+      left.textContent = "λ = " + lam.toFixed(2)
+                       + "    BP: R² = " + r.r2b.toFixed(3) + ", nR² = " + r.bp.toFixed(2)
+                       + " vs 3.84 — " + (r.bp > CHI1 ? "reject" : "do not reject");
+      right.textContent = "White: R² = " + r.r2w.toFixed(3) + ", nR² = " + r.white.toFixed(2)
+                        + " vs 5.99 — " + (r.white > CHI2 ? "reject" : "do not reject");
+      c.svg.setAttribute("aria-label",
+        "Two LM statistics rising with the strength of the heteroscedasticity, both crossing "
+        + "their critical values; at lambda " + lam.toFixed(2) + " they are "
+        + r.bp.toFixed(1) + " and " + r.white.toFixed(1) + ".");
+    }
+
+    var controls = h("div", "viz-controls");
+    var lab = h("label", null, "λ — strength of the heteroscedasticity");
+    var rn = document.createElement("input");
+    rn.type = "range"; rn.min = "0"; rn.max = "2.5"; rn.step = "0.05"; rn.value = "1.2";
+    rn.addEventListener("input", function () { lam = +rn.value; draw(); });
+    lab.appendChild(rn);
+    controls.appendChild(lab);
+    var left = h("span", "viz-readout");
+    var right = h("span", "viz-readout");
+    controls.appendChild(left);
+    controls.appendChild(right);
+
+    host.appendChild(c.svg);
+    host.appendChild(controls);
+    host.appendChild(h("p", "viz-caption",
+      "One sample of sixty, held fixed, with only the severity of the heteroscedasticity "
+      + "moving. At λ = 0 the errors are homoscedastic and neither statistic goes anywhere "
+      + "near its critical value — which is what a test that did not fire on well-behaved "
+      + "data ought to do. Both then rise and cross. Watch the right-hand end: the White "
+      + "statistic keeps climbing while Breusch–Pagan flattens, because the variance here is "
+      + "growing faster than linearly and only White's auxiliary regression has the squared "
+      + "term needed to see it. That extra power is bought with a degree of freedom, which is "
+      + "why White's bar sits at 5.99 rather than 3.84 — and with three or four regressors "
+      + "rather than one, the bar rises a great deal further."));
+
+    draw();
+  });
+
+  /* ============================================================
+     Unit 2C — Figure 3: why the standard error cannot be trusted
+
+     The consequence students most often state loosely — "the
+     standard errors are wrong" — made exact. Three quantities, all
+     computed rather than asserted:
+
+       the Monte Carlo spread of β̂2 over many samples  (the truth)
+       the conventional OLS standard error              (what is printed)
+       the White HC0 robust standard error              (the remedy)
+
+     The Monte Carlo spread also confirms the deck's own variance
+     formula Σxᵢ²σᵢ² / (Σxᵢ²)², which is drawn as the theoretical
+     line the simulation has to land on.
+     ============================================================ */
+  VIZ.register("robust-se", function (host) {
+    var N = 60, B1 = 20, B2 = 0.6, S0 = 9, RUNS = 600, HI = 2.5;
+    var G = grid2c(N);
+    var lam = 1.6;
+
+    function sigma(x, L) { return S0 * Math.pow(x / G.mean, L); }
+
+    /* the deck's formula for var(β̂2) when the variance is not constant */
+    function trueSE(L) {
+      var num = 0, k;
+      for (k = 0; k < N; k++) {
+        var sd = sigma(G.X[k], L);
+        num += (G.X[k] - G.mean) * (G.X[k] - G.mean) * sd * sd;
+      }
+      return Math.sqrt(num / (G.sxx * G.sxx));
+    }
+
+    function study(L) {
+      var R = rng2c(20250830);              /* common random numbers across λ */
+      var sum = 0, sq = 0, sa = 0, sr = 0, r, k;
+      for (r = 0; r < RUNS; r++) {
+        var Y = [], my = 0;
+        for (k = 0; k < N; k++) {
+          Y.push(B1 + B2 * G.X[k] + sigma(G.X[k], L) * R.gauss());
+          my += Y[k];
+        }
+        my /= N;
+        var sxy = 0;
+        for (k = 0; k < N; k++) sxy += (G.X[k] - G.mean) * (Y[k] - my);
+        var b2 = sxy / G.sxx, b1 = my - b2 * G.mean, rss = 0, meat = 0;
+        for (k = 0; k < N; k++) {
+          var e = Y[k] - b1 - b2 * G.X[k];
+          rss += e * e;
+          meat += (G.X[k] - G.mean) * (G.X[k] - G.mean) * e * e;
+        }
+        sum += b2; sq += b2 * b2;
+        sa += Math.sqrt((rss / (N - 2)) / G.sxx);       /* conventional */
+        sr += Math.sqrt(meat / (G.sxx * G.sxx));        /* White HC0 */
+      }
+      var mean = sum / RUNS;
+      var v = (sq - RUNS * mean * mean) / (RUNS - 1);
+      return { mc: Math.sqrt(Math.max(v, 0)), ols: sa / RUNS, rob: sr / RUNS,
+               theory: trueSE(L), mean: mean };
+    }
+
+    var c = chart({ w: 640, h: 350, pad: { t: 30, r: 20, b: 46, l: 58 },
+                    xd: [0, HI], yd: [0, 0.14] });
+    c.axes("λ — how fast var(u) grows with X", "standard error of β̂₂");
+
+    var grid = [], k;
+    for (k = 0; k <= 25; k++) {
+      var L = HI * k / 25;
+      grid.push({ lam: L, r: study(L) });
+    }
+    var series = [
+      { key: "theory", colour: P.ink,     label: "true SE, from Σxᵢ²σᵢ²/(Σxᵢ²)²", dash: "5 4" },
+      { key: "mc",     colour: P.good,    label: "spread of β̂₂ over 600 samples", dash: null },
+      { key: "ols",    colour: P.accent,  label: "conventional OLS SE — what is printed", dash: null },
+      { key: "rob",    colour: P.accent2, label: "robust (White HC0) SE", dash: null }
+    ];
+    series.forEach(function (sr, n) {
+      var dpath = "";
+      grid.forEach(function (g, m) {
+        dpath += (m ? " L " : "M ") + c.x(g.lam) + " " + c.y(Math.min(g.r[sr.key], 0.14));
+      });
+      c.plot.appendChild(s("path", { d: dpath, fill: "none", stroke: sr.colour,
+                                     "stroke-width": sr.dash ? 2 : 2.3,
+                                     "stroke-dasharray": sr.dash }));
+      sr.dot = s("circle", { r: 4.5, fill: sr.colour, stroke: P.paper, "stroke-width": 1.4 });
+      c.plot.appendChild(sr.dot);
+      var t = s("text", { x: c.x(n % 2 ? 1.25 : 0.02), y: 15 + Math.floor(n / 2) * 14,
+                          "font-size": 11, fill: sr.colour });
+      t.textContent = sr.label;
+      c.plot.appendChild(t);
+    });
+
+    function draw() {
+      var r = study(lam);
+      series.forEach(function (sr) {
+        sr.dot.setAttribute("cx", c.x(lam));
+        sr.dot.setAttribute("cy", c.y(Math.min(r[sr.key], 0.14)));
+      });
+      left.textContent = "λ = " + lam.toFixed(1)
+                       + "    true SE " + r.theory.toFixed(4)
+                       + "    simulated " + r.mc.toFixed(4)
+                       + "    mean β̂₂ = " + r.mean.toFixed(3);
+      right.textContent = "conventional " + r.ols.toFixed(4)
+                        + " (" + (100 * r.ols / r.theory).toFixed(0) + "% of the truth)"
+                        + "    robust " + r.rob.toFixed(4)
+                        + " (" + (100 * r.rob / r.theory).toFixed(0) + "%)";
+      c.svg.setAttribute("aria-label",
+        "Four standard-error curves: the conventional one falls away from the true value as "
+        + "the heteroscedasticity strengthens while the robust one follows it.");
+    }
+
+    var controls = h("div", "viz-controls");
+    var lab = h("label", null, "λ — strength of the heteroscedasticity");
+    var rn = document.createElement("input");
+    rn.type = "range"; rn.min = "0"; rn.max = "2.5"; rn.step = "0.1"; rn.value = "1.6";
+    rn.addEventListener("input", function () { lam = +rn.value; draw(); });
+    lab.appendChild(rn);
+    controls.appendChild(lab);
+    var left = h("span", "viz-readout");
+    var right = h("span", "viz-readout");
+    controls.appendChild(left);
+    controls.appendChild(right);
+
+    host.appendChild(c.svg);
+    host.appendChild(controls);
+    host.appendChild(h("p", "viz-caption",
+      "Six hundred samples at each setting. The green simulated spread sits on the dashed "
+      + "theoretical line throughout, which is the deck's variance formula confirmed rather "
+      + "than quoted. At λ = 0 all four agree and there is nothing to fix. As the variance "
+      + "fans out, the conventional standard error — the one the regression output prints — "
+      + "peels away below the truth, reaching about three-quarters of it: t-ratios inflated "
+      + "by a third, and a 5% test rejecting far more often than 5% of the time. The robust "
+      + "standard error tracks the truth instead, and note that β̂₂ itself stays on 0.600 the "
+      + "whole way. Nothing is biased here except the reported precision. Robust does run a "
+      + "few per cent low at n = 60 — HC0 is a large-sample correction, which is why software "
+      + "offers the small-sample variants HC1 and HC3."));
+
+    draw();
+  });
+
+  /* ============================================================
+     Unit 2C — Figure 4: logging the data
+
+     The deck's first remedy, and the one that connects back to 2A
+     Part 2. When the relationship is multiplicative, the levels
+     scatter fans out because the spread is proportional to the
+     level; taking logs makes the error additive and the fan
+     disappears. Constructed data, in the shape of the CO2-GNI
+     example the unit works through, with the Breusch-Pagan
+     statistic reported on both sides.
+     ============================================================ */
+  VIZ.register("log-fixes-heteroscedasticity", function (host) {
+    var N = 120, A1 = -1.10, A2 = 1.01, SU = 0.55, logged = false;
+    var R = rng2c(777), LX = [], LY = [], X = [], Y = [], i;
+    for (i = 0; i < N; i++) {
+      var L = -1.5 + 10.5 * i / (N - 1);
+      var ly = A1 + A2 * L + SU * R.gauss();
+      LX.push(L); LY.push(ly);
+      X.push(Math.exp(L)); Y.push(Math.exp(ly));
+    }
+
+    /* simple regression plus the Breusch-Pagan auxiliary on one regressor */
+    function fit(xv, yv) {
+      var n = xv.length, mx = 0, my = 0, k;
+      for (k = 0; k < n; k++) { mx += xv[k]; my += yv[k]; }
+      mx /= n; my /= n;
+      var sxy = 0, sxx = 0;
+      for (k = 0; k < n; k++) { sxy += (xv[k] - mx) * (yv[k] - my); sxx += (xv[k] - mx) * (xv[k] - mx); }
+      var b = sxy / sxx, a = my - b * mx, u2 = [], mu = 0;
+      for (k = 0; k < n; k++) {
+        var e = yv[k] - a - b * xv[k];
+        u2.push(e * e); mu += e * e;
+      }
+      mu /= n;
+      var s1 = 0;
+      for (k = 0; k < n; k++) s1 += (xv[k] - mx) * (u2[k] - mu);
+      var bb = s1 / sxx, aa = mu - bb * mx, rss = 0, tss = 0;
+      for (k = 0; k < n; k++) {
+        rss += (u2[k] - aa - bb * xv[k]) * (u2[k] - aa - bb * xv[k]);
+        tss += (u2[k] - mu) * (u2[k] - mu);
+      }
+      var r2 = tss <= 0 ? 0 : 1 - rss / tss;
+      return { a: a, b: b, r2: r2, lm: n * r2 };
+    }
+
+    var c = chart({ w: 640, h: 360, pad: { t: 22, r: 20, b: 46, l: 60 },
+                    xd: [0, 100], yd: [0, 100] });
+    var axg = c.axes("GNI", "CO₂");
+    var pts = s("g"), ln = s("g");
+    c.plot.appendChild(ln);
+    c.plot.appendChild(pts);
+
+    function draw() {
+      var xv = logged ? LX : X, yv = logged ? LY : Y;
+      var m = fit(xv, yv), k;
+      while (pts.firstChild) pts.removeChild(pts.firstChild);
+      while (ln.firstChild) ln.removeChild(ln.firstChild);
+
+      var xlo = 1e18, xhi = -1e18, ylo = 1e18, yhi = -1e18;
+      for (k = 0; k < N; k++) {
+        if (xv[k] < xlo) xlo = xv[k];
+        if (xv[k] > xhi) xhi = xv[k];
+        if (yv[k] < ylo) ylo = yv[k];
+        if (yv[k] > yhi) yhi = yv[k];
+      }
+      var px = function (v) { return 100 * (v - xlo) / (xhi - xlo || 1); };
+      var py = function (v) { return 100 * (v - ylo) / (yhi - ylo || 1); };
+
+      ln.appendChild(s("line", { x1: c.x(px(xlo)), y1: c.y(py(m.a + m.b * xlo)),
+                                 x2: c.x(px(xhi)), y2: c.y(py(m.a + m.b * xhi)),
+                                 stroke: P.accent2, "stroke-width": 2.2 }));
+      for (k = 0; k < N; k++) {
+        pts.appendChild(s("circle", { cx: c.x(px(xv[k])), cy: c.y(py(yv[k])),
+                                      r: 3, fill: P.accent, opacity: 0.68 }));
+      }
+      axg.querySelectorAll("text")[0].textContent = logged ? "ln(GNI)" : "GNI";
+      axg.querySelectorAll("text")[1].textContent = logged ? "ln(CO₂)" : "CO₂";
+
+      left.textContent = logged
+        ? "ln(CO₂) = " + m.a.toFixed(2) + " + " + m.b.toFixed(3) + " ln(GNI)"
+        : "CO₂ = " + m.a.toFixed(1) + " + " + m.b.toFixed(3) + " GNI";
+      right.textContent = "Breusch–Pagan: R² = " + m.r2.toFixed(3)
+                        + ", nR² = " + m.lm.toFixed(2) + " vs 3.84 — "
+                        + (m.lm > 3.84 ? "reject: heteroscedastic" : "do not reject");
+      c.svg.setAttribute("aria-label", logged
+        ? "Logged scatter with even spread about the fitted line."
+        : "Levels scatter fanning out sharply about the fitted line.");
+    }
+
+    var controls = h("div", "viz-controls");
+    var tog = h("button", null, "Take logs of both variables");
+    tog.addEventListener("click", function () {
+      logged = !logged;
+      tog.textContent = logged ? "Back to levels" : "Take logs of both variables";
+      draw();
+    });
+    controls.appendChild(tog);
+    var left = h("span", "viz-readout");
+    var right = h("span", "viz-readout");
+    controls.appendChild(left);
+    controls.appendChild(right);
+
+    host.appendChild(c.svg);
+    host.appendChild(controls);
+    host.appendChild(h("p", "viz-caption",
+      "Constructed data, built to the shape of the CO₂ and GNI example worked through in "
+      + "section 8 — not that dataset itself. In levels the scatter fans out violently and "
+      + "Breusch–Pagan rejects without hesitation. Press the button: the same observations, "
+      + "logged, sit in an even band about the line and the test finds nothing at all. No "
+      + "observation was dropped and nothing was reweighted. The heteroscedasticity was "
+      + "never really about the errors — it was the model being written in the wrong units, "
+      + "which makes this a case of the impure kind from section 3, and the reason the first "
+      + "thing to check is always the specification."));
+
+    draw();
+  });
+
   /* ---------- boot ---------- */
   function boot() {
     palette();

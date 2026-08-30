@@ -133,7 +133,7 @@ window.COURSE = {
       title: "Heteroscedasticity",
       blurb: "Non-constant error variance: detecting it, and the four ways to live with it.",
       wooldridge: "Ch. 8", gujarati: "Ch. 11", slides: 32,
-      deck: "UNIT 2C - Heteroscedasticity.pdf", status: "planned" },
+      deck: "UNIT 2C - Heteroscedasticity.pdf", status: "ready" },
 
     { unit: "2D", part: "2", week: null, slug: "2d-autocorrelation",
       title: "Autocorrelation",

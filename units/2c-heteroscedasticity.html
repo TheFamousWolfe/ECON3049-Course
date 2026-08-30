@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>/* Apply saved reader preferences before first paint, so a reader who
+chose dark does not get a white flash on every navigation. */
+try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
+z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
+if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
+<title>Unit 2C — Heteroscedasticity · ECON 3049</title>
+<link rel="stylesheet" href="../assets/lesson.css?v=a210624d">
+<link rel="stylesheet" href="../assets/course.css?v=a210624d">
+<script src="../assets/course.js?v=a210624d"></script>
+<script src="../assets/nav.js?v=a210624d" defer></script>
+<script src="../assets/export.js?v=a210624d" defer></script>
+<script src="../assets/reader.js?v=a210624d" defer></script>
+<script src="../assets/quiz.js?v=a210624d" defer></script>
+<script src="../assets/viz.js?v=a210624d" defer></script>
+</head>
+<body>
+<div class="masthead" data-unit="2C"></div>
+<div class="wrap">
+
+<div class="reader-bar"></div>
+
+<h1>Heteroscedasticity</h1>
+<p class="subtitle">Non-constant error variance: detecting it, and the four ways to live with it.</p>
+<p class="unit-meta" data-unit="2C"></p>
+
+<div class="box key">
+  <span class="box-label">By the end of this unit you should be able to</span>
+  <ul style="margin:0.3rem 0 0; padding-left:1.1rem;">
+    <li>state the assumption that heteroscedasticity violates, and write the variance of β̂<sub>2</sub> when it fails;</li>
+    <li>distinguish pure from impure heteroscedasticity, and say why the remedies differ;</li>
+    <li>list the consequences for OLS, and say which properties survive;</li>
+    <li>read a plot of squared residuals against fitted values;</li>
+    <li>carry out the Breusch–Pagan and White tests, and state what each can and cannot detect;</li>
+    <li>count the degrees of freedom a White test spends, and say why that matters;</li>
+    <li>choose among logging, robust standard errors, weighted least squares and FGLS.</li>
+  </ul>
+</div>
+
+<div class="box refresh">
+  <span class="box-label">Where this sits</span>
+  Unit 2B was a problem with the <em>data</em>: the sample could not separate two effects, though
+  every assumption held. This unit is a genuine assumption failure. Assumption 5 breaks, and with
+  it goes the Gauss–Markov theorem and every standard error the regression prints. The
+  coefficients themselves are the one thing that survives untouched.
+</div>
+
+<div class="box def">
+  <span class="box-label">On the spelling</span>
+  The word is written with either a <em>c</em> or a <em>k</em> in the middle, and both are
+  standard. The lecture slides use the k; the course outline and this site use the c
+  throughout. Nothing turns on it, but be prepared to meet both in the textbooks — Gujarati and
+  Porter use the c, Wooldridge the k.
+</div>
+
+<h2>1 · The assumption, and what breaks</h2>
+
+<p>One of the classical assumptions is <strong><a class="gt" href="../reference/glossary.html#homoscedasticity">homoscedasticity</a></strong>: each <a class="gt" href="../reference/glossary.html#disturbance">disturbance</a>,
+conditional on the chosen values of the explanatory variables, has the <em>same</em>
+variance.</p>
+
+<p class="math">var(u<sub>i</sub>) = σ<sup>2</sup> = a constant &nbsp; (i = 1, 2, …, N)</p>
+
+<p>In reality this assumption is often violated. When it fails, the variance of the error term
+is not constant but depends on the observation:</p>
+
+<p class="math">var(u<sub>i</sub>) = σ<sub>i</sub><sup>2</sup> &nbsp; (i = 1, 2, …, N)</p>
+
+<p>The subscript on σ<sup>2</sup> is the entire content of the problem. It is
+<strong>more prevalent in models using <a class="gt" href="../reference/glossary.html#cross-sectional">cross-sectional data</a></strong>, though it can occur in <a class="gt" href="../reference/glossary.html#time-series">time
+series</a> models as well, and it often turns up in data sets where there is a large disparity
+between the largest and smallest observed values of the <a class="gt" href="../reference/glossary.html#dependent-variable">dependent variable</a>. A regression across
+countries, or across firms, or across households will have this feature almost by construction:
+the units are not of comparable size, so there is no reason to expect the unexplained part of Y
+to be of comparable size either.</p>
+
+<h2>2 · Pure and impure heteroscedasticity</h2>
+
+<p><a class="gt" href="../reference/glossary.html#heteroscedasticity">Heteroscedasticity</a> divides into two versions, and the distinction determines the remedy.</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">Pure</span><span>
+    Caused by the error term of a <strong>correctly specified</strong> equation. The model is
+    right; the disturbance simply does not have constant variance. This is assumption 5 failing
+    on its own.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">Impure</span><span>
+    Caused by <strong>specification error</strong> — a missing variable, or the wrong functional
+    form. Here the non-constant variance is a symptom rather than the disease: what has actually
+    happened is a violation of E(u | X) = 0, and the pattern in the residuals is the omitted
+    piece of the model showing through.
+  </span></div>
+</div>
+
+<div class="box key">
+  <span class="box-label">Why the distinction earns its place</span>
+  With impure heteroscedasticity the correct remedy is to <strong>find the omitted variable and
+  include it, or change the functional form</strong>. Reaching instead for robust standard errors
+  or weighted least squares would leave a biased model with tidier-looking standard errors, which
+  is worse than the problem you started with — you would have corrected the symptom and preserved
+  the disease. This is why every list of remedies in section 9 begins by re-examining the
+  specification.
+</div>
+
+<h2>3 · Why pure heteroscedasticity arises</h2>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">1</span><span>
+    <strong>Error-learning models.</strong> As people learn, their errors of behaviour become
+    smaller over time, or the number of errors becomes more consistent.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">2</span><span>
+    <strong>Discretionary income.</strong> As incomes grow, people have more scope for choice
+    about the disposition of their income — so consumption at high incomes is more variable
+    around its mean than consumption at low incomes, where most of it is committed.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">3</span><span>
+    <strong>Improving data collection.</strong> As data-collecting techniques improve,
+    σ<sub>i</sub><sup>2</sup> is likely to decrease.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">4</span><span>
+    <strong>Outliers.</strong> An outlying observation is one much different, either very small
+    or very large, in relation to the rest of the sample. A few of them are enough to make the
+    variance look as though it depends on where in the sample you are.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">5</span><span>
+    <strong>Skewness in a regressor.</strong> Skewness in the distribution of one or more
+    regressors included in the model — income, wealth and education are the standard examples,
+    and all three are common right-hand-side variables.
+  </span></div>
+</div>
+
+<h2>4 · What it does to OLS</h2>
+
+<p>Suppose we let E(u<sub>i</sub><sup>2</sup>) = σ<sub>i</sub><sup>2</sup> but retain every other
+assumption of the classical model. Revert to the two-variable model:</p>
+
+<p class="math">Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> + u<sub>i</sub></p>
+
+<p>Applying the usual formula, the <a class="gt" href="../reference/glossary.html#ols">OLS</a> <a class="gt" href="../reference/glossary.html#estimator">estimator</a> of β<sub>2</sub> is</p>
+
+<p class="math">β̂<sub>2</sub> = Σx<sub>i</sub>y<sub>i</sub> / Σx<sub>i</sub><sup>2</sup>
+= [ nΣX<sub>i</sub>Y<sub>i</sub> − ΣX<sub>i</sub>ΣY<sub>i</sub> ] / [ nΣX<sub>i</sub><sup>2</sup> − (ΣX<sub>i</sub>)<sup>2</sup> ]</p>
+
+<p>Nothing in that expression mentions σ<sup>2</sup>. <strong>The OLS estimators are the same
+under <a class="gt" href="../reference/glossary.html#pure-heteroscedasticity">pure heteroscedasticity</a></strong> — the arithmetic of fitting the line does not know or care
+whether the variance is constant. What changes is the variance of that estimator:</p>
+
+<p class="math">var(β̂<sub>2</sub>) = Σx<sub>i</sub><sup>2</sup>σ<sub>i</sub><sup>2</sup>
+/ ( Σx<sub>i</sub><sup>2</sup> )<sup>2</sup></p>
+
+<p>which is obviously different from the usual formula obtained under homoscedasticity:</p>
+
+<p class="math">var(β̂<sub>2</sub>) = σ<sup>2</sup> / Σx<sub>i</sub><sup>2</sup></p>
+
+<div class="box def">
+  <span class="box-label">The one contains the other</span>
+  Set every σ<sub>i</sub><sup>2</sup> equal to a common σ<sup>2</sup> and it comes out of the
+  sum: Σx<sub>i</sub><sup>2</sup>σ<sup>2</sup> / (Σx<sub>i</sub><sup>2</sup>)<sup>2</sup> =
+  σ<sup>2</sup>Σx<sub>i</sub><sup>2</sup> / (Σx<sub>i</sub><sup>2</sup>)<sup>2</sup> =
+  σ<sup>2</sup> / Σx<sub>i</sub><sup>2</sup>. The familiar formula is the special case, which is
+  worth seeing: the software that printed your standard error assumed the special case whether or
+  not it holds.
+</div>
+
+<h3>The three consequences</h3>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span>
+    <strong>No bias and no inconsistency.</strong> The coefficient estimates are unaffected.
+    Note, though, that a lack of bias does not guarantee accuracy — an unbiased estimate drawn
+    from a wide distribution can still be a long way from the truth.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span>
+    <strong>OLS becomes inefficient.</strong> It no longer has the minimum variance of all the
+    linear unbiased estimators, because the Gauss–Markov theorem needs assumption 5 and no longer
+    has it. Some other linear unbiased estimator — weighted least squares, in section 9 — can now
+    beat it.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">iii</span><span>
+    <strong>The estimated standard errors are biased.</strong> The regression reports
+    √(σ̂<sup>2</sup>/Σx<sub>i</sub><sup>2</sup>) when the truth is the other formula, so
+    <strong>hypothesis tests and confidence intervals are unreliable</strong> — t-ratios,
+    F-tests and interval estimates all inherit the error.
+  </span></div>
+</div>
+
+<div class="box warn">
+  <span class="box-label">Which way is the bias?</span>
+  There is no general answer, and an examination answer that asserts one is wrong. The
+  conventional formula understates the truth when σ<sub>i</sub><sup>2</sup> is
+  <em>positively</em> associated with x<sub>i</sub><sup>2</sup> — that is, when the noisiest
+  observations are also the ones furthest from X̄, which is the common case and the more
+  dangerous one, since it makes t-ratios too large and tests reject too often. Where the
+  association runs the other way the conventional standard error is too conservative instead.
+</div>
+
+<div class="viz" data-viz="robust-se">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It compares four standard errors of β̂<sub>2</sub>
+    as the heteroscedasticity strengthens: the theoretical value from the formula above, the
+    spread actually observed across 600 simulated samples, the conventional OLS standard error,
+    and the robust standard error introduced in section 9.
+  </p>
+</div>
+
+<h2>5 · The forms it takes</h2>
+
+<p>Heteroscedasticity can take many complex forms, and the reasons for it vary. Most often the
+variance of the error term is related to one or more of the <a class="gt" href="../reference/glossary.html#independent-variable">independent variables</a>. For a typical
+regression equation</p>
+
+<p class="math">Y = β<sub>1</sub> + β<sub>2</sub>X<sub>2</sub> + ⋯ + β<sub>k</sub>X<sub>k</sub> + u</p>
+
+<p>we can write the conditional variance as</p>
+
+<p class="math">var(u | <strong>X</strong>) = σ<sub>i</sub><sup>2</sup> = σ<sup>2</sup>h(X<sub>i</sub>) = σ<sup>2</sup>Z<sub>i</sub></p>
+
+<p>where Z<sub>i</sub> = h(X<sub>i</sub>) is some function of the explanatory variables that
+determines the heteroscedasticity. Two conditions and one warning attach to this.</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span>
+    <strong>h(X) must be positive</strong>, since a variance always is. This constraint reappears
+    in section 9 as the reason FGLS works with logarithms.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span>
+    <strong>The function may be linear or non-linear.</strong> We could easily have
+    σ<sub>i</sub><sup>2</sup> = σ<sup>2</sup>X<sub>i</sub><sup>2</sup>, which is the case
+    Z<sub>i</sub> = X<sub>i</sub><sup>2</sup>. Which of these two possibilities holds is exactly
+    what separates the two tests in sections 7 and 8.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">iii</span><span>
+    <strong>This does not imply E(u | X) ≠ 0.</strong> Writing the variance as a function of X
+    says nothing about the mean of the disturbance. Pure heteroscedasticity leaves assumptions 3
+    and 4 entirely intact, which is precisely why it costs no bias.
+  </span></div>
+</div>
+
+<h2>6 · Detecting it: the informal methods</h2>
+
+<p>Before reaching for a formal test, three things are worth doing, and the first two cost
+nothing.</p>
+
+<ol class="steps">
+  <li><strong>Look at the dependent variable.</strong> If its maximum value is many, many times
+    larger than its minimum, beware of heteroscedasticity.</li>
+  <li><strong>Look for specification errors.</strong> Are there any obvious ones? Any likely
+    omitted variables? Have you specified a linear model where a double-log model would be more
+    appropriate? This is the impure case of section 2, and it is much the cheapest to fix.</li>
+  <li><strong>Eyeball the squared residuals.</strong> Estimate the regression, collect the
+    residuals and square them: û<sub>i</sub><sup>2</sup> = (Y − Ŷ)<sup>2</sup>. These are not the
+    same as u<sub>i</sub><sup>2</sup>, which we never observe, but they serve as a proxy. Create
+    a scatter plot with û<sub>i</sub><sup>2</sup> on the vertical axis and Ŷ on the horizontal.
+    <strong>No pattern suggests homoscedasticity; a pattern suggests the opposite.</strong> One
+    may also plot the squared residuals against the various independent variables.</li>
+</ol>
+
+<div class="viz" data-viz="residual-plot-shapes">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It generates data under four different forms of
+    the error variance and switches between the ordinary scatter of Y on X and the diagnostic
+    plot of û<sup>2</sup> against Ŷ, so the shapes can be compared.
+  </p>
+</div>
+
+<h2>7 · The Breusch–Pagan test</h2>
+
+<p>After the preliminary investigation it is a good idea to try a formal test. There are many;
+two are in common use, and the first is designed to detect any <strong>linear</strong> form of
+heteroscedasticity, var(u | <strong>X</strong>) = σ<sup>2</sup>X. It investigates whether the
+squared <a class="gt" href="../reference/glossary.html#residual">residuals</a> can be explained by the independent variables.</p>
+
+<div class="box def">
+  <span class="box-label">Hypotheses and small print</span>
+  <strong>H<sub>0</sub>:</strong> the error variances are all equal — homoscedasticity.<br>
+  <strong>H<sub>1</sub>:</strong> the error variances are a multiplicative function of one or
+  more variables.<br>
+  It is usually carried out as an <strong>LM test</strong> against χ<sup>2</sup>, though some
+  programs also present an F-test version, and it <strong>assumes normality of the errors</strong>.
+</div>
+
+<ol class="steps">
+  <li>Obtain the residuals from the estimated equation, û<sub>i</sub> = Y<sub>i</sub> − Ŷ<sub>i</sub>.</li>
+  <li>Square them and use them as the dependent variable in an auxiliary equation:
+    <p class="math">û<sub>i</sub><sup>2</sup> = α<sub>1</sub> + α<sub>2</sub>X<sub>2</sub> + α<sub>3</sub>X<sub>3</sub> + ⋯ + α<sub>k</sub>X<sub>k</sub> + ε</p>
+  </li>
+  <li>Save the R<sup>2</sup> from that auxiliary regression and test
+    H<sub>0</sub>: α<sub>2</sub> = α<sub>3</sub> = ⋯ = α<sub>k</sub> = 0 against the alternative
+    that at least one α ≠ 0, using
+    <p class="math">LM = nR<sup>2</sup> &nbsp;~&nbsp; χ<sup>2</sup>(d)</p>
+    where n is the sample size and d is the number of independent variables in the auxiliary
+    regression. It is a <strong>right-tail test</strong>.
+  </li>
+</ol>
+
+<h3>Worked example — CO<sub>2</sub> emissions and national income</h3>
+
+<p>A regression of carbon dioxide emissions on gross national income across 182 countries:</p>
+
+<p class="math">CO<sub>2</sub> = 12.28 + 0.44 GNI &nbsp;·&nbsp; n = 182</p>
+
+<p>Following the three steps, the <a class="gt" href="../reference/glossary.html#auxiliary-regression">auxiliary regression</a> of the squared residuals on GNI is</p>
+
+<p class="math">û<sup>2</sup> = −11,312.17 + 676.61 GNI &nbsp;·&nbsp; R<sup>2</sup> = 0.145</p>
+
+<p>so that</p>
+
+<p class="math">LM = nR<sup>2</sup> = 182 × 0.145 = <strong>26.39</strong></p>
+
+<p>The 5% <a class="gt" href="../reference/glossary.html#critical-value">critical value</a> of χ<sup>2</sup> with one degree of freedom — one independent variable in
+the auxiliary regression — is 3.84. Since 26.39 far exceeds it, we reject the <a class="gt" href="../reference/glossary.html#null-hypothesis">null hypothesis</a>:
+there is evidence of heteroscedasticity. Given what the variables are, this should surprise
+nobody. The gap between the largest and smallest national incomes in a 182-country sample is
+enormous, which is the very first informal warning sign in section 6.</p>
+
+<h2>8 · The White test</h2>
+
+<p>The default <a class="gt" href="../reference/glossary.html#breusch-pagan">Breusch–Pagan test</a> investigates linear forms. But as section 5 noted, in the case
+of multiplicative heteroscedasticity — var(u | X) = σ<sub>i</sub><sup>2</sup> =
+σ<sup>2</sup>h(X) — the function h(X) may be non-linear, and a linear auxiliary regression will
+look straight past it. The <a class="gt" href="../reference/glossary.html#white-test">White test</a> investigates whether the squared residuals can be explained
+by the equation's independent variables, <strong>their squares, and their cross-products</strong>.
+It is again an LM test, with H<sub>0</sub> homoscedasticity against H<sub>1</sub> the negation.</p>
+
+<ol class="steps">
+  <li>Obtain the residuals of the estimated equation, û<sub>i</sub> = Y<sub>i</sub> − Ŷ<sub>i</sub>.</li>
+  <li>Use the squared residuals as the dependent variable in an auxiliary equation, with each X
+    from the original equation, the square of each X, and the product of each X with every other
+    X as explanatory variables. For a model with two independent variables:
+    <p class="math">û<sub>i</sub><sup>2</sup> = α<sub>1</sub> + α<sub>2</sub>X<sub>2</sub> + α<sub>3</sub>X<sub>3</sub> + α<sub>4</sub>X<sub>2</sub>X<sub>3</sub> + α<sub>5</sub>X<sub>2</sub><sup>2</sup> + α<sub>6</sub>X<sub>3</sub><sup>2</sup> + ε</p>
+  </li>
+  <li>Collect the R<sup>2</sup> and use it to test the overall significance of that equation —
+    H<sub>0</sub>: α<sub>2</sub> = α<sub>3</sub> = α<sub>4</sub> = α<sub>5</sub> = α<sub>6</sub> = 0
+    — with the same χ<sup>2</sup> test on nR<sup>2</sup>.
+  </li>
+</ol>
+
+<h3>The same example, tested by White</h3>
+
+<p>With only one independent variable there are no cross-terms, so the auxiliary regression adds
+just the square:</p>
+
+<p class="math">û<sup>2</sup> = −289,715.7 + 2,142.486 GNI − 0.124 GNI<sup>2</sup> &nbsp;·&nbsp; R<sup>2</sup> = 0.279</p>
+
+<p class="math">LM = nR<sup>2</sup> = 182 × 0.279 = <strong>50.778</strong></p>
+
+<p>The 5% critical value with two <a class="gt" href="../reference/glossary.html#degrees-of-freedom">degrees of freedom</a> is 5.99, so again we reject: there is
+evidence of heteroscedasticity. Notice that the White statistic is roughly twice the
+Breusch–Pagan one on the same data. The squared term has picked up curvature in the variance that
+the linear auxiliary regression could not represent.</p>
+
+<div class="box warn">
+  <span class="box-label">The weakness: White uses up a lot of degrees of freedom</span>
+  As the number of explanatory variables in the original regression rises, the number of
+  right-hand-side variables in the White auxiliary regression goes up much faster — k linear
+  terms, k squares and k(k − 1)/2 cross-products.
+  <div class="table-scroll"><table class="cal" style="margin-top:0.5rem;">
+    <tr><th>Regressors k</th><td class="cov">1</td><td class="cov">2</td><td class="cov">3</td><td class="cov">4</td><td class="cov">5</td></tr>
+    <tr><th>Terms in the auxiliary</th><td class="cov">2</td><td class="cov">5</td><td class="cov">9</td><td class="cov">14</td><td class="cov">20</td></tr>
+    <tr><th>5% χ<sup>2</sup> critical value</th><td class="cov">5.99</td><td class="cov">11.07</td><td class="cov">16.92</td><td class="cov">23.68</td><td class="cov">31.41</td></tr>
+  </table></div>
+  With five regressors White must clear 31.41, where Breusch–Pagan on the same equation needs
+  only 11.07 — and in a small sample the auxiliary regression may not even have the observations
+  to estimate twenty parameters at all.
+</div>
+
+<h3>The special case that conserves degrees of freedom</h3>
+
+<p>A special case of the White test, used to economise, changes step 2. Instead of every variable,
+its square and its cross-products, regress the squared residuals on the fitted values and their
+square:</p>
+
+<p class="math">û<sub>i</sub><sup>2</sup> = α<sub>1</sub> + α<sub>2</sub>Ŷ + α<sub>3</sub>Ŷ<sup>2</sup> + ε</p>
+
+<p>The test of <a class="gt" href="../reference/glossary.html#f-test">joint significance</a> is now simply H<sub>0</sub>: α<sub>2</sub> = α<sub>3</sub> = 0,
+which is two degrees of freedom no matter how many regressors the original equation had. The trick
+is the same one the <a class="gt" href="../reference/glossary.html#reset-test">RESET test</a> of Unit 2A used: Ŷ is a linear combination of all the regressors,
+so its square carries their squares and cross-products in compressed form.</p>
+
+<div class="viz" data-viz="bp-vs-white">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It traces the Breusch–Pagan and White LM statistics
+    for one sample as the strength of the heteroscedasticity is varied, drawing both
+    χ<sup>2</sup> critical values so the trade between power and degrees of freedom is visible.
+  </p>
+</div>
+
+<h2>9 · Remedies</h2>
+
+<h3>First — re-examine the specification</h3>
+
+<p>If heteroscedasticity is found, the first thing to do is examine the equation carefully for
+<a class="gt" href="../reference/glossary.html#specification-bias">specification errors</a>. Are there any <a class="gt" href="../reference/glossary.html#omitted-variable">omitted variables</a>? Should one or more of the independent
+variables be non-linear? Is there non-linearity in the <a class="gt" href="../reference/glossary.html#parameter">parameters</a>? Only if there are no obvious
+specification errors is the heteroscedasticity probably pure in nature, and only then should one
+of the following remedies be considered.</p>
+
+<h3>Remedy 1 — logging the data</h3>
+
+<p>In many cases the problem disappears after logging the data, though it does not always work.
+It is most useful in instances of outliers, since taking logarithms compresses the upper tail of
+a distribution far more than the lower, and a variable whose largest value is a thousand times its
+smallest becomes one whose range is a factor of seven.</p>
+
+<p>The limitation is the one from Unit 2A Part 2: <strong>you cannot log every variable</strong>.
+Variables containing zeros or negative numbers have no logarithm, and some variables — a rate
+already in percent, a variable measured in years — make no intuitive sense logged.</p>
+
+<p>Return to the emissions example and suppose we log both variables:</p>
+
+<p class="math">ln(CO<sub>2</sub>) = −1.10 + 1.01 ln(GNI) &nbsp;·&nbsp; n = 182</p>
+
+<p>The Breusch–Pagan auxiliary regression is now</p>
+
+<p class="math">û<sup>2</sup> = 0.672 − 7.94 × 10<sup>−5</sup> ln(GNI) &nbsp;·&nbsp; R<sup>2</sup> = 0.000</p>
+
+<p>giving LM = 182 × 0.000 ≈ 0, far below the critical 3.84, so we cannot reject the null: there
+is no evidence of heteroscedasticity. The White test agrees. Its auxiliary regression</p>
+
+<p class="math">û<sup>2</sup> = 0.672 + 0.091 [ln(GNI)]<sup>2</sup> − 0.013 ln(GNI) &nbsp;·&nbsp; R<sup>2</sup> = 0.004</p>
+
+<p>gives LM = 182 × 0.004 = 0.728 against a critical value of 5.99, so again we cannot reject.
+One transformation has taken a decisively heteroscedastic equation and made it well behaved,
+and it has done so without discarding a single observation.</p>
+
+<div class="viz" data-viz="log-fixes-heteroscedasticity">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It shows a multiplicative relationship in levels,
+    where the scatter fans out and Breusch–Pagan rejects decisively, and the same observations in
+    logarithms, where the spread is even and the test finds nothing.
+  </p>
+</div>
+
+<div class="box key">
+  <span class="box-label">Notice what has just happened</span>
+  If logging cures it, the heteroscedasticity was <strong>impure</strong> — the error variance
+  was never really non-constant, the model was written in the wrong units. A multiplicative
+  relationship forced into a linear equation produces residuals that grow with the level of Y,
+  and that is a functional form error wearing a disguise. Which is the strongest argument for
+  checking the specification first: the cheapest remedy is the one that also fixes the model.
+</div>
+
+<h3>Remedy 2 — heteroscedasticity-corrected standard errors</h3>
+
+<p><a class="gt" href="../reference/glossary.html#wls">Weighted least squares</a> and <a class="gt" href="../reference/glossary.html#fgls">FGLS</a> can be difficult to implement, and one cannot always log the
+data. The most widely used alternative is to leave the <a class="gt" href="../reference/glossary.html#estimate">estimates</a> alone and repair only what is
+broken. <strong>Heteroscedasticity-corrected (HC) <a class="gt" href="../reference/glossary.html#standard-error">standard errors</a></strong>, also called
+<a class="gt" href="../reference/glossary.html#hc-standard-errors">heteroscedasticity-robust standard errors</a>, are calculated specifically to avoid the consequences
+set out in section 4. They are more accurate than uncorrected standard errors, they can be used
+in <a class="gt" href="../reference/glossary.html#t-statistic">t-tests</a> and other <a class="gt" href="../reference/glossary.html#hypothesis-test">hypothesis tests</a> in the ordinary way, and most software packages will
+produce them on request under one name or another — Huber, White, robust, HC.</p>
+
+<div class="box def">
+  <span class="box-label">What robust standard errors do and do not do</span>
+  They change <strong>the standard errors only</strong>. The coefficient estimates are identical
+  before and after, because OLS was never biased and there is nothing about the point estimates
+  to correct. Nor do they make OLS efficient again: a robust standard error is an honest
+  measurement of an imprecise estimate, not a more precise estimate. For efficiency you need
+  weighted least squares.
+</div>
+
+<h3>Worked example — petrol consumption by state</h3>
+
+<p class="math">PCON<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>REG<sub>i</sub> + β<sub>3</sub>PRICE<sub>i</sub> + u<sub>i</sub></p>
+
+<p>where PCON<sub>i</sub> is petroleum consumption in the ith state in trillions of BTUs,
+REG<sub>i</sub> is motor vehicle registrations there in thousands, and PRICE<sub>i</sub> is the
+price of petrol in cents per gallon. Using data from 2005 across the 50 states:</p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>PCON&#770;<sub>i</sub> =</span><span>s.e.</span><span>t =</span></span>
+  <span class="er-col"><span>4101</span><span></span><span></span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>0.16 REG<sub>i</sub></span><span>(0.01)</span><span>12.4</span></span>
+  <span class="er-col er-op"><span>−</span><span></span><span></span></span>
+  <span class="er-col"><span>1885 PRICE<sub>i</sub></span><span>(750)</span><span>−2.51</span></span>
+  <span class="er-note">n = 50 &nbsp;·&nbsp; both slopes significant, and signed as theory predicts</span>
+</div>
+
+<p>The equation seems to have no problems at all. The coefficients are significant and in the
+hypothesised direction: more registered vehicles means more petrol burned, a higher price means
+less. A student who stopped here would have nothing obviously wrong to report.</p>
+
+<p>Now run the Breusch–Pagan test. The auxiliary regression of the squared residuals on the two
+regressors is</p>
+
+<p class="math">û<sup>2</sup> = 5,164,290 + 83.33 REG<sub>i</sub> − 2,475,027 PRICE<sub>i</sub> &nbsp;·&nbsp; n = 50 &nbsp;·&nbsp; R<sup>2</sup> = 0.197</p>
+
+<p>with t-ratios of 3.32 and −1.68 on the two slopes. Testing H<sub>0</sub>: α<sub>2</sub> =
+α<sub>3</sub> = 0 gives LM = nR<sup>2</sup> = 50 × 0.197 = 9.85 against a 5% critical
+χ<sup>2</sup> value of 5.99 on two degrees of freedom. Reject: we have heteroscedasticity. The
+White test, whose auxiliary regression adds REG<sup>2</sup>, PRICE<sup>2</sup> and the
+cross-product REG × PRICE, returns R<sup>2</sup> = 0.85, so LM = 50 × 0.85 = 42.5 against a
+critical value of 11.07 on five degrees of freedom. Reject again, and emphatically.</p>
+
+<p>Re-estimating the same model with heteroscedasticity-corrected standard errors:</p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>PCON&#770;<sub>i</sub> =</span><span>s.e.</span><span>t =</span></span>
+  <span class="er-col"><span>4101</span><span></span><span></span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>0.16 REG<sub>i</sub></span><span>(0.03)</span><span>4.85</span></span>
+  <span class="er-col er-op"><span>−</span><span></span><span></span></span>
+  <span class="er-col"><span>1885 PRICE<sub>i</sub></span><span>(1360)</span><span>−1.39</span></span>
+  <span class="er-note">n = 50 &nbsp;·&nbsp; price is now statistically insignificant</span>
+</div>
+
+<p>Every coefficient is unchanged, exactly as promised. Every standard error has grown — that on
+price by nearly a factor of two — and the conclusion about price has reversed. What looked like a
+significant negative price effect at the 5% level was an artefact of a standard error that was
+too small, and the honest report is that this sample cannot establish a price effect. Note how
+much rests on having run the test: nothing in the first set of results looked wrong.</p>
+
+<div class="box warn">
+  <span class="box-label">A note on the printed figures</span>
+  The standard errors above are rounded to two decimal places, so recomputing the t-ratios from
+  them will not reproduce the values shown — 0.16/0.01 is 16, not 12.4. The t-ratios are those
+  the software reported from the unrounded output. This is worth knowing generally: a reported
+  coefficient divided by a reported standard error rarely gives the reported t exactly, and the
+  discrepancy is rounding, not error.
+</div>
+
+<h3>Remedy 3 — weighted least squares</h3>
+
+<p>Weighted least squares is a special type of generalised least squares, and in the presence of
+heteroscedasticity <strong>WLS is usually <a class="gt" href="../reference/glossary.html#blue">BLUE</a></strong>. Two cases are worth working through.</p>
+
+<p><strong>Case 1: σ<sub>i</sub><sup>2</sup> is known.</strong> Here we derive a least squares
+estimator in which each observation is weighted by a factor proportional to the inverse of its
+error variance. Instead of estimating Y<sub>i</sub> = β<sub>1</sub> +
+β<sub>2</sub>X<sub>2i</sub> + β<sub>3</sub>X<sub>3i</sub> + u<sub>i</sub>, we divide everything
+through by σ<sub>i</sub>:</p>
+
+<p class="math">Y<sub>i</sub>/σ<sub>i</sub> = β<sub>1</sub>/σ<sub>i</sub> + β<sub>2</sub>X<sub>2i</sub>/σ<sub>i</sub> + β<sub>3</sub>X<sub>3i</sub>/σ<sub>i</sub> + u<sub>i</sub>/σ<sub>i</sub></p>
+
+<p>which we rewrite as Y* = β<sub>1</sub>* + β<sub>2</sub>*X<sub>2</sub>* +
+β<sub>3</sub>X<sub>3</sub>* + u*, the asterisks marking the transformed variables and parameters.
+The transformed disturbance is homoscedastic, and its variance is exactly 1:</p>
+
+<p class="math">var(u*) = var(u<sub>i</sub>/σ<sub>i</sub>) = σ<sub>i</sub><sup>2</sup>/σ<sub>i</sub><sup>2</sup> = 1</p>
+
+<p><strong>Case 2: h(X) is known.</strong> If σ<sub>i</sub><sup>2</sup> = σ<sup>2</sup>h(X), then
+σ<sub>i</sub> = σ√h(X), and dividing through by √h(X) instead achieves the same thing:</p>
+
+<p class="math">Y<sub>i</sub>/√h(X) = β<sub>1</sub>/√h(X) + β<sub>2</sub>X<sub>2i</sub>/√h(X) + β<sub>3</sub>X<sub>3i</sub>/√h(X) + u<sub>i</sub>/√h(X)</p>
+
+<p>Again the transformed error is homoscedastic, but this time its variance is σ<sup>2</sup>
+rather than 1, since var(u<sub>i</sub>/√h(X)) = σ<sup>2</sup>h(X)/h(X) = σ<sup>2</sup>.</p>
+
+<div class="box key">
+  <span class="box-label">What weighting is doing, and what it risks</span>
+  The use of weights implies that <strong>observations with a higher variance get a smaller
+  weight</strong> in estimation. That is the whole idea: the noisy observations are told to count
+  for less, which is precisely the information OLS throws away and precisely why WLS can beat
+  it.<br>
+  <strong>But what if we get h(X) wrong?</strong> Misspecification of the weighting function
+  causes <strong>bias and inconsistency</strong> of the WLS estimator. That is a serious warning.
+  OLS under heteroscedasticity is inefficient but unbiased; WLS with the wrong weights is neither.
+  A remedy that can leave you worse off than the disease deserves to be applied only when you have
+  a real reason to believe your h(X).
+</div>
+
+<h3>Remedy 4 — feasible generalised least squares</h3>
+
+<p>The previous case assumed we knew something about h(X). More often than not we do not know the
+exact form of the heteroscedasticity. The <strong>feasible</strong>, or estimated, generalised
+least squares estimator estimates h(X) instead of assuming it. One flexible approach specifies</p>
+
+<p class="math">var(u | X) = σ<sup>2</sup> e<sup>(δ1 + δ2X2 + ⋯ + δkXk)</sup></p>
+
+<p>where X<sub>2</sub> … X<sub>k</sub> are the independent variables of the regression model and
+the δ's are unknown. The exponential is not decoration: it is what <strong>ensures the predicted
+variances are positive</strong>, which section 5 required of any h(X) and which a linear
+specification could not guarantee.</p>
+
+<ol class="steps">
+  <li>Estimate Y = β<sub>1</sub> + β<sub>2</sub>X<sub>2</sub> + ⋯ + β<sub>k</sub>X<sub>k</sub> + u
+    by OLS and obtain the residuals.</li>
+  <li>Square the residuals, then log them, creating ln(û<sup>2</sup>). This is the step that makes
+    the exponential form estimable — taking logs of the specification above turns a multiplicative
+    model into one that is linear in the δ's, which is the trick of Unit 2A Part 2 applied to the
+    variance rather than to the mean.</li>
+  <li>Estimate the regression
+    <p class="math">ln(û<sup>2</sup>) = α<sub>1</sub> + δ<sub>2</sub>X<sub>2</sub> + ⋯ + δ<sub>k</sub>X<sub>k</sub> + e</p>
+    where the constant α<sub>1</sub> differs from the δ<sub>1</sub> above.</li>
+  <li>Obtain the fitted values from that regression, Ẑ<sub>i</sub> — the predicted values of
+    ln(û<sup>2</sup>).</li>
+  <li>Compute ĥ<sub>i</sub> = e<sup>Ẑi</sup>, which is necessarily positive.</li>
+  <li>Re-estimate the original equation using ĥ as the weights.</li>
+</ol>
+
+<div class="box warn">
+  <span class="box-label">What FGLS costs</span>
+  <strong>Unlike the GLS estimator, FGLS is not BLUE.</strong> The weights are estimated rather
+  than known, and that estimation has to be paid for. It is <em>consistent</em> and
+  <em>asymptotically efficient</em>, and usually more efficient than OLS in the presence of
+  heteroscedasticity — but those are large-sample properties. FGLS is mainly valid in large
+  samples, and its testing procedures may only be valid in large samples too. In a sample of
+  fifty, robust standard errors are the safer choice.
+</div>
+
+<h2>10 · Tutorial</h2>
+
+<p style="font-size:0.85rem; color:var(--ink-soft); font-style:italic;">
+Draft questions, to be replaced by the tutorial sheet issued in class.</p>
+
+<div class="tutorial">
+
+  <div class="tq">
+    <span class="qtext">A model with three independent variables is estimated on 100
+    observations. The Breusch–Pagan auxiliary regression returns R<sup>2</sup> = 0.128. Carry out
+    the test at 5%, given that the critical χ<sup>2</sup> values are 7.81 for three degrees of
+    freedom and 16.92 for nine. Then say what would change if you ran a White test instead, and
+    whether it would still reject.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>Breusch–Pagan.</strong> The auxiliary regression has the three original
+        regressors on the right-hand side, so d = 3.</p>
+        <p class="math">LM = nR<sup>2</sup> = 100 × 0.128 = <strong>12.8</strong></p>
+        <p>Against χ<sup>2</sup>(3) = 7.81 in the right tail, 12.8 &gt; 7.81, so we
+        <strong>reject</strong> homoscedasticity at 5%.</p>
+        <p><strong>Under White.</strong> The auxiliary regression would carry the three variables,
+        their three squares and the three cross-products — 3 + 3 + 3(3 − 1)/2 = 9 terms — so the
+        test would have nine degrees of freedom and a critical value of 16.92 instead of 7.81.</p>
+        <p><strong>Would it still reject?</strong> That depends on the new R<sup>2</sup>, which we
+        do not have, and the honest answer is that we cannot say. Adding six regressors cannot
+        lower R<sup>2</sup>, so the new statistic is at least 12.8 — but it must now clear 16.92,
+        which requires R<sup>2</sup> to rise to at least 0.169. If the heteroscedasticity really
+        is linear in the X's, the extra terms will add little and the White test may well
+        <em>fail</em> to reject where Breusch–Pagan succeeded. That is the trade-off in one
+        sentence: White can see shapes Breusch–Pagan cannot, and pays for the privilege in
+        degrees of freedom whether or not those shapes are there.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">Show that the general variance formula
+    var(β̂<sub>2</sub>) = Σx<sub>i</sub><sup>2</sup>σ<sub>i</sub><sup>2</sup>/(Σx<sub>i</sub><sup>2</sup>)<sup>2</sup>
+    collapses to the familiar σ<sup>2</sup>/Σx<sub>i</sub><sup>2</sup> under homoscedasticity.
+    Then explain why the conventional standard error is biased when the assumption fails, and say
+    what determines the direction of the bias.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>The collapse.</strong> Under homoscedasticity every
+        σ<sub>i</sub><sup>2</sup> equals a common σ<sup>2</sup>, which is a constant and comes
+        outside the summation:</p>
+        <p class="math">Σx<sub>i</sub><sup>2</sup>σ<sup>2</sup>/(Σx<sub>i</sub><sup>2</sup>)<sup>2</sup>
+        = σ<sup>2</sup>Σx<sub>i</sub><sup>2</sup>/(Σx<sub>i</sub><sup>2</sup>)<sup>2</sup>
+        = σ<sup>2</sup>/Σx<sub>i</sub><sup>2</sup></p>
+        <p>So the familiar formula is not a different result but a special case of the general
+        one.</p>
+        <p><strong>Why the reported standard error is biased.</strong> The software computes
+        √(σ̂<sup>2</sup>/Σx<sub>i</sub><sup>2</sup>), where σ̂<sup>2</sup> = <a class="gt" href="../reference/glossary.html#rss">RSS</a>/(n − 2) estimates
+        a single common variance. When there is no single common variance, that quantity is an
+        average of the σ<sub>i</sub><sup>2</sup>, and an average put into the wrong formula. The
+        correct formula weights each σ<sub>i</sub><sup>2</sup> by x<sub>i</sub><sup>2</sup>; the
+        conventional one weights them all equally.</p>
+        <p><strong>The direction.</strong> It follows from that difference in weighting. If the
+        large variances sit on observations with large x<sub>i</sub><sup>2</sup> — that is, if
+        σ<sub>i</sub><sup>2</sup> is positively associated with distance from X̄ — the correct
+        formula gives them more weight than the conventional one does, so the conventional
+        standard error is <strong>too small</strong>. t-ratios are then too large and tests reject
+        too often, which is the dangerous direction and the common one, since a variable whose
+        variance grows with X has its noisiest observations out at the top of the range. Where the
+        association is negative the conventional standard error is too large instead, and the test
+        is merely conservative. There is no general answer, only that association.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">A regression of household food expenditure on household income, estimated
+    linearly on 800 households, produces a Breusch–Pagan statistic of 61.4 against a critical
+    value of 3.84. A colleague proposes going straight to robust standard errors. Explain what you
+    would do first and why, and what would tell you that the colleague's approach was in fact the
+    right one.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>What to do first.</strong> Establish whether this is pure or impure
+        heteroscedasticity, because the remedies are different and only one of them is correct.
+        Robust standard errors treat the problem as pure — as a property of a correctly specified
+        equation's disturbance. If the equation is in fact misspecified, robust standard errors
+        will give an honest-looking measure of precision for a biased coefficient, which is a
+        worse position than the one we started in, because it looks defensible.</p>
+        <p><strong>Why suspicion is warranted here.</strong> An Engel curve is not linear. Food
+        expenditure rises with income at a decreasing rate — that is Engel's law, and it has been
+        known since 1857. A linear specification will therefore under-predict in the middle of the
+        income range and over-predict at the ends, or the reverse, and those systematic residuals
+        will grow with income and show up as heteroscedasticity. The obvious first move is a
+        <a class="gt" href="../reference/glossary.html#double-log">double-log</a> or <a class="gt" href="../reference/glossary.html#semi-log">lin–log</a> specification from Unit 2A Part 2, or a <a class="gt" href="../reference/glossary.html#turning-point">quadratic</a> in income, which
+        also has the merit of estimating an <a class="gt" href="../reference/glossary.html#elasticity">elasticity</a>, which is what one actually wants from an
+        Engel curve.</p>
+        <p><strong>What would vindicate the colleague.</strong> If, after respecifying — logs, a
+        quadratic term, any omitted variables such as household size — the Breusch–Pagan statistic
+        remains large, then the heteroscedasticity has survived the specification search and is
+        probably pure. That is exactly the situation robust standard errors exist for, and reason
+        3 of section 3 says to expect it here: as incomes grow, households have more discretionary
+        income and more scope for choice, so the variance of food spending should genuinely rise
+        with income even in a correctly specified model.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">In the petrol example of section 9, the coefficient on price is −1885
+    both before and after the heteroscedasticity correction, but its t-ratio falls from −2.51 to
+    −1.39. Explain why the coefficient did not move, why the standard error did, and what you
+    would now report about the price effect.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>Why the coefficient did not move.</strong> Heteroscedasticity does not bias
+        OLS, so there is nothing about the point estimate to correct. The formula
+        β̂<sub>2</sub> = Σx<sub>i</sub>y<sub>i</sub>/Σx<sub>i</sub><sup>2</sup> makes no reference
+        to the error variance, so a different assumption about that variance cannot change the
+        arithmetic. The robust procedure does not re-estimate the equation; it recomputes one
+        quantity.</p>
+        <p><strong>Why the standard error did.</strong> The conventional standard error is built
+        from the wrong formula — it assumes a single common σ<sup>2</sup>. Here the variances of
+        the observations differ, and the correct calculation weights each squared residual by
+        x<sub>i</sub><sup>2</sup> rather than treating them alike. On this sample the correct
+        calculation is nearly twice as large, so the conventional figure of 750 was understating
+        the uncertainty by roughly half.</p>
+        <p><strong>What to report.</strong> That the equation is heteroscedastic, on the evidence
+        of both tests; that robust standard errors have been used; that registrations remain
+        strongly significant with t = 4.85; and that <strong>the price effect is not <a class="gt" href="../reference/glossary.html#practical-significance">statistically
+        significant</a> at 5%</strong>, since 1.39 falls short of roughly 2.01 for 47 degrees of
+        freedom. The coefficient is still correctly signed and economically substantial, so the
+        right conclusion is not that price does not matter but that this sample of fifty cannot
+        establish that it does. It would be indefensible to report the original t of −2.51 having
+        seen the tests.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">Suppose σ<sub>i</sub><sup>2</sup> = σ<sup>2</sup>h(X<sub>i</sub>) with
+    h(X) known. Show that dividing the regression through by √h(X) produces a homoscedastic
+    error, and state its variance. Then say what happens if h(X) is specified wrongly, and why
+    that makes the choice between WLS and robust standard errors a real one.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>The transformation.</strong> Dividing Y<sub>i</sub> = β<sub>1</sub> +
+        β<sub>2</sub>X<sub>2i</sub> + β<sub>3</sub>X<sub>3i</sub> + u<sub>i</sub> through by
+        √h(X<sub>i</sub>) gives a new disturbance u* = u<sub>i</sub>/√h(X<sub>i</sub>). Since
+        dividing a random variable by a constant divides its variance by the square of that
+        constant:</p>
+        <p class="math">var(u*) = var(u<sub>i</sub>)/h(X<sub>i</sub>)
+        = σ<sup>2</sup>h(X<sub>i</sub>)/h(X<sub>i</sub>) = σ<sup>2</sup></p>
+        <p>which does not depend on i. The transformed equation is homoscedastic and OLS applied
+        to it is BLUE. Had we divided by σ<sub>i</sub> itself instead, the same argument gives
+        var(u*) = σ<sub>i</sub><sup>2</sup>/σ<sub>i</sub><sup>2</sup> = 1.</p>
+        <p><strong>If h(X) is wrong.</strong> The weights are then wrong, and misspecification of
+        the weighting function causes <strong>bias and inconsistency</strong> of the WLS
+        estimator. Note how much worse this is than the disease: OLS under heteroscedasticity is
+        inefficient but unbiased and <a class="gt" href="../reference/glossary.html#consistency">consistent</a>, so it is merely imprecise. Badly weighted least
+        squares is neither, and no amount of extra data will rescue it.</p>
+        <p><strong>Why the choice is real.</strong> The two remedies trade different things.
+        Robust standard errors make no assumption whatever about the form of the
+        heteroscedasticity — they accept the inefficiency of OLS and simply measure it honestly.
+        WLS promises <a class="gt" href="../reference/glossary.html#efficiency">efficiency</a>, and can deliver BLUE, but only if you know h(X); guess it wrong
+        and you have exchanged an unbiased imprecise estimator for a biased one. So the sensible
+        rule is that WLS needs a genuine reason to believe a particular h(X) — a theoretical
+        argument, or a known feature of the data such as group averages of known group sizes.
+        Without such a reason, robust standard errors are the conservative and usually the correct
+        choice.</p>
+      </div>
+    </details>
+  </div>
+
+</div>
+
+<h2>11 · Check yourself</h2>
+
+<div class="quiz" data-answer="2">
+  <div class="q">In the presence of pure heteroscedasticity, the OLS estimator of β<sub>2</sub> is</div>
+  <button class="opt">biased and inconsistent, so the estimates cannot be used</button>
+  <button class="opt">unbiased and still the minimum-variance linear estimator</button>
+  <button class="opt">unbiased but inefficient, with biased standard errors too</button>
+  <button class="opt">biased upwards whenever the variance increases with X</button>
+  <div class="feedback right">Correct — the coefficient is fine, the efficiency claim is gone with Gauss–Markov, and the reported standard error is computed from the wrong formula.</div>
+  <div class="feedback wrong">Look at the estimator: β̂<sub>2</sub> = Σx<sub>i</sub>y<sub>i</sub>/Σx<sub>i</sub><sup>2</sup> makes no reference to σ<sup>2</sup>, so it cannot be biased by a change in the variance. But Gauss–Markov needs assumption 5, so minimum variance is lost, and the standard error formula assumed a constant σ<sup>2</sup> that no longer exists.</div>
+</div>
+
+<div class="quiz" data-answer="0">
+  <div class="q">The main difference between the White test and the Breusch–Pagan test is that White</div>
+  <button class="opt">adds the squares and cross-products of the regressors as well</button>
+  <button class="opt">uses the F distribution rather than a chi-square distribution</button>
+  <button class="opt">tests the residuals themselves instead of the squared residuals</button>
+  <button class="opt">requires the errors to be normally distributed to be valid</button>
+  <div class="feedback right">Correct — the extra terms let it see non-linear forms of heteroscedasticity, at the cost of degrees of freedom.</div>
+  <div class="feedback wrong">Both are LM tests on nR<sup>2</sup> against χ<sup>2</sup>, and both use the <em>squared</em> residuals as the dependent variable in an auxiliary regression. What White adds is the squares and cross-products of the regressors, which is what lets it detect a non-linear h(X) — and what makes it expensive in degrees of freedom.</div>
+</div>
+
+<div class="quiz" data-answer="3">
+  <div class="q">Re-estimating an equation with heteroscedasticity-robust standard errors will</div>
+  <button class="opt">change the coefficients and leave the standard errors as they are</button>
+  <button class="opt">restore efficiency, so that OLS becomes BLUE once again here</button>
+  <button class="opt">remove the heteroscedasticity from the disturbances of the model</button>
+  <button class="opt">change the standard errors and leave the coefficients as they are</button>
+  <div class="feedback right">Correct — an honest measurement of an imprecise estimate. For efficiency you would need weighted least squares.</div>
+  <div class="feedback wrong">OLS is unbiased under heteroscedasticity, so there is nothing about the coefficients to correct, and the robust procedure does not touch them. Nor does it change the disturbances or make OLS efficient — it recomputes one quantity, the standard error, using a formula that does not assume a constant variance.</div>
+</div>
+
+<div class="quiz" data-answer="1">
+  <div class="q">A Breusch–Pagan test rejects. Before applying any remedy you should first</div>
+  <button class="opt">take logarithms of every variable that has no zero values in it</button>
+  <button class="opt">re-examine the specification for omitted variables or wrong form</button>
+  <button class="opt">weight each observation by the inverse of its own error variance</button>
+  <button class="opt">re-run the test as an F version to confirm the chi-square result</button>
+  <div class="feedback right">Correct — impure heteroscedasticity is a specification error in disguise, and only fixing the specification actually repairs the model.</div>
+  <div class="feedback wrong">The test cannot tell you whether the heteroscedasticity is pure or impure, and that distinction decides the remedy. If it is impure — an omitted variable or the wrong functional form — then logging, weighting or robust standard errors would tidy the standard errors of a model that is still biased. Check the specification first.</div>
+</div>
+
+<p class="deck-link" data-unit="2C"></p>
+
+<div class="ask-teacher">
+  <strong>The examinable core: the variance formula, the three consequences, the two tests as nR<sup>2</sup> against χ<sup>2</sup>, and what each remedy does and does not fix.</strong>
+  The step most often skipped in an answer is checking the specification before reaching for a remedy. Bring questions to the tutorial, or to office hours — <span data-course="officeHours"></span>.
+</div>
+
+<ol class="sources">
+  <li id="s1">Gujarati, D. &amp; Porter, D. (2008), <em>Basic Econometrics</em>, Chapter 11 — the nature and consequences of non-constant error variance, detection, and the remedial measures including weighted least squares.</li>
+  <li id="s2">Wooldridge, J. (2016), <em>Introductory Econometrics: A Modern Approach</em>, Chapter 8 — robust inference, the Breusch–Pagan and White tests, and weighted and feasible generalised least squares.</li>
+  <li id="s3">White, H. (1980), <em>Econometrica</em> 48(4), 817–838 — the paper that introduced both the consistent covariance matrix estimator behind robust standard errors and the direct test named after it. Breusch, T. &amp; Pagan, A. (1979), <em>Econometrica</em> 47(5), is the companion paper for the other test.</li>
+</ol>
+
+<div class="lesson-nav" data-unit="2C"></div>
+
+</div>
+</body>
+</html>

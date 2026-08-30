@@ -109,6 +109,18 @@ Figures that simulate should draw from a **seeded** generator rather than
 can quote it. `high-r2-low-t` uses MINSTD, whose products stay inside exact
 double arithmetic.
 
+**Do not use an LCG for anything you average over.** Unit 2C's `robust-se`
+compares a Monte Carlo standard deviation against a closed form, and MINSTD's
+lattice — consecutive pairs feeding Box–Muller — put the simulation about 4%
+below the theory it was meant to confirm. `rng2c` is mulberry32 and lands on
+it. A figure that quietly misses its own theory is worse than no figure.
+
+**Check a fixed draw against every setting the figure offers.** With 23
+observations per third, the first seed for `residual-plot-shapes` had a weak
+middle third, which cancelled the arch-shaped variance exactly. The figure was
+drawing the noise, not the form. Drive every control before believing any of
+it.
+
 ## Adding or changing a unit
 
 Edit `assets/course.js` and nothing else. The roadmap, the breadcrumb, the
@@ -253,7 +265,7 @@ node dev/check-site.mjs      # catches unconverted characters
 pdflatex -interaction=nonstopmode <unit>.tex
 ```
 
-All eleven pages currently compile. Five of them did not on the first attempt,
+All twelve pages currently compile. Five of them did not on the first attempt,
 and the failures were only visible by actually running `pdflatex` — bare
 Greek inside `<sub>`, stacked accents (Y with *two* combining marks), and
 `\sqrt` emitted with no radicand. Unit 2B added a sixth: a `≫` that no range
@@ -299,8 +311,8 @@ the repository private would have hidden nothing that is not already served.
 
 Progress is recorded in the manifest, not here — `status: "ready"` is the
 authority, and `node dev/check-site.mjs` prints every written unit. As of the
-last session: **Unit 1 complete (1A–1F), Unit 2A complete (both parts), Unit 2B
-complete**, with 2C, 2D and all of Unit 3 still `"planned"`.
+last session: **Unit 1 complete (1A–1F), Unit 2A complete (both parts), Units 2B
+and 2C complete**, with 2D and all of Unit 3 still `"planned"`.
 
 Three things are deliberately unfinished, and all three need input rather than
 writing:
