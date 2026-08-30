@@ -4,22 +4,103 @@
    restrained palette, prints cleanly. Linked by every lesson.
    ============================================================ */
 
+/* ============================================================
+   Palette.
+
+   Every colour in the site — including every colour in the SVG
+   figures, which read these at draw time — comes from a token here.
+   Adding a theme means redefining the tokens and nothing else.
+
+   Light is the default. Dark is applied either because the reader's
+   system asks for it (prefers-color-scheme) or because they chose it
+   (data-theme on <html>, set by assets/reader.js). The explicit
+   choice always wins in both directions.
+   ============================================================ */
 :root {
   --ink:        #1a1a1a;
   --ink-soft:   #555;
+  --ink-faint:  #8a8378;
   --paper:      #fffff8;   /* warm off-white, Tufte */
   --rule:       #e4e0d4;
+  --rule-soft:  #c9c2b6;
   --accent:     #7a1f2b;   /* deep maroon, matches the textbook */
   --accent-2:   #2c5f7c;   /* slate blue for R/code accents */
+  --good:       #3a6230;
   --key-bg:     #fbf6e9;
   --def-bg:     #eef3f6;
   --refresh-bg: #f1f6ee;
   --warn-bg:    #fcefec;
   --code-bg:    #f6f4ec;
+  --card:       #ffffff;   /* raised surfaces: figures, quiz options, cards */
+  --ok-bg:      #e8f3e3;
+  --ok-ink:     #2c5022;
+  --ok-line:    #4a7c3a;
+  --bad-bg:     #fbe6e2;
+  --bad-ink:    #6e1b22;
+  --key-ink:    #8a6508;
+  --cmt:        #7a8a6a;
   --maxw:       720px;
 }
 
-html { font-size: 18px; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+  --ink:        #e9e6df;
+  --ink-soft:   #a9a49a;
+  --ink-faint:  #8d887e;
+  --paper:      #1a1917;
+  --rule:       #35332e;
+  --rule-soft:  #4a473f;
+  --accent:     #e0949e;
+  --accent-2:   #86b8d8;
+  --good:       #8fc07d;
+  --key-bg:     #2a2418;
+  --def-bg:     #1b2429;
+  --refresh-bg: #1d2a1b;
+  --warn-bg:    #2f1e1e;
+  --code-bg:    #232219;
+  --card:       #211f1c;
+  --ok-bg:      #1e2c1b;
+  --ok-ink:     #a9d199;
+  --ok-line:    #4a7c3a;
+  --bad-bg:     #2f1d1d;
+  --bad-ink:    #e8a9a2;
+  --key-ink:    #d9b366;
+  --cmt:        #93a383;
+  }
+}
+:root[data-theme="dark"] {
+  --ink:        #e9e6df;
+  --ink-soft:   #a9a49a;
+  --ink-faint:  #8d887e;
+  --paper:      #1a1917;
+  --rule:       #35332e;
+  --rule-soft:  #4a473f;
+  --accent:     #e0949e;
+  --accent-2:   #86b8d8;
+  --good:       #8fc07d;
+  --key-bg:     #2a2418;
+  --def-bg:     #1b2429;
+  --refresh-bg: #1d2a1b;
+  --warn-bg:    #2f1e1e;
+  --code-bg:    #232219;
+  --card:       #211f1c;
+  --ok-bg:      #1e2c1b;
+  --ok-ink:     #a9d199;
+  --ok-line:    #4a7c3a;
+  --bad-bg:     #2f1d1d;
+  --bad-ink:    #e8a9a2;
+  --key-ink:    #d9b366;
+  --cmt:        #93a383;
+}
+
+/* ---------- Reader text size ----------
+   Steps the root font size, which everything else is expressed in
+   rem against. The narrow-screen sizes below step in parallel, so
+   choosing "larger" on a phone does not undo the mobile scaling. */
+html                  { font-size: 18px; }
+html[data-text="s"]   { font-size: 16px; }
+html[data-text="l"]   { font-size: 20px; }
+html[data-text="xl"]  { font-size: 22.5px; }
 
 body {
   font-family: et-book, Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
@@ -99,9 +180,9 @@ a { color: var(--accent); }
 .box.def      { background: var(--def-bg);     border-left: 4px solid var(--accent-2); }
 .box.def      .box-label { color: var(--accent-2); }
 .box.key      { background: var(--key-bg);     border-left: 4px solid #b8860b; }
-.box.key      .box-label { color: #8a6508; }
+.box.key      .box-label { color: var(--key-ink); }
 .box.refresh  { background: var(--refresh-bg); border-left: 4px solid #4a7c3a; }
-.box.refresh  .box-label { color: #3a6230; }
+.box.refresh  .box-label { color: var(--good); }
 .box.warn     { background: var(--warn-bg);    border-left: 4px solid var(--accent); }
 .box.warn     .box-label { color: var(--accent); }
 
@@ -130,7 +211,7 @@ pre.code {
   overflow-x: auto;
   margin: 1.2rem 0;
 }
-pre.code .cmt  { color: #7a8a6a; font-style: italic; }
+pre.code .cmt  { color: var(--cmt); font-style: italic; }
 pre.code .out  { color: var(--ink-soft); }
 code.inline {
   padding: 0.1rem 0.35rem;
@@ -152,7 +233,7 @@ sup.cite a { text-decoration: none; color: var(--accent); font-size: 0.75em; }
 
 /* ---------- Primary-source spotlight ---------- */
 .primary-source {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--rule);
   border-top: 3px solid var(--accent);
   border-radius: 6px;
@@ -173,7 +254,7 @@ sup.cite a { text-decoration: none; color: var(--accent); font-size: 0.75em; }
   width: 100%;
   text-align: left;
   font: inherit;
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--rule);
   border-radius: 5px;
   padding: 0.6rem 0.9rem;
@@ -182,8 +263,8 @@ sup.cite a { text-decoration: none; color: var(--accent); font-size: 0.75em; }
   transition: background 0.15s, border-color 0.15s;
 }
 .quiz .opt:hover { border-color: var(--accent-2); }
-.quiz .opt.correct   { background: #e8f3e3; border-color: #4a7c3a; }
-.quiz .opt.incorrect { background: #fbe6e2; border-color: var(--accent); }
+.quiz .opt.correct   { background: var(--ok-bg); border-color: var(--ok-line); }
+.quiz .opt.incorrect { background: var(--bad-bg); border-color: var(--accent); }
 .quiz .opt:disabled  { cursor: default; }
 .quiz .feedback {
   margin-top: 0.6rem;
@@ -193,12 +274,12 @@ sup.cite a { text-decoration: none; color: var(--accent); font-size: 0.75em; }
   display: none;
 }
 .quiz .feedback.show { display: block; }
-.quiz .feedback.right { background: #e8f3e3; color: #2c5022; }
-.quiz .feedback.wrong { background: #fbe6e2; color: #6e1b22; }
+.quiz .feedback.right { background: var(--ok-bg); color: var(--ok-ink); }
+.quiz .feedback.wrong { background: var(--bad-bg); color: var(--bad-ink); }
 
 /* ---------- Ask-your-teacher reminder ---------- */
 .ask-teacher {
-  background: #f4f1e8;
+  background: var(--code-bg);
   border: 1px dashed var(--accent-2);
   border-radius: 6px;
   padding: 0.9rem 1.2rem;
@@ -220,6 +301,15 @@ sup.cite a { text-decoration: none; color: var(--accent); font-size: 0.75em; }
 
 /* ---------- Print ---------- */
 @media print {
+  /* Paper is always paper. Reset the tokens so a reader who chose the
+     dark theme does not print white text on a white page. */
+  :root, :root[data-theme="dark"] {
+    --ink: #000; --ink-soft: #444; --ink-faint: #666;
+    --paper: #fff; --rule: #ccc; --rule-soft: #ddd;
+    --accent: #000; --accent-2: #000; --good: #000;
+    --key-bg: #fff; --def-bg: #fff; --refresh-bg: #fff;
+    --warn-bg: #fff; --code-bg: #f4f4f4;
+  }
   body { background: #fff; color: #000; padding: 0; }
   .ask-teacher, .lesson-nav, .masthead { display: none; }
   .box, pre.code, .primary-source { break-inside: avoid; }
@@ -228,6 +318,9 @@ sup.cite a { text-decoration: none; color: var(--accent); font-size: 0.75em; }
 
 /* ---------- Small screens ---------- */
 @media (max-width: 600px) {
-  html { font-size: 16px; }
+  html                  { font-size: 16px; }
+  html[data-text="s"]   { font-size: 14.5px; }
+  html[data-text="l"]   { font-size: 18px; }
+  html[data-text="xl"]  { font-size: 20px; }
   body { padding: 0 1rem 4rem; }
 }

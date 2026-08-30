@@ -195,7 +195,61 @@ for (const u of live) {
   });
 }
 
-/* ---------- 5. house conventions, across the built site ---------- */
+/* ---------- 5. reader controls and downloads ----------
+   Every page carries the preferences bar, and every page must be able to
+   export itself. The coverage assertion is the one that matters: an
+   earlier walker silently dropped every callout box and assumption grid,
+   which is thousands of words a unit, and nothing failed. */
+head("reader controls and downloads");
+for (const f of ["index.html", ...live.map(u => `units/${u.slug}.html`),
+                 ...refLive.map(r => `reference/${r.slug}.html`)]) {
+  const w = await load(f);
+  const d = w.document;
+  const at = (m) => `${f}: ${m}`;
+
+  const src = readFileSync(SITE + f, "utf8");
+  ok(/econ3049-theme/.test(src), at("carries the no-flash preference script"));
+  ok(/assets\/reader\.js/.test(src) && /assets\/export\.js/.test(src),
+     at("loads reader.js and export.js"));
+
+  const bar = d.querySelector(".reader-bar");
+  ok(!!bar && bar.children.length === 3, at("reader bar rendered with 3 groups"),
+     bar ? String(bar.children.length) : "missing");
+
+  /* theme and text size actually apply, and the figures survive a rebuild */
+  const btn = (t) => [...bar.querySelectorAll("button")]
+                     .find(b => b.textContent.trim() === t);
+  btn("Dark").dispatchEvent(new w.MouseEvent("click"));
+  ok(d.documentElement.getAttribute("data-theme") === "dark", at("Dark applies"));
+  btn("Auto").dispatchEvent(new w.MouseEvent("click"));
+  ok(!d.documentElement.hasAttribute("data-theme"), at("Auto clears the override"));
+  btn("A+").dispatchEvent(new w.MouseEvent("click"));
+  ok(d.documentElement.getAttribute("data-text") === "l", at("A+ steps the text size"));
+
+  const figs = [...d.querySelectorAll(".viz[data-viz]")];
+  ok(figs.every(v => !!v.querySelector("svg")), at("figures survive a theme rebuild"));
+  ok(!figs.some(v => /NaN/.test(v.innerHTML)), at("no NaN after rebuild"));
+
+  /* exports produce something, and something big enough to be the page */
+  const visible = (d.querySelector(".wrap") || d.body).textContent
+                    .replace(/\s+/g, " ").trim().length;
+  for (const fmt of ["md", "tex", "doc"]) {
+    const out = w.EXPORT.build(fmt);
+    ok(out.length > 0, at(`exports ${fmt}`));
+    if (fmt === "md") {
+      ok(out.length > visible * 0.6,
+         at("markdown keeps most of the page"),
+         `${out.length} chars vs ${visible} visible`);
+    }
+  }
+  /* a LaTeX file that will not compile is worse than none: no bare Greek
+     or combining marks may survive the converter */
+  const tex = w.EXPORT.build("tex");
+  const stray = [...new Set((tex.match(/[\u0300-\u036f\u0370-\u03ff\u2070-\u209f]/g) || []))];
+  ok(stray.length === 0, at("LaTeX has no unconverted Unicode"), stray.join(" "));
+}
+
+/* ---------- 6. house conventions, across the built site ---------- */
 head("conventions");
 for (const u of live) {
   const src = readFileSync(`${SITE}units/${u.slug}.html`, "utf8");

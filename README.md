@@ -50,6 +50,8 @@ assets/nav.js         renders roadmap, breadcrumbs, prev/next from the manifest
 assets/viz.js         interactive SVG figures, one per unit
 assets/quiz.js        multiple-choice self-test widget
 assets/glossary.js    glossary filter (progressive enhancement only)
+assets/reader.js      text size, theme and the download menu
+assets/export.js      Word / Markdown / LaTeX converters
 assets/lesson.css     base typography and palette
 assets/course.css     course-site components (.eqn-report, .tutorial, .viz …)
 units/                one page per unit, 1A through 3C
@@ -172,6 +174,56 @@ markup and nothing else: **the page must read completely with JavaScript off.**
 Reference pages are listed in the manifest's `reference` array with the same
 `status` field the units use, so one that has not been written yet is named on the
 home page but not linked.
+
+## Reader preferences and downloads
+
+Every page carries a small control bar: **text size**, **theme** and
+**Download**. Preferences are stored per reader in `localStorage` and apply
+across the site. With JavaScript off the bar does not appear, the page
+follows the reader's system theme through `prefers-color-scheme`, and
+printing still works from the browser's own menu.
+
+### Themes
+
+**Every colour in the site comes from a custom property on `:root`** — the
+SVG figures included. `assets/viz.js` reads the tokens through
+`getComputedStyle` at draw time, so adding or changing a theme means editing
+the token block in `lesson.css` and nothing else. Never hard-code a colour in
+a figure; there is a `P.accent` / `P.ink` / `P.paper` for it.
+
+A theme change calls `VIZ.redraw()`, which rebuilds every figure from
+scratch. That resets slider positions, which is a fair price for not
+threading a recolour path through nineteen closures.
+
+The no-flash behaviour is a tiny inline script in each page's `<head>` that
+stamps `data-theme` and `data-text` before first paint. It has to be inline
+and it has to be in the head — a deferred script would let a white flash
+through on every navigation.
+
+### Downloads
+
+| Format | How it works | Quality |
+| --- | --- | --- |
+| PDF | `window.print()`, using the print stylesheet | Best. Respects what the reader expanded on screen |
+| Word | HTML served as `application/msword` | Good. Not a real `.docx`; Word may warn about the extension |
+| Markdown | DOM walk, Unicode sub/superscripts | Clean |
+| LaTeX | DOM walk, real `\beta` / `_{}` / `\hat{}` | Compiles under pdfLaTeX; equations want a read-through |
+
+`check-site.mjs` verifies that every page exports, that Markdown retains at
+least 60% of the visible text, and that **no unconverted Greek or combining
+marks survive into the LaTeX** — a `.tex` that will not compile is worse than
+no `.tex` at all. To check that claim properly, compile them:
+
+```sh
+node dev/check-site.mjs      # catches unconverted characters
+# then, if you have a TeX toolchain:
+pdflatex -interaction=nonstopmode <unit>.tex
+```
+
+All ten pages currently compile. Five of them did not on the first attempt,
+and the failures were only visible by actually running `pdflatex` — bare
+Greek inside `<sub>`, stacked accents (Y with *two* combining marks), and
+`\sqrt` emitted with no radicand.
 
 ## House conventions
 

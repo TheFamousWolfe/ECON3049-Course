@@ -55,15 +55,15 @@
     function axes(xLabel, yLabel) {
       var g = s("g");
       g.appendChild(s("line", { x1: p.l, y1: ht - p.b, x2: w - p.r, y2: ht - p.b,
-                                stroke: "#1a1a1a", "stroke-width": 1 }));
+                                stroke: P.ink, "stroke-width": 1 }));
       g.appendChild(s("line", { x1: p.l, y1: p.t, x2: p.l, y2: ht - p.b,
-                                stroke: "#1a1a1a", "stroke-width": 1 }));
+                                stroke: P.ink, "stroke-width": 1 }));
       var xl = s("text", { x: (p.l + w - p.r) / 2, y: ht - 6,
-                           "text-anchor": "middle", "font-size": 12, fill: "#555" });
+                           "text-anchor": "middle", "font-size": 12, fill: P.inkSoft });
       xl.textContent = xLabel;
       g.appendChild(xl);
       var yl = s("text", { x: 12, y: (p.t + ht - p.b) / 2,
-                           "text-anchor": "middle", "font-size": 12, fill: "#555",
+                           "text-anchor": "middle", "font-size": 12, fill: P.inkSoft,
                            transform: "rotate(-90 12 " + (p.t + ht - p.b) / 2 + ")" });
       yl.textContent = yLabel;
       g.appendChild(yl);
@@ -221,6 +221,32 @@
     return (lo + hi) / 2;
   }
 
+  /* ---------- the palette, read from the stylesheet ----------
+     Every colour below comes from a CSS custom property, so the
+     figures follow whatever theme is active instead of carrying their
+     own hard-coded hexes. Read once per render rather than per shape:
+     getComputedStyle is not free, and 19 figures is a lot of calls.
+     The fallbacks are the light palette, for the case where a figure
+     is somehow drawn before the stylesheet has applied. */
+  var P = {};
+  function palette() {
+    var cs = window.getComputedStyle(document.documentElement);
+    function g(name, fallback) {
+      var v = cs.getPropertyValue(name);
+      return (v && v.trim()) || fallback;
+    }
+    P.ink      = g("--ink",       "#1a1a1a");
+    P.inkSoft  = g("--ink-soft",  "#555");
+    P.inkFaint = g("--ink-faint", "#8a8378");
+    P.paper    = g("--paper",     "#fffff8");
+    P.rule     = g("--rule",      "#e4e0d4");
+    P.ruleSoft = g("--rule-soft", "#c9c2b6");
+    P.accent   = g("--accent",    "#7a1f2b");
+    P.accent2  = g("--accent-2",  "#2c5f7c");
+    P.good     = g("--good",      "#3a6230");
+    P.warnBg   = g("--warn-bg",   "#fcefec");
+  }
+
   var VIZ = {
     register: function (name, fn) { registry[name] = fn; },
     s: s, h: h, chart: chart, pointAt: pointAt, ols: ols, ols3: ols3, olsk: olsk,
@@ -248,8 +274,8 @@
     var c = chart({ w: 640, h: 380, xd: [0, 100], yd: [0, 100] });
     c.axes("Income  X", "Consumption expenditure  Y");
 
-    var drops = s("g", { stroke: "#7a1f2b", "stroke-width": 1.2, opacity: 0.8 });
-    var prf   = s("line", { stroke: "#2c5f7c", "stroke-width": 2.5 });
+    var drops = s("g", { stroke: P.accent, "stroke-width": 1.2, opacity: 0.8 });
+    var prf   = s("line", { stroke: P.accent2, "stroke-width": 2.5 });
     var dots  = s("g");
     c.plot.appendChild(drops);
     c.plot.appendChild(prf);
@@ -260,13 +286,13 @@
 
     var label = s("text", {
       x: c.x(72), y: c.y(B1 + B2 * 72) - 10,
-      "font-size": 13, "font-style": "italic", fill: "#2c5f7c"
+      "font-size": 13, "font-style": "italic", fill: P.accent2
     });
     label.textContent = "E(Y | X) = β1 + β2X";
     c.plot.appendChild(label);
 
     XS.forEach(function () {
-      dots.appendChild(s("circle", { r: 5.5, fill: "#1a1a1a" }));
+      dots.appendChild(s("circle", { r: 5.5, fill: P.ink }));
     });
 
     function draw() {
@@ -342,16 +368,16 @@
     var c = chart({ w: 640, h: 380, xd: [0, 100], yd: [0, 100] });
     c.axes("Income  X", "Consumption  Y");
 
-    var resid = s("g", { stroke: "#7a1f2b", "stroke-width": 1,
+    var resid = s("g", { stroke: P.accent, "stroke-width": 1,
                          "stroke-dasharray": "3 3", opacity: 0.75 });
-    var line  = s("line", { stroke: "#2c5f7c", "stroke-width": 2.5 });
+    var line  = s("line", { stroke: P.accent2, "stroke-width": 2.5 });
     var dots  = s("g");
     c.plot.appendChild(resid);
     c.plot.appendChild(line);
     c.plot.appendChild(dots);
 
     var circles = pts.map(function (p, i) {
-      var el = s("circle", { r: 7, fill: "#1a1a1a", cursor: "grab" });
+      var el = s("circle", { r: 7, fill: P.ink, cursor: "grab" });
       el.setAttribute("tabindex", "0");
       el.setAttribute("role", "slider");
       el.setAttribute("aria-label", "Observation " + (i + 1) + ", drag to move");
@@ -474,8 +500,8 @@
     var c = chart({ w: 640, h: 380, xd: [0, 100], yd: [0, 100] });
     c.axes("Income  X", "Consumption  Y");
 
-    var prf = s("line", { stroke: "#2c5f7c", "stroke-width": 2.5 });
-    var srf = s("line", { stroke: "#7a1f2b", "stroke-width": 2.5,
+    var prf = s("line", { stroke: P.accent2, "stroke-width": 2.5 });
+    var srf = s("line", { stroke: P.accent, "stroke-width": 2.5,
                           "stroke-dasharray": "7 4" });
     var dots = s("g");
     c.plot.appendChild(prf);
@@ -495,8 +521,8 @@
       g.appendChild(t);
       c.plot.appendChild(g);
     }
-    legend("PRF  E(Y | X) = β1 + β2X   (never observed)", "#2c5f7c", 22, null);
-    legend("SRF  Ŷ = β̂1 + β̂2X   (what you estimate)", "#7a1f2b", 40, "7 4");
+    legend("PRF  E(Y | X) = β1 + β2X   (never observed)", P.accent2, 22, null);
+    legend("SRF  Ŷ = β̂1 + β̂2X   (what you estimate)", P.accent, 40, "7 4");
 
     /* box–muller, so the scatter is genuinely normal rather than uniform */
     function gauss() {
@@ -513,7 +539,7 @@
       while (dots.firstChild) dots.removeChild(dots.firstChild);
       pts.forEach(function (p) {
         dots.appendChild(s("circle", {
-          cx: c.x(p.x), cy: c.y(Math.max(2, Math.min(98, p.y))), r: 5, fill: "#1a1a1a"
+          cx: c.x(p.x), cy: c.y(Math.max(2, Math.min(98, p.y))), r: 5, fill: P.ink
         }));
       });
 
@@ -574,14 +600,14 @@
     var c = chart({ w: 640, h: 380, xd: [0, 100], yd: [0, 100] });
     c.axes("Income  X", "Consumption  Y");
 
-    var prf = s("line", { stroke: "#2c5f7c", "stroke-width": 2.5 });
+    var prf = s("line", { stroke: P.accent2, "stroke-width": 2.5 });
     prf.setAttribute("x1", c.x(0));   prf.setAttribute("y1", c.y(B1));
     prf.setAttribute("x2", c.x(100)); prf.setAttribute("y2", c.y(B1 + B2 * 100));
     var g = s("g");
     c.plot.appendChild(prf);
     c.plot.appendChild(g);
 
-    var lg = s("text", { x: c.x(4), y: 24, "font-size": 11.5, fill: "#2c5f7c" });
+    var lg = s("text", { x: c.x(4), y: 24, "font-size": 11.5, fill: P.accent2 });
     lg.textContent = "PRF  E(Y | X) = β1 + β2X";
     c.plot.appendChild(lg);
 
@@ -598,21 +624,21 @@
         g.appendChild(s("line", {
           x1: c.x(xv), y1: c.y(mean - 2.1 * sp),
           x2: c.x(xv), y2: c.y(mean + 2.1 * sp),
-          stroke: "#c9c2b6", "stroke-width": 1
+          stroke: P.ruleSoft, "stroke-width": 1
         }));
 
         D.forEach(function (d) {
           var yv = mean + d * sp;
           g.appendChild(s("circle", {
             cx: c.x(xv), cy: c.y(yv), r: 3.4,
-            fill: d > 0 ? "#7a1f2b" : d < 0 ? "#2c5f7c" : "#8a8378"
+            fill: d > 0 ? P.accent : d < 0 ? P.accent2 : P.inkFaint
           }));
         });
 
         /* the circled mean of the deck's Figure 1 — always on the line */
         g.appendChild(s("circle", {
           cx: c.x(xv), cy: c.y(mean), r: 7.5,
-          fill: "none", stroke: "#1a1a1a", "stroke-width": 2
+          fill: "none", stroke: P.ink, "stroke-width": 2
         }));
       });
 
@@ -683,9 +709,9 @@
 
     var zero = s("line", {
       x1: c.x(0), y1: c.y(0), x2: c.x(N + 1), y2: c.y(0),
-      stroke: "#1a1a1a", "stroke-width": 1, "stroke-dasharray": "4 3", opacity: 0.6
+      stroke: P.ink, "stroke-width": 1, "stroke-dasharray": "4 3", opacity: 0.6
     });
-    var path = s("polyline", { fill: "none", stroke: "#2c5f7c", "stroke-width": 1.6, opacity: 0.75 });
+    var path = s("polyline", { fill: "none", stroke: P.accent2, "stroke-width": 1.6, opacity: 0.75 });
     var dots = s("g");
     c.plot.appendChild(zero);
     c.plot.appendChild(path);
@@ -705,7 +731,7 @@
         pts.push(c.x(k + 1) + "," + c.y(yv));
         dots.appendChild(s("circle", {
           cx: c.x(k + 1), cy: c.y(yv), r: 3.2,
-          fill: u[k] >= 0 ? "#7a1f2b" : "#2c5f7c"
+          fill: u[k] >= 0 ? P.accent : P.accent2
         }));
       }
       path.setAttribute("points", pts.join(" "));
@@ -782,8 +808,8 @@
     var c = chart({ w: 640, h: 360, xd: [0, 100], yd: [0, 100] });
     c.axes("Income  X", "Consumption  Y");
 
-    var meanLine = s("line", { stroke: "#8a8378", "stroke-width": 1.6, "stroke-dasharray": "6 4" });
-    var fit = s("line", { stroke: "#7a1f2b", "stroke-width": 2.5 });
+    var meanLine = s("line", { stroke: P.inkFaint, "stroke-width": 1.6, "stroke-dasharray": "6 4" });
+    var fit = s("line", { stroke: P.accent, "stroke-width": 2.5 });
     var drops = s("g");
     var dots = s("g");
     c.plot.appendChild(meanLine);
@@ -793,11 +819,11 @@
 
     /* the decomposition bar lives in its own small svg beneath the plot */
     var bar = s("svg", { viewBox: "0 0 640 62", preserveAspectRatio: "xMidYMid meet" });
-    var ess = s("rect", { x: 60, y: 14, height: 22, fill: "#2c5f7c" });
-    var rss = s("rect", { y: 14, height: 22, fill: "#c9c2b6" });
-    var essT = s("text", { y: 52, "font-size": 11.5, fill: "#2c5f7c", "text-anchor": "middle" });
-    var rssT = s("text", { y: 52, "font-size": 11.5, fill: "#6b6459", "text-anchor": "middle" });
-    var tssT = s("text", { x: 8, y: 30, "font-size": 11.5, fill: "#1a1a1a" });
+    var ess = s("rect", { x: 60, y: 14, height: 22, fill: P.accent2 });
+    var rss = s("rect", { y: 14, height: 22, fill: P.ruleSoft });
+    var essT = s("text", { y: 52, "font-size": 11.5, fill: P.accent2, "text-anchor": "middle" });
+    var rssT = s("text", { y: 52, "font-size": 11.5, fill: P.inkSoft, "text-anchor": "middle" });
+    var tssT = s("text", { x: 8, y: 30, "font-size": 11.5, fill: P.ink });
     tssT.textContent = "TSS";
     bar.appendChild(ess); bar.appendChild(rss);
     bar.appendChild(essT); bar.appendChild(rssT); bar.appendChild(tssT);
@@ -824,10 +850,10 @@
         drops.appendChild(s("line", {
           x1: c.x(pts[k].x), y1: c.y(pts[k].y),
           x2: c.x(pts[k].x), y2: c.y(yh),
-          stroke: "#7a1f2b", "stroke-width": 1, "stroke-dasharray": "3 3", opacity: 0.7
+          stroke: P.accent, "stroke-width": 1, "stroke-dasharray": "3 3", opacity: 0.7
         }));
         dots.appendChild(s("circle", {
-          cx: c.x(pts[k].x), cy: c.y(pts[k].y), r: 4, fill: "#1a1a1a"
+          cx: c.x(pts[k].x), cy: c.y(pts[k].y), r: 4, fill: P.ink
         }));
       }
 
@@ -909,8 +935,8 @@
     var c = chart({ w: 640, h: 380, xd: [0, 100], yd: [0, 130] });
     c.axes("Spending per student  X₂", "Average test score  Y");
 
-    var truth = s("line", { stroke: "#2c5f7c", "stroke-width": 2.5 });
-    var naive = s("line", { stroke: "#7a1f2b", "stroke-width": 2.5, "stroke-dasharray": "7 4" });
+    var truth = s("line", { stroke: P.accent2, "stroke-width": 2.5 });
+    var naive = s("line", { stroke: P.accent, "stroke-width": 2.5, "stroke-dasharray": "7 4" });
     var dots = s("g");
     c.plot.appendChild(truth);
     c.plot.appendChild(naive);
@@ -925,8 +951,8 @@
       g.appendChild(t);
       c.plot.appendChild(g);
     }
-    legend("true partial slope β2 = 0.600", "#2c5f7c", 22, null);
-    legend("Y regressed on X2 alone", "#7a1f2b", 40, "7 4");
+    legend("true partial slope β2 = 0.600", P.accent2, 22, null);
+    legend("Y regressed on X2 alone", P.accent, 40, "7 4");
 
     function draw() {
       var pts = [], x2 = [], x3 = [], y = [], k;
@@ -948,7 +974,7 @@
         dots.appendChild(s("circle", {
           cx: c.x(Math.max(0, Math.min(100, p.x))),
           cy: c.y(Math.max(0, Math.min(130, p.y))),
-          r: 4, fill: "#1a1a1a"
+          r: 4, fill: P.ink
         }));
       });
 
@@ -1032,25 +1058,25 @@
     [0.25, 0.5, 0.75, 1].forEach(function (g) {
       c.plot.appendChild(s("line", {
         x1: c.x(0), y1: c.y(g), x2: c.x(MAXJ), y2: c.y(g),
-        stroke: "#e4e0d4", "stroke-width": 1
+        stroke: P.rule, "stroke-width": 1
       }));
       var t = s("text", { x: c.x(0) - 6, y: c.y(g) + 4, "font-size": 10.5,
-                          fill: "#8a8378", "text-anchor": "end" });
+                          fill: P.inkFaint, "text-anchor": "end" });
       t.textContent = g.toFixed(2);
       c.plot.appendChild(t);
     });
 
-    var pR2 = s("polyline", { fill: "none", stroke: "#2c5f7c", "stroke-width": 2.5 });
-    var pAdj = s("polyline", { fill: "none", stroke: "#7a1f2b", "stroke-width": 2.5,
+    var pR2 = s("polyline", { fill: "none", stroke: P.accent2, "stroke-width": 2.5 });
+    var pAdj = s("polyline", { fill: "none", stroke: P.accent, "stroke-width": 2.5,
                                "stroke-dasharray": "7 4" });
     var marks = s("g");
     c.plot.appendChild(pR2);
     c.plot.appendChild(pAdj);
     c.plot.appendChild(marks);
 
-    var lg1 = s("text", { x: c.x(0.4), y: c.y(0.06), "font-size": 11.5, fill: "#2c5f7c" });
+    var lg1 = s("text", { x: c.x(0.4), y: c.y(0.06), "font-size": 11.5, fill: P.accent2 });
     lg1.textContent = "R²  — never falls";
-    var lg2 = s("text", { x: c.x(0.4), y: c.y(0.02), "font-size": 11.5, fill: "#7a1f2b" });
+    var lg2 = s("text", { x: c.x(0.4), y: c.y(0.02), "font-size": 11.5, fill: P.accent });
     lg2.textContent = "adjusted R²  — charges for each regressor";
     c.plot.appendChild(lg1);
     c.plot.appendChild(lg2);
@@ -1082,8 +1108,8 @@
       pAdj.setAttribute("points", b.join(" "));
 
       while (marks.firstChild) marks.removeChild(marks.firstChild);
-      marks.appendChild(s("circle", { cx: c.x(junk), cy: c.y(series[junk].r2), r: 4.5, fill: "#2c5f7c" }));
-      marks.appendChild(s("circle", { cx: c.x(junk), cy: c.y(Math.max(0, series[junk].adj)), r: 4.5, fill: "#7a1f2b" }));
+      marks.appendChild(s("circle", { cx: c.x(junk), cy: c.y(series[junk].r2), r: 4.5, fill: P.accent2 }));
+      marks.appendChild(s("circle", { cx: c.x(junk), cy: c.y(Math.max(0, series[junk].adj)), r: 4.5, fill: P.accent }));
 
       readout.textContent =
         junk + " noise regressor" + (junk === 1 ? "" : "s") +
@@ -1150,11 +1176,11 @@
     c.axes("Sum of the omitted influences, standardised", "");
 
     var bars = s("g");
-    var curve = s("path", { fill: "none", stroke: "#7a1f2b", "stroke-width": 2.5 });
+    var curve = s("path", { fill: "none", stroke: P.accent, "stroke-width": 2.5 });
     c.plot.appendChild(bars);
     c.plot.appendChild(curve);
 
-    var lg = s("text", { x: c.x(LO + 0.15), y: c.y(0.51), "font-size": 11.5, fill: "#7a1f2b" });
+    var lg = s("text", { x: c.x(LO + 0.15), y: c.y(0.51), "font-size": 11.5, fill: P.accent });
     lg.textContent = "N(0, 1) — what the CLT promises";
     c.plot.appendChild(lg);
 
@@ -1189,7 +1215,7 @@
           x: c.x(x0) + 0.5, y: c.y(Math.min(0.55, dens)),
           width: Math.max(0.5, c.x(x0 + w) - c.x(x0) - 1),
           height: Math.max(0, c.y(0) - c.y(Math.min(0.55, dens))),
-          fill: "#2c5f7c", opacity: 0.62
+          fill: P.accent2, opacity: 0.62
         }));
       }
 
@@ -1263,35 +1289,35 @@
     /* --- top panel: the data and the candidate line --- */
     var c = chart({ w: 640, h: 300, xd: [0, 100], yd: [0, 100] });
     c.axes("Income  X", "Consumption  Y");
-    var line = s("line", { stroke: "#7a1f2b", "stroke-width": 2.5 });
+    var line = s("line", { stroke: P.accent, "stroke-width": 2.5 });
     var drops = s("g");
     var dots = s("g");
     c.plot.appendChild(line);
     c.plot.appendChild(drops);
     c.plot.appendChild(dots);
     pts.forEach(function (p) {
-      dots.appendChild(s("circle", { cx: c.x(p.x), cy: c.y(p.y), r: 4, fill: "#1a1a1a" }));
+      dots.appendChild(s("circle", { cx: c.x(p.x), cy: c.y(p.y), r: 4, fill: P.ink }));
     });
 
     /* --- bottom panel: RSS and ln L over the same β2 axis --- */
     var g2 = chart({ w: 640, h: 230, pad: { t: 20, r: 16, b: 42, l: 44 },
                      xd: [LO, HI], yd: [0, 1] });
     g2.axes("candidate value of β2", "");
-    var pRSS = s("polyline", { fill: "none", stroke: "#2c5f7c", "stroke-width": 2.5 });
-    var pLL = s("polyline", { fill: "none", stroke: "#7a1f2b", "stroke-width": 2.5,
+    var pRSS = s("polyline", { fill: "none", stroke: P.accent2, "stroke-width": 2.5 });
+    var pLL = s("polyline", { fill: "none", stroke: P.accent, "stroke-width": 2.5,
                               "stroke-dasharray": "7 4" });
-    var vline = s("line", { stroke: "#1a1a1a", "stroke-width": 1, "stroke-dasharray": "3 3" });
-    var markR = s("circle", { r: 4.5, fill: "#2c5f7c" });
-    var markL = s("circle", { r: 4.5, fill: "#7a1f2b" });
+    var vline = s("line", { stroke: P.ink, "stroke-width": 1, "stroke-dasharray": "3 3" });
+    var markR = s("circle", { r: 4.5, fill: P.accent2 });
+    var markL = s("circle", { r: 4.5, fill: P.accent });
     g2.plot.appendChild(vline);
     g2.plot.appendChild(pRSS);
     g2.plot.appendChild(pLL);
     g2.plot.appendChild(markR);
     g2.plot.appendChild(markL);
 
-    var t1 = s("text", { x: g2.x(LO) + 8, y: g2.y(0.93), "font-size": 11.5, fill: "#2c5f7c" });
+    var t1 = s("text", { x: g2.x(LO) + 8, y: g2.y(0.93), "font-size": 11.5, fill: P.accent2 });
     t1.textContent = "Σû²  — OLS drives this DOWN";
-    var t2 = s("text", { x: g2.x(LO) + 8, y: g2.y(0.80), "font-size": 11.5, fill: "#7a1f2b" });
+    var t2 = s("text", { x: g2.x(LO) + 8, y: g2.y(0.80), "font-size": 11.5, fill: P.accent });
     t2.textContent = "ln L  — ML drives this UP";
     g2.plot.appendChild(t1);
     g2.plot.appendChild(t2);
@@ -1340,7 +1366,7 @@
       pts.forEach(function (p) {
         drops.appendChild(s("line", {
           x1: c.x(p.x), y1: c.y(p.y), x2: c.x(p.x), y2: c.y(b1 + b2 * p.x),
-          stroke: "#7a1f2b", "stroke-width": 1, "stroke-dasharray": "3 3", opacity: 0.7
+          stroke: P.accent, "stroke-width": 1, "stroke-dasharray": "3 3", opacity: 0.7
         }));
       });
 
@@ -1411,10 +1437,10 @@
                     xd: [LO, HI], yd: [0, 0.42] });
     c.axes("t", "");
 
-    var shade = s("path", { fill: "#7a1f2b", opacity: 0.18 });
-    var curve = s("path", { fill: "none", stroke: "#2c5f7c", "stroke-width": 2.5 });
-    var stat = s("line", { stroke: "#1a1a1a", "stroke-width": 2 });
-    var statLab = s("text", { "font-size": 11.5, fill: "#1a1a1a", "text-anchor": "middle" });
+    var shade = s("path", { fill: P.accent, opacity: 0.18 });
+    var curve = s("path", { fill: "none", stroke: P.accent2, "stroke-width": 2.5 });
+    var stat = s("line", { stroke: P.ink, "stroke-width": 2 });
+    var statLab = s("text", { "font-size": 11.5, fill: P.ink, "text-anchor": "middle" });
     var critG = s("g");
     c.plot.appendChild(shade);
     c.plot.appendChild(curve);
@@ -1459,10 +1485,10 @@
       cuts.forEach(function (v) {
         critG.appendChild(s("line", {
           x1: c.x(v), y1: c.y(0), x2: c.x(v), y2: c.y(0.40),
-          stroke: "#7a1f2b", "stroke-width": 1.4, "stroke-dasharray": "5 3"
+          stroke: P.accent, "stroke-width": 1.4, "stroke-dasharray": "5 3"
         }));
         var t = s("text", { x: c.x(v), y: c.y(0.41), "font-size": 11,
-                            fill: "#7a1f2b", "text-anchor": "middle" });
+                            fill: P.accent, "text-anchor": "middle" });
         t.textContent = v.toFixed(3);
         critG.appendChild(t);
       });
@@ -1484,7 +1510,7 @@
       verdict.textContent = reject
         ? "reject H₀"
         : "do not reject H₀";
-      verdict.style.color = reject ? "#7a1f2b" : "#3a6230";
+      verdict.style.color = reject ? P.accent : P.good;
       c.svg.setAttribute("aria-label",
         "t distribution with " + df + " degrees of freedom, " + tail
         + "-tailed rejection region at alpha " + alpha + ", test statistic " + tstat.toFixed(3)
@@ -1502,7 +1528,7 @@
           Array.prototype.forEach.call(wrap.querySelectorAll("button"), function (n) {
             n.style.borderColor = "";
           });
-          b.style.borderColor = "#7a1f2b";
+          b.style.borderColor = P.accent;
           draw();
         });
         wrap.appendChild(b);
@@ -1550,8 +1576,8 @@
       + "“t → Z as n → ∞” means."));
 
     /* default highlighting on the two chooser rows */
-    tailBox.querySelectorAll("button")[0].style.borderColor = "#7a1f2b";
-    alphaBox.querySelectorAll("button")[1].style.borderColor = "#7a1f2b";
+    tailBox.querySelectorAll("button")[0].style.borderColor = P.accent;
+    alphaBox.querySelectorAll("button")[1].style.borderColor = P.accent;
     draw();
   });
 
@@ -1597,12 +1623,12 @@
 
     var truth = s("line", {
       x1: c.x(B2), y1: c.y(0), x2: c.x(B2), y2: c.y(RUNS + 1),
-      stroke: "#2c5f7c", "stroke-width": 2
+      stroke: P.accent2, "stroke-width": 2
     });
     var bars = s("g");
     c.plot.appendChild(truth);
     c.plot.appendChild(bars);
-    var lg = s("text", { x: c.x(B2) + 6, y: c.y(RUNS + 0.6), "font-size": 11.5, fill: "#2c5f7c" });
+    var lg = s("text", { x: c.x(B2) + 6, y: c.y(RUNS + 0.6), "font-size": 11.5, fill: P.accent2 });
     lg.textContent = "true β2 = 0.600";
     c.plot.appendChild(lg);
 
@@ -1614,7 +1640,7 @@
         var lo = iv.b2 - crit * iv.se, hi = iv.b2 + crit * iv.se;
         var covers = lo <= B2 && B2 <= hi;
         if (covers) hit++;
-        var col = covers ? "#8a8378" : "#7a1f2b";
+        var col = covers ? P.inkFaint : P.accent;
         var y = c.y(r + 1);
         bars.appendChild(s("line", {
           x1: c.x(Math.max(0.2, lo)), y1: y, x2: c.x(Math.min(1.0, hi)), y2: y,
@@ -1638,7 +1664,7 @@
       b.addEventListener("click", function () {
         level = L;
         Array.prototype.forEach.call(lab.querySelectorAll("button"), function (n) { n.style.borderColor = ""; });
-        b.style.borderColor = "#7a1f2b";
+        b.style.borderColor = P.accent;
         draw();
       });
       lab.appendChild(b);
@@ -1664,7 +1690,7 @@
       + "miss. Notice too that every interval that fails to cover 0.600 would also reject a "
       + "true null at that level — the interval and the test are the same arithmetic."));
 
-    lab.querySelectorAll("button")[1].style.borderColor = "#7a1f2b";
+    lab.querySelectorAll("button")[1].style.borderColor = P.accent;
     draw();
   });
 
@@ -1715,25 +1741,25 @@
     var c = chart({ w: 640, h: 150, pad: { t: 28, r: 24, b: 42, l: 24 },
                     xd: [-0.4, 1.6], yd: [0, 1] });
     var axis = s("line", { x1: c.x(-0.4), y1: c.y(0.42), x2: c.x(1.6), y2: c.y(0.42),
-                           stroke: "#1a1a1a", "stroke-width": 1 });
+                           stroke: P.ink, "stroke-width": 1 });
     c.plot.appendChild(axis);
     [-0.4, 0, 0.4, 0.6, 0.8, 1.2, 1.6].forEach(function (v) {
       c.plot.appendChild(s("line", { x1: c.x(v), y1: c.y(0.42), x2: c.x(v), y2: c.y(0.36),
-                                     stroke: "#8a8378", "stroke-width": 1 }));
-      var t = s("text", { x: c.x(v), y: c.y(0.20), "font-size": 10.5, fill: "#8a8378",
+                                     stroke: P.inkFaint, "stroke-width": 1 }));
+      var t = s("text", { x: c.x(v), y: c.y(0.20), "font-size": 10.5, fill: P.inkFaint,
                           "text-anchor": "middle" });
       t.textContent = v.toFixed(1);
       c.plot.appendChild(t);
     });
 
     var truthMark = s("line", { x1: c.x(B2), y1: c.y(0.30), x2: c.x(B2), y2: c.y(0.78),
-                                stroke: "#2c5f7c", "stroke-width": 2.5 });
-    var truthLab = s("text", { x: c.x(B2), y: c.y(0.86), "font-size": 11.5, fill: "#2c5f7c",
+                                stroke: P.accent2, "stroke-width": 2.5 });
+    var truthLab = s("text", { x: c.x(B2), y: c.y(0.86), "font-size": 11.5, fill: P.accent2,
                                "text-anchor": "middle" });
     truthLab.textContent = "true β2 = 0.600";
-    var arrow = s("line", { stroke: "#7a1f2b", "stroke-width": 3 });
-    var estMark = s("circle", { r: 6, fill: "#7a1f2b" });
-    var estLab = s("text", { "font-size": 11.5, fill: "#7a1f2b", "text-anchor": "middle" });
+    var arrow = s("line", { stroke: P.accent, "stroke-width": 3 });
+    var estMark = s("circle", { r: 6, fill: P.accent });
+    var estLab = s("text", { "font-size": 11.5, fill: P.accent, "text-anchor": "middle" });
     c.plot.appendChild(arrow);
     c.plot.appendChild(truthMark);
     c.plot.appendChild(truthLab);
@@ -1749,16 +1775,16 @@
      ["np", 1, 2, "Downward (negative)"], ["nn", 2, 2, "Upward (positive)"]].forEach(function (d) {
       var g = s("g");
       var box = s("rect", { x: CX[d[1]] - 145, y: CY[d[2]] - 20, width: 290, height: 34,
-                            fill: "#fff", stroke: "#e4e0d4" });
+                            fill: P.paper, stroke: P.rule });
       var t = s("text", { x: CX[d[1]], y: CY[d[2]] + 3, "font-size": 12,
-                          fill: "#1a1a1a", "text-anchor": "middle" });
+                          fill: P.ink, "text-anchor": "middle" });
       t.textContent = d[3];
       g.appendChild(box); g.appendChild(t);
       tbl.appendChild(g);
       cells[d[0]] = { box: box, text: t };
     });
     function head(x, y, txt, anchor) {
-      var t = s("text", { x: x, y: y, "font-size": 11.5, fill: "#6b6459",
+      var t = s("text", { x: x, y: y, "font-size": 11.5, fill: P.inkSoft,
                           "text-anchor": anchor || "middle" });
       t.textContent = txt;
       tbl.appendChild(t);
@@ -1800,10 +1826,10 @@
       var key = dead ? null : (b3 >= 0 ? "p" : "n") + (delta.b2 >= 0 ? "p" : "n");
       Object.keys(cells).forEach(function (kk) {
         var on = kk === key;
-        cells[kk].box.setAttribute("fill", on ? "#fcefec" : "#fff");
-        cells[kk].box.setAttribute("stroke", on ? "#7a1f2b" : "#e4e0d4");
+        cells[kk].box.setAttribute("fill", on ? P.warnBg : P.paper);
+        cells[kk].box.setAttribute("stroke", on ? P.accent : P.rule);
         cells[kk].box.setAttribute("stroke-width", on ? 2 : 1);
-        cells[kk].text.setAttribute("fill", on ? "#7a1f2b" : "#8a8378");
+        cells[kk].text.setAttribute("fill", on ? P.accent : P.inkFaint);
       });
 
       readout.textContent =
@@ -1885,9 +1911,9 @@
     c.plot.appendChild(barsA);
     c.plot.appendChild(barsB);
     var truth = s("line", { x1: c.x(B2), y1: c.y(0), x2: c.x(B2), y2: c.y(0.95),
-                            stroke: "#1a1a1a", "stroke-width": 2, "stroke-dasharray": "4 3" });
+                            stroke: P.ink, "stroke-width": 2, "stroke-dasharray": "4 3" });
     c.plot.appendChild(truth);
-    var tl = s("text", { x: c.x(B2), y: c.y(0.99), "font-size": 11.5, fill: "#1a1a1a",
+    var tl = s("text", { x: c.x(B2), y: c.y(0.99), "font-size": 11.5, fill: P.ink,
                          "text-anchor": "middle" });
     tl.textContent = "true β2 = 0.600";
     c.plot.appendChild(tl);
@@ -1897,8 +1923,8 @@
       t.textContent = text;
       c.plot.appendChild(t);
     }
-    legend("correct model:  Y on X₂", "#2c5f7c", 34);
-    legend("overfitted:  Y on X₂ and an irrelevant X₃", "#7a1f2b", 50);
+    legend("correct model:  Y on X₂", P.accent2, 34);
+    legend("overfitted:  Y on X₂ and an irrelevant X₃", P.accent, 50);
 
     function hist(vals, g, colour, up) {
       var counts = new Array(BINS).fill(0), k;
@@ -1948,8 +1974,8 @@
         over.push(ols3(x2, x3, y).b2);
       });
 
-      hist(simple, barsA, "#2c5f7c", true);
-      hist(over, barsB, "#7a1f2b", false);
+      hist(simple, barsA, P.accent2, true);
+      hist(over, barsB, P.accent, false);
 
       var a = sd(simple), b = sd(over);
       readout.textContent =
@@ -2016,8 +2042,8 @@
     var c = chart({ w: 640, h: 320, xd: [10, 90], yd: [-32, 32] });
     c.axes("the omitted variable  X₃", "residual  û");
     var zero = s("line", { x1: c.x(10), y1: c.y(0), x2: c.x(90), y2: c.y(0),
-                           stroke: "#1a1a1a", "stroke-width": 1, "stroke-dasharray": "4 3" });
-    var trend = s("line", { stroke: "#7a1f2b", "stroke-width": 2.5 });
+                           stroke: P.ink, "stroke-width": 1, "stroke-dasharray": "4 3" });
+    var trend = s("line", { stroke: P.accent, "stroke-width": 2.5 });
     var dots = s("g");
     c.plot.appendChild(zero);
     c.plot.appendChild(trend);
@@ -2042,7 +2068,7 @@
         dots.appendChild(s("circle", {
           cx: c.x(Math.max(10, Math.min(90, x3[k]))),
           cy: c.y(Math.max(-31, Math.min(31, res[k]))),
-          r: 4, fill: res[k] >= 0 ? "#7a1f2b" : "#2c5f7c"
+          r: 4, fill: res[k] >= 0 ? P.accent : P.accent2
         }));
       }
       var t = ols(rp);
@@ -2055,7 +2081,7 @@
       note.textContent = omit
         ? "the residuals still carry X₃'s effect"
         : "no pattern left to find";
-      note.style.color = omit ? "#7a1f2b" : "#3a6230";
+      note.style.color = omit ? P.accent : P.good;
       c.svg.setAttribute("aria-label",
         "Residuals plotted against the omitted variable, with X3 "
         + (omit ? "omitted" : "included") + "; the fitted slope is " + t.b2.toFixed(3) + ".");
@@ -2113,18 +2139,18 @@
     var c = chart({ w: 640, h: 380, xd: [0, 95], yd: [0, 80] });
     c.axes("Output  Q", "Total cost  C");
 
-    var line = s("line", { stroke: "#7a1f2b", "stroke-width": 2.5 });
+    var line = s("line", { stroke: P.accent, "stroke-width": 2.5 });
     var drops = s("g");
     var dots = s("g");
     c.plot.appendChild(line);
     c.plot.appendChild(drops);
     c.plot.appendChild(dots);
     pts.forEach(function (p) {
-      dots.appendChild(s("circle", { cx: c.x(p.x), cy: c.y(p.y), r: 4, fill: "#1a1a1a" }));
+      dots.appendChild(s("circle", { cx: c.x(p.x), cy: c.y(p.y), r: 4, fill: P.ink }));
     });
 
     var origin = s("circle", { cx: c.x(0), cy: c.y(0), r: 5, fill: "none",
-                               stroke: "#2c5f7c", "stroke-width": 2 });
+                               stroke: P.accent2, "stroke-width": 2 });
     c.plot.appendChild(origin);
 
     function draw() {
@@ -2148,7 +2174,7 @@
         sumRes += e; rss += e * e;
         drops.appendChild(s("line", {
           x1: c.x(p.x), y1: c.y(p.y), x2: c.x(p.x), y2: c.y(b1 + b2 * p.x),
-          stroke: "#7a1f2b", "stroke-width": 1, "stroke-dasharray": "3 3", opacity: 0.65
+          stroke: P.accent, "stroke-width": 1, "stroke-dasharray": "3 3", opacity: 0.65
         }));
       });
 
@@ -2158,7 +2184,7 @@
         "β̂1 = " + b1.toFixed(2) + "    β̂2 = " + b2.toFixed(3) +
         "    (true 34.00 and 0.420)";
       resid.textContent = "Σû = " + sumRes.toFixed(2) + "    Σû² = " + rss.toFixed(1);
-      resid.style.color = Math.abs(sumRes) > 0.5 ? "#7a1f2b" : "#3a6230";
+      resid.style.color = Math.abs(sumRes) > 0.5 ? P.accent : P.good;
       c.svg.setAttribute("aria-label",
         "Cost against output, fitted " + (useConst ? "with" : "without")
         + " an intercept; the slope is " + b2.toFixed(3) + ".");
@@ -2218,12 +2244,12 @@
 
     var c = chart({ w: 640, h: 360, xd: [0, 100], yd: [0, 60] });
     c.axes("X", "Y");
-    var curve = s("path", { fill: "none", stroke: "#7a1f2b", "stroke-width": 2.5 });
+    var curve = s("path", { fill: "none", stroke: P.accent, "stroke-width": 2.5 });
     var dots = s("g");
     c.plot.appendChild(curve);
     c.plot.appendChild(dots);
     for (i = 0; i < N; i++) {
-      dots.appendChild(s("circle", { cx: c.x(xs[i]), cy: c.y(ys[i]), r: 3.6, fill: "#1a1a1a" }));
+      dots.appendChild(s("circle", { cx: c.x(xs[i]), cy: c.y(ys[i]), r: 3.6, fill: P.ink }));
     }
 
     var FORMS = {
@@ -2311,7 +2337,7 @@
       b.addEventListener("click", function () {
         form = kk;
         Object.keys(buttons).forEach(function (q) { buttons[q].style.borderColor = ""; });
-        b.style.borderColor = "#7a1f2b";
+        b.style.borderColor = P.accent;
         draw();
       });
       buttons[kk] = b;
@@ -2335,7 +2361,7 @@
       + "because the forms with ln Y have a different dependent variable, and an R² computed "
       + "on ln Y is not comparable with one computed on Y."));
 
-    buttons.linear.style.borderColor = "#7a1f2b";
+    buttons.linear.style.borderColor = P.accent;
     draw();
   });
 
@@ -2354,12 +2380,12 @@
     c.axes("X", "Y");
     /* the y = 0 line, so the U case reads properly */
     c.plot.appendChild(s("line", { x1: c.x(0), y1: c.y(0), x2: c.x(70), y2: c.y(0),
-                                   stroke: "#c9c2b6", "stroke-width": 1 }));
+                                   stroke: P.ruleSoft, "stroke-width": 1 }));
 
-    var curve = s("path", { fill: "none", stroke: "#7a1f2b", "stroke-width": 2.5 });
-    var vline = s("line", { stroke: "#2c5f7c", "stroke-width": 2, "stroke-dasharray": "5 3" });
-    var star = s("circle", { r: 5.5, fill: "#2c5f7c" });
-    var slab = s("text", { "font-size": 11.5, fill: "#2c5f7c", "text-anchor": "middle" });
+    var curve = s("path", { fill: "none", stroke: P.accent, "stroke-width": 2.5 });
+    var vline = s("line", { stroke: P.accent2, "stroke-width": 2, "stroke-dasharray": "5 3" });
+    var star = s("circle", { r: 5.5, fill: P.accent2 });
+    var slab = s("text", { "font-size": 11.5, fill: P.accent2, "text-anchor": "middle" });
     c.plot.appendChild(curve);
     c.plot.appendChild(vline);
     c.plot.appendChild(star);
@@ -2402,7 +2428,7 @@
                              : "U-shaped, but X* lies outside the data")
         : b3 < 0 ? "inverted U — rises, then falls: X* is a MAXIMUM"
                  : "U-shaped — falls, then rises: X* is a MINIMUM";
-      shape.style.color = b3 < 0 ? "#7a1f2b" : "#2c5f7c";
+      shape.style.color = b3 < 0 ? P.accent : P.accent2;
       c.svg.setAttribute("aria-label",
         "A quadratic with squared coefficient " + b3.toFixed(4)
         + (inRange ? ", turning at X = " + xstar.toFixed(1) : ", with no turning point in range"));
@@ -2473,9 +2499,9 @@
     var c = chart({ w: 640, h: 380, xd: [10, 100], yd: [10, 100] });
     c.axes("Income  Y", "Consumption  C");
 
-    var pooled = s("line", { stroke: "#1a1a1a", "stroke-width": 2.5, "stroke-dasharray": "6 4" });
-    var lPre = s("line", { stroke: "#2c5f7c", "stroke-width": 2.5 });
-    var lPost = s("line", { stroke: "#7a1f2b", "stroke-width": 2.5 });
+    var pooled = s("line", { stroke: P.ink, "stroke-width": 2.5, "stroke-dasharray": "6 4" });
+    var lPre = s("line", { stroke: P.accent2, "stroke-width": 2.5 });
+    var lPost = s("line", { stroke: P.accent, "stroke-width": 2.5 });
     var dots = s("g");
     c.plot.appendChild(pooled);
     c.plot.appendChild(lPre);
@@ -2491,9 +2517,9 @@
       g.appendChild(t);
       c.plot.appendChild(g);
     }
-    legend("pooled — the restricted model", "#1a1a1a", 22, "6 4");
-    legend("1992–2007", "#2c5f7c", 40, null);
-    legend("2008–2016", "#7a1f2b", 58, null);
+    legend("pooled — the restricted model", P.ink, 22, "6 4");
+    legend("1992–2007", P.accent2, 40, null);
+    legend("2008–2016", P.accent, 58, null);
 
     function fitRss(pts) {
       var f = ols(pts);
@@ -2516,10 +2542,10 @@
 
       while (dots.firstChild) dots.removeChild(dots.firstChild);
       pre.forEach(function (p) {
-        dots.appendChild(s("circle", { cx: c.x(p.x), cy: c.y(p.y), r: 3.4, fill: "#2c5f7c" }));
+        dots.appendChild(s("circle", { cx: c.x(p.x), cy: c.y(p.y), r: 3.4, fill: P.accent2 }));
       });
       post.forEach(function (p) {
-        dots.appendChild(s("circle", { cx: c.x(p.x), cy: c.y(p.y), r: 3.4, fill: "#7a1f2b" }));
+        dots.appendChild(s("circle", { cx: c.x(p.x), cy: c.y(p.y), r: 3.4, fill: P.accent }));
       });
 
       var R = fitRss(all), A = fitRss(pre), B = fitRss(post);
@@ -2540,7 +2566,7 @@
       verdict.textContent = F > FCRIT
         ? "F > 3.09 — reject: the parameters are not stable"
         : "F < 3.09 — do not reject: no evidence of a break";
-      verdict.style.color = F > FCRIT ? "#7a1f2b" : "#3a6230";
+      verdict.style.color = F > FCRIT ? P.accent : P.good;
       c.svg.setAttribute("aria-label",
         "Consumption against income in two periods, with pooled and separate fitted lines; "
         + "the Chow F statistic is " + F.toFixed(2) + ".");
@@ -2575,6 +2601,7 @@
 
   /* ---------- boot ---------- */
   function boot() {
+    palette();
     document.querySelectorAll(".viz[data-viz]").forEach(function (host) {
       var fn = registry[host.getAttribute("data-viz")];
       if (!fn) return;                    /* leave the fallback text in place */
@@ -2588,6 +2615,13 @@
       }
     });
   }
+
+  /* Called by assets/reader.js when the theme changes. Figures are
+     rebuilt from scratch rather than recoloured in place — they hold
+     their own state in closures, and a theme switch is rare enough
+     that resetting a slider is a fair price for not threading a
+     colour-update path through all nineteen of them. */
+  VIZ.redraw = boot;
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", boot);
