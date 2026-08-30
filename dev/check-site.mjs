@@ -2,7 +2,8 @@
    Expectations are derived from assets/course.js, so this keeps working
    as units move from planned -> ready. Run: node check-site.mjs        */
 import { JSDOM } from "jsdom";
-import { readFileSync, existsSync } from "fs";
+import { readFileSync, existsSync, readdirSync } from "fs";
+import { createHash } from "crypto";
 
 const SITE = new URL("../", import.meta.url).pathname;
 
@@ -249,7 +250,30 @@ for (const f of ["index.html", ...live.map(u => `units/${u.slug}.html`),
   ok(stray.length === 0, at("LaTeX has no unconverted Unicode"), stray.join(" "));
 }
 
-/* ---------- 6. house conventions, across the built site ---------- */
+/* ---------- 6. asset stamps are current ----------
+   A stale stamp means a returning reader can get new HTML against a
+   cached stylesheet, which is how the preferences bar first shipped
+   completely unstyled. */
+head("asset cache stamps");
+{
+  const assets = readdirSync(`${SITE}assets`).filter(f => /\.(css|js)$/.test(f)).sort();
+  const h = createHash("sha256");
+  for (const a of assets) h.update(readFileSync(`${SITE}assets/${a}`));
+  const version = h.digest("hex").slice(0, 8);
+
+  for (const page of ["index.html", ...live.map(u => `units/${u.slug}.html`),
+                      ...refLive.map(r => `reference/${r.slug}.html`)]) {
+    const src = readFileSync(SITE + page, "utf8");
+    const refs = [...src.matchAll(/(?:\.\.\/)?assets\/[a-z-]+\.(?:css|js)(\?v=[0-9a-f]+)?/g)];
+    ok(refs.length > 0, `${page}: references assets`);
+    const bad = refs.filter(m => m[1] !== `?v=${version}`).map(m => m[0]);
+    ok(bad.length === 0,
+       `${page}: every asset carries the current stamp ?v=${version}`,
+       bad.join(" ") + "  — run: node dev/stamp-assets.mjs");
+  }
+}
+
+/* ---------- 7. house conventions, across the built site ---------- */
 head("conventions");
 for (const u of live) {
   const src = readFileSync(`${SITE}units/${u.slug}.html`, "utf8");

@@ -88,9 +88,10 @@ loudly rather than silently:
    term is only *named* in an earlier unit but *derived* in this one, re-point
    its `.g-unit` link here.
 5. **`node dev/link-glossary.mjs`** to back-link the prose.
-6. **`node dev/check-site.mjs`** until it is clean.
+6. **`node dev/stamp-assets.mjs`** if you touched anything in `assets/`.
+7. **`node dev/check-site.mjs`** until it is clean.
 
-Step 6 catches, in practice: quiz options whose lengths give the answer away,
+Step 7 catches, in practice: quiz options whose lengths give the answer away,
 a unit the glossary forgot, missing back-links, figures that render `NaN`, and
 `data-unit` codes that do not match the manifest.
 
@@ -174,6 +175,31 @@ markup and nothing else: **the page must read completely with JavaScript off.**
 Reference pages are listed in the manifest's `reference` array with the same
 `status` field the units use, so one that has not been written yet is named on the
 home page but not linked.
+
+## Asset caching
+
+GitHub Pages serves assets with `cache-control: max-age=600`. For ten
+minutes after a push, a returning reader can get **new HTML against an old
+stylesheet** — which is exactly how the preferences bar first shipped
+completely unstyled, markup arriving without the CSS that lays it out.
+
+Every asset link therefore carries a stamp derived from a hash of the assets
+themselves:
+
+```html
+<link rel="stylesheet" href="../assets/course.css?v=5ed93599">
+```
+
+Change any asset and the hash changes, so the URL changes, so no browser can
+serve a stale copy. After editing anything in `assets/`:
+
+```sh
+node dev/stamp-assets.mjs           # rewrite the stamps
+node dev/stamp-assets.mjs --check   # verify without writing
+```
+
+`check-site.mjs` runs the same verification, so a forgotten stamp fails the
+suite rather than reaching a student.
 
 ## Reader preferences and downloads
 

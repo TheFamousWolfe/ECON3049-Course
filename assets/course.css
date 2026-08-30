@@ -480,6 +480,8 @@ footer.site {
 /* ---------- download menu ---------- */
 .rb-downloads { position: relative; }
 .rb-downloads > summary {
+  display: block;            /* kills the ▶ marker everywhere; list-style
+                                alone does not do it in every engine */
   list-style: none;
   cursor: pointer;
   font-size: 0.78rem;
