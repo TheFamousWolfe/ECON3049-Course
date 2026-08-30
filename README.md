@@ -58,9 +58,11 @@ reference/            glossary (written); EViews guide, formula sheet (planned)
 
 ## Writing a new unit — the actual sequence
 
-Units are built from the lecture decks in `../Econ3049/LectureNotes/`, **not**
-from the course outline (see the note at the end of this file). The decks are the
-source of truth for what is taught and in what order.
+Units are built from the lecture decks in `../Econ3049/LectureNotes/`. **The
+decks are the source of truth** for what is taught and in what order — check the
+deck filenames rather than the printed course outline, which differs from them in
+places (Unit 1's topics and ordering, and the fact that 2A is delivered in two
+parts). Where the two disagree, the decks win.
 
 ```sh
 pdftotext -layout "../Econ3049/LectureNotes/UNIT 2B - Multicollinearity.pdf" -
