@@ -280,6 +280,14 @@ students, so they are worth keeping.
 
 ## Where things stand
 
+**Published at https://thefamouswolfe.github.io/ECON3049-Course/** from the
+`main` branch of a public GitHub repository. Pushing to `main` rebuilds the
+live site in about half a minute, so the checker has to pass *before* the
+push, not after — a broken push is publicly broken. The repository is public
+because GitHub Pages on a free plan requires it, and because this site has no
+build step: the source and the served artifact are the same files, so keeping
+the repository private would have hidden nothing that is not already served.
+
 Progress is recorded in the manifest, not here — `status: "ready"` is the
 authority, and `node dev/check-site.mjs` prints every written unit. As of the
 last session: **Unit 1 complete (1A–1F), Unit 2A complete (both parts)**, with
