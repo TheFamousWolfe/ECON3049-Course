@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 1C — OLS Assumptions and Goodness of Fit · ECON 3049</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/course.js"></script>
+<script src="../assets/nav.js" defer></script>
+<script src="../assets/quiz.js" defer></script>
+<script src="../assets/viz.js" defer></script>
+</head>
+<body>
+<div class="masthead" data-unit="1C"></div>
+<div class="wrap">
+
+<h1>OLS Assumptions and Goodness of Fit</h1>
+<p class="subtitle">What OLS needs in order to be trusted, and how much of Y the model actually explains.</p>
+<p class="unit-meta" data-unit="1C"></p>
+
+<div class="box key">
+  <span class="box-label">By the end of this unit you should be able to</span>
+  <ul style="margin:0.3rem 0 0; padding-left:1.1rem;">
+    <li>state all seven OLS assumptions and say what each one is protecting;</li>
+    <li>show that β̂<sub>2</sub> is a linear estimator, and derive the three properties of its weights k<sub>i</sub>;</li>
+    <li>prove that β̂<sub>2</sub> is unbiased, and derive var(β̂<sub>2</sub>), var(β̂<sub>1</sub>) and cov(β̂<sub>1</sub>, β̂<sub>2</sub>);</li>
+    <li>explain why σ̂<sup>2</sup> = Σû<sub>i</sub><sup>2</sup>/(n − 2) and not Σû<sub>i</sub><sup>2</sup>/n;</li>
+    <li>show that OLS has minimum variance among linear unbiased estimators;</li>
+    <li>derive r<sup>2</sup> from TSS = ESS + RSS, and interpret a fitted equation reported in the house format;</li>
+    <li>say why a high r<sup>2</sup> is not evidence of a good model.</li>
+  </ul>
+</div>
+
+<div class="box refresh">
+  <span class="box-label">Carried over from Unit 1B</span>
+  Everything here builds on β̂<sub>2</sub> = Σx<sub>i</sub>y<sub>i</sub> / Σx<sub>i</sub><sup>2</sup>
+  and β̂<sub>1</sub> = Ȳ − β̂<sub>2</sub>X̄, with lower case standing for deviations from the
+  mean: x<sub>i</sub> = X<sub>i</sub> − X̄ and y<sub>i</sub> = Y<sub>i</sub> − Ȳ. If those two
+  formulas and the fact that Σx<sub>i</sub> = 0 are not automatic yet, go back before starting
+  section 4 — the derivations below use them on nearly every line.
+</div>
+
+<h2>1 · Why the assumptions come first</h2>
+
+<p>Unit 1B produced two <a class="gt" href="../reference/glossary.html#estimator">estimators</a>. It did not establish that they are any good. Before
+examining the reliability of the population <a class="gt" href="../reference/glossary.html#estimate">estimates</a> derived from the <a class="gt" href="../reference/glossary.html#ols">OLS</a> method, we need
+to make a few simplifying assumptions.</p>
+
+<p>Recall that the <a class="gt" href="../reference/glossary.html#functional-form">functional form</a> of the <a class="gt" href="../reference/glossary.html#prf">population regression function</a> has to be specified
+before estimation — for example</p>
+
+<p class="math">Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> + u<sub>i</sub></p>
+
+<p>The model clearly states that Y<sub>i</sub> depends linearly on X<sub>i</sub> and
+u<sub>i</sub>. What it does <em>not</em> state is anything about the process generating the
+data. That gap matters: statistical inference is impossible without a clear view of what
+constitutes desirable statistical properties of the data generation process. The assumptions
+below fill the gap. Each one is a claim about the <strong><a class="gt" href="../reference/glossary.html#disturbance">disturbances</a></strong> and the
+<strong>regressors</strong>, not about the estimator, and every result in the rest of this
+unit is bought with one or more of them.</p>
+
+<h2>2 · The seven assumptions</h2>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">1</span><span>
+    <strong>The regression model is linear in parameters.</strong> The βs are not raised to
+    a power greater or less than one. A model can be non-linear in <em>variables</em> and
+    still satisfy this.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">2</span><span>
+    <strong>The values of X<sub>i</sub> are fixed / non-stochastic.</strong> X is fixed —
+    probably by design — and therefore not a random variable. Where X is stochastic, it is
+    treated as <em>fixed in repeated sampling</em>.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">3</span><span>
+    <strong>No relationship between the regressors and the disturbance:</strong>
+    cov(X<sub>i</sub>, u<sub>i</sub>) = 0.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">4</span><span>
+    <strong>The disturbance has a mean of zero:</strong>
+    E(u<sub>i</sub> | X<sub>i</sub>) = E(u<sub>i</sub>) = 0. Given any value of X<sub>i</sub>,
+    the average of the disturbances is zero.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">5</span><span>
+    <strong>Homoscedasticity — constant variance of u<sub>i</sub>:</strong>
+    var(u<sub>i</sub>) = E[u<sub>i</sub> − E(u<sub>i</sub> | X<sub>i</sub>)]<sup>2</sup>
+    = E(u<sub>i</sub><sup>2</sup>) = σ<sup>2</sup>. The variance of the disturbances is the
+    same throughout the sample.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">6</span><span>
+    <strong>No autocorrelation between disturbances:</strong> given X<sub>i</sub> and
+    X<sub>j</sub> with their disturbances u<sub>i</sub> and u<sub>j</sub>, once i ≠ j the
+    correlation between the two is zero —
+    cov(u<sub>i</sub>, u<sub>j</sub> | X<sub>i</sub>, X<sub>j</sub>) = 0.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">7</span><span>
+    <strong>No perfect collinearity of the regressors.</strong> It must not be possible to
+    express any independent variable as a deterministic function of another.
+  </span></div>
+</div>
+
+<h3>Assumption 1 — linear in parameters, three examples</h3>
+
+<p>The assumption restricts how the <em><a class="gt" href="../reference/glossary.html#parameter">parameters</a></em> enter, and says nothing at all about
+how the variables enter:</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">a</span><span>
+    Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> + u<sub>i</sub> —
+    <strong>linear in parameters and in the variable.</strong> Satisfies it.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">b</span><span>
+    Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub><sup>2</sup> + u<sub>i</sub> —
+    <strong>linear in parameters, non-linear in the variable.</strong> Satisfies it: set
+    Z<sub>i</sub> = X<sub>i</sub><sup>2</sup> and it is an ordinary simple regression.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">c</span><span>
+    Y<sub>i</sub> = β<sub>1</sub><sup>2</sup> + β<sub>2</sub>X<sub>i</sub><sup>2</sup> + u<sub>i</sub> —
+    <strong>non-linear in parameters</strong> as well as in the variable. Violates it.
+  </span></div>
+</div>
+
+<h3>Assumption 2 — fixed in repeated sampling</h3>
+
+<p>Taking X as fixed is a strong claim about the world, and in most economic data it is
+plainly false: income is not set by the researcher. The working version is weaker and is the
+one to remember. <strong><a class="gt" href="../reference/glossary.html#fixed-in-repeated-sampling">Fixed in repeated sampling</a></strong> means that if we could draw the
+sample again and again, we would hold the same set of X values each time and let only the
+disturbances — and therefore the Ys — change. Every expectation taken below is an
+expectation of that kind: over disturbances, with X held where it is. That is why
+X<sub>i</sub> and any function of it can be pulled outside an expectation operator as though
+it were a constant, a step used repeatedly from section 4 onwards.</p>
+
+<h3>Assumptions 3 and 4 — a zero mean, at every X</h3>
+
+<p>Consider the relationship between consumption (Y) and income (X). The figure below is a
+population regression function: at each level of income, several different levels of
+consumption were recorded. Although people may have the same income, their consumption
+differs for many known and unknown reasons unrelated to income.</p>
+
+<p>Some observations sit above the population regression line and some below — positive
+disturbances and negative disturbances. Assumption 4 says that at each level of income these
+cancel, so that the <em>average</em> consumption at that income lies exactly on the line.
+The ringed points in the figure are those conditional averages.</p>
+
+<div class="viz" data-viz="conditional-means">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It shows a population regression line with
+    observations stacked above and below it at six levels of income; the ringed conditional
+    mean sits on the line at each one, and a control lets the spread of the disturbances
+    grow with income.
+  </p>
+</div>
+
+<div class="box def">
+  <span class="box-label">Assumptions 3 and 4 are not the same claim</span>
+  cov(X<sub>i</sub>, u<sub>i</sub>) = 0 rules out a <em>linear</em> association between the
+  regressor and the disturbance. E(u<sub>i</sub> | X<sub>i</sub>) = 0 rules out
+  <em>any</em> systematic relationship, linear or not, and implies the covariance condition.
+  The second is therefore stronger. When assumption 3 fails, X is called
+  <strong>endogenous</strong>, OLS is biased, and no amount of extra data repairs it — this
+  is Unit 3B, and it is the most serious failure in the list.
+</div>
+
+<h3>Assumption 5 — constant variance</h3>
+
+<p>The spread of the disturbances is the same at every value of X. In the figure above, press
+the button and the spread fans out with income instead: rich households vary far more in
+their consumption than poor ones. The rings stay on the line — OLS remains unbiased — but
+every variance formula derived in section 6 stops being correct, because each of them
+assumes a single σ<sup>2</sup> that applies everywhere. This is
+<strong><a class="gt" href="../reference/glossary.html#heteroscedasticity">heteroscedasticity</a></strong>, Unit 2C.</p>
+
+<h3>Assumption 6 — no autocorrelation</h3>
+
+<p>Knowing that one disturbance was positive should tell you nothing about the next. In
+cross-section data that is usually reasonable. In <a class="gt" href="../reference/glossary.html#time-series">time series</a> it very often is not: a shock
+to consumption this quarter tends to persist into the next.</p>
+
+<div class="viz" data-viz="error-correlation">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It plots a sequence of disturbances against
+    observation number, with a control for the correlation between consecutive disturbances;
+    at zero the signs alternate freely, and at high values they arrive in long runs.
+  </p>
+</div>
+
+<h3>Assumption 7 — no perfect collinearity</h3>
+
+<p>With more than one regressor, it should not be possible to write any of them as a
+<a class="gt" href="../reference/glossary.html#deterministic">deterministic</a> function of the others. In</p>
+
+<p class="math">Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>2i</sub> + β<sub>3</sub>X<sub>3i</sub> + u<sub>i</sub></p>
+
+<p>there must be no relationship such as X<sub>3i</sub> = 2X<sub>2i</sub>. If there were, the
+two regressors would carry identical information and there would be no way to say how much of
+the movement in Y belongs to each — the data simply cannot separate them. This has a visible
+trace in the simple model already: β̂<sub>2</sub> = Σx<sub>i</sub>y<sub>i</sub> /
+Σx<sub>i</sub><sup>2</sup> does not exist when X does not vary, because the denominator is
+zero. Perfect collinearity is the several-regressor version of the same breakdown, and the
+imperfect version of it is Unit 2B.</p>
+
+<h2>3 · Precision: what a standard error is</h2>
+
+<p>It should never escape the student's mind that OLS relies on <em>sampled</em> data to make
+inferences about <em>population</em> parameters. The estimators derived from it are therefore
+random variables: as the sample changes, so do the OLS estimates. Before judging the precision
+of an estimate we have to account for that uncertainty, and the tool statistics provides is
+the <a class="gt" href="../reference/glossary.html#standard-error">standard error</a>.</p>
+
+<div class="box def">
+  <span class="box-label">Definition</span>
+  The <strong>standard error</strong> is nothing but the standard deviation of the sampling
+  distribution of the estimator. The <strong>sampling distribution</strong> of an estimator is
+  simply a probability or frequency distribution of the estimator — the distribution of the
+  set of values it takes across all possible samples of the same size drawn from a given
+  population. Sampling distributions are used to draw inferences about the values of the
+  population parameters on the basis of the values of the estimators calculated from one or
+  more samples.
+</div>
+
+<p>Two properties have to be established before that standard error can be derived:
+<strong>linearity</strong> and <strong><a class="gt" href="../reference/glossary.html#unbiasedness">unbiasedness</a></strong>. They are the L and the U of
+<a class="gt" href="../reference/glossary.html#blue">BLUE</a>, and they come first because the variance formula in section 6 is built on top of them.</p>
+
+<h2>4 · Linearity of the OLS estimator</h2>
+
+<ol class="steps">
+  <li>Start from the estimator derived in Unit 1B and split the fraction:
+    <p class="math">β̂<sub>2</sub> = Σ x<sub>i</sub>y<sub>i</sub> / Σ x<sub>i</sub><sup>2</sup>
+      = Σ ( x<sub>i</sub> / Σ x<sub>i</sub><sup>2</sup> ) y<sub>i</sub>
+      = Σ k<sub>i</sub> y<sub>i</sub> = Σ k<sub>i</sub> Y<sub>i</sub>
+      <span class="small">(Equation 1)</span></p>
+    where
+    <p class="math">k<sub>i</sub> = x<sub>i</sub> / Σ x<sub>i</sub><sup>2</sup></p>
+    <details>
+      <summary>Why Σk<sub>i</sub>y<sub>i</sub> and Σk<sub>i</sub>Y<sub>i</sub> are the same thing</summary>
+      <div class="solution">
+        Σk<sub>i</sub>y<sub>i</sub> = Σk<sub>i</sub>(Y<sub>i</sub> − Ȳ) =
+        Σk<sub>i</sub>Y<sub>i</sub> − ȲΣk<sub>i</sub>, and Σk<sub>i</sub> = 0 by the first
+        property below. So the second term vanishes.
+      </div>
+    </details>
+  </li>
+  <li>Equation 1 says that β̂<sub>2</sub> is a <strong>linear function</strong> — a weighted
+    average of the Y<sub>i</sub>, with weights k<sub>i</sub>. Because X is fixed
+    (assumption 2), the k<sub>i</sub> are constants, and they have three properties that do
+    almost all the work below:
+    <p class="math">Σ k<sub>i</sub> = 0 &nbsp;·&nbsp;
+      Σ k<sub>i</sub>X<sub>i</sub> = Σ k<sub>i</sub>x<sub>i</sub> = 1 &nbsp;·&nbsp;
+      Σ k<sub>i</sub><sup>2</sup> = 1 / Σ x<sub>i</sub><sup>2</sup></p>
+    <details>
+      <summary>All three, in one line each</summary>
+      <div class="solution">
+        <p><strong>Σk<sub>i</sub> = 0.</strong> Σk<sub>i</sub> = Σx<sub>i</sub> /
+        Σx<sub>i</sub><sup>2</sup>, and the numerator Σx<sub>i</sub> = Σ(X<sub>i</sub> − X̄)
+        = 0 by the definition of the mean.</p>
+        <p><strong>Σk<sub>i</sub>x<sub>i</sub> = 1.</strong> Σk<sub>i</sub>x<sub>i</sub> =
+        Σx<sub>i</sub><sup>2</sup> / Σx<sub>i</sub><sup>2</sup> = 1. And
+        Σk<sub>i</sub>X<sub>i</sub> = Σk<sub>i</sub>(x<sub>i</sub> + X̄) =
+        Σk<sub>i</sub>x<sub>i</sub> + X̄Σk<sub>i</sub> = 1 + 0 = 1.</p>
+        <p><strong>Σk<sub>i</sub><sup>2</sup> = 1/Σx<sub>i</sub><sup>2</sup>.</strong>
+        Σk<sub>i</sub><sup>2</sup> = Σx<sub>i</sub><sup>2</sup> /
+        (Σx<sub>i</sub><sup>2</sup>)<sup>2</sup> = 1 / Σx<sub>i</sub><sup>2</sup>. Note that
+        the denominator is squared because the whole constant Σx<sub>i</sub><sup>2</sup> is
+        squared along with x<sub>i</sub>.</p>
+      </div>
+    </details>
+  </li>
+</ol>
+
+<h2>5 · Unbiasedness</h2>
+
+<ol class="steps">
+  <li>Substitute the PRF, Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> +
+    u<sub>i</sub>, into Equation 1:
+    <p class="math">β̂<sub>2</sub> = Σ k<sub>i</sub>(β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> + u<sub>i</sub>)
+      = β<sub>1</sub>Σk<sub>i</sub> + β<sub>2</sub>Σk<sub>i</sub>X<sub>i</sub> + Σk<sub>i</sub>u<sub>i</sub>
+      <span class="small">(Equation 2)</span></p>
+  </li>
+  <li>Apply the properties of k<sub>i</sub>: the first term is zero and the second collapses
+    to β<sub>2</sub>. So
+    <p class="math"><strong>β̂<sub>2</sub> = β<sub>2</sub> + Σ k<sub>i</sub>u<sub>i</sub></strong></p>
+    This one line is worth more than the rest of the section. The estimate equals the truth
+    <em>plus</em> a weighted sum of the disturbances — the sampling error. It is the reason
+    β̂<sub>2</sub> is a random variable, and it reappears in every derivation below.
+  </li>
+  <li>Take expectations, using E(u<sub>i</sub>) = 0 from assumption 4 and holding the
+    k<sub>i</sub> fixed by assumption 2:
+    <p class="math">E(β̂<sub>2</sub>) = β<sub>2</sub> + Σ k<sub>i</sub>E(u<sub>i</sub>) =
+      <strong>β<sub>2</sub></strong>
+      <span class="small">(Equation 3)</span></p>
+  </li>
+</ol>
+
+<div class="box key">
+  <span class="box-label">What unbiasedness does and does not promise</span>
+  E(β̂<sub>2</sub>) = β<sub>2</sub> says that <em>on average across all possible samples</em>
+  the estimator hits the true parameter. It says nothing whatever about the sample in front of
+  you, which may be far off. That is precisely why the variance comes next: unbiasedness
+  locates the centre of the sampling distribution, and the variance says how tightly the
+  distribution is packed around it.
+</div>
+
+<h2>6 · Variance and covariance of the estimators</h2>
+
+<ol class="steps">
+  <li>Begin from the definition of variance, and use the result of section 5:
+    <p class="math">var(β̂<sub>2</sub>) = E[β̂<sub>2</sub> − E(β̂<sub>2</sub>)]<sup>2</sup>
+      = E[β̂<sub>2</sub> − β<sub>2</sub>]<sup>2</sup>
+      = E(Σ k<sub>i</sub>u<sub>i</sub>)<sup>2</sup>
+      <span class="small">(Equation 4)</span></p>
+  </li>
+  <li>Expand the square of the sum into squared terms and cross terms:
+    <p class="math">E(Σ k<sub>i</sub>u<sub>i</sub>)<sup>2</sup> =
+      Σ k<sub>i</sub><sup>2</sup>E(u<sub>i</sub><sup>2</sup>) +
+      Σ<sub>i≠j</sub> k<sub>i</sub>k<sub>j</sub>E(u<sub>i</sub>u<sub>j</sub>)</p>
+    Assumption 6 kills every cross term, since E(u<sub>i</sub>u<sub>j</sub>) = 0 for i ≠ j.
+    Assumption 5 replaces each E(u<sub>i</sub><sup>2</sup>) with the same σ<sup>2</sup>.
+  </li>
+  <li>What survives is Σk<sub>i</sub><sup>2</sup>σ<sup>2</sup>, and the third property of the
+    weights finishes it:
+    <p class="math"><strong>var(β̂<sub>2</sub>) = σ<sup>2</sup> / Σ x<sub>i</sub><sup>2</sup></strong>
+      &nbsp;·&nbsp; se(β̂<sub>2</sub>) = σ / √( Σ x<sub>i</sub><sup>2</sup> )
+      <span class="small">(Equation 5)</span></p>
+  </li>
+  <li>The same route, applied to β̂<sub>1</sub> = Ȳ − β̂<sub>2</sub>X̄, gives the intercept's
+    variance and the covariance between the two estimators (Equation 6):
+    <p class="math">var(β̂<sub>1</sub>) = σ<sup>2</sup> · Σ X<sub>i</sub><sup>2</sup> /
+      ( n Σ x<sub>i</sub><sup>2</sup> ) &nbsp;·&nbsp;
+      cov(β̂<sub>1</sub>, β̂<sub>2</sub>) = − X̄ · σ<sup>2</sup> / Σ x<sub>i</sub><sup>2</sup>
+      = − X̄ · var(β̂<sub>2</sub>)</p>
+    <details>
+      <summary>Where the covariance comes from</summary>
+      <div class="solution">
+        <p>Averaging the PRF gives Ȳ = β<sub>1</sub> + β<sub>2</sub>X̄ + ū, so
+        β<sub>1</sub> = Ȳ − β<sub>2</sub>X̄ − ū. Subtracting this from
+        β̂<sub>1</sub> = Ȳ − β̂<sub>2</sub>X̄ leaves</p>
+        <p class="math">β̂<sub>1</sub> − β<sub>1</sub> = −X̄(β̂<sub>2</sub> − β<sub>2</sub>) + ū</p>
+        <p>Multiply by (β̂<sub>2</sub> − β<sub>2</sub>) and take expectations. The second
+        piece is E[ū Σk<sub>i</sub>u<sub>i</sub>] = (σ<sup>2</sup>/n)Σk<sub>i</sub> = 0, so
+        cov(β̂<sub>1</sub>, β̂<sub>2</sub>) = −X̄ E[(β̂<sub>2</sub> − β<sub>2</sub>)<sup>2</sup>]
+        = −X̄ var(β̂<sub>2</sub>).</p>
+        <p>The negative sign is worth a moment: since the fitted line must pass through
+        (X̄, Ȳ), a sample that produces a steeper slope must produce a lower intercept to
+        compensate. The two estimates are not free to move independently.</p>
+      </div>
+    </details>
+  </li>
+</ol>
+
+<div class="box key">
+  <span class="box-label">Three levers on precision — read them off Equation 5</span>
+  var(β̂<sub>2</sub>) = σ<sup>2</sup>/Σx<sub>i</sub><sup>2</sup> falls when
+  <strong>σ<sup>2</sup> is small</strong> (less unexplained noise in Y),
+  when <strong>X is spread widely</strong> about its mean (a large
+  Σx<sub>i</sub><sup>2</sup>), and when <strong>n is large</strong> — since every extra
+  observation adds another non-negative term to Σx<sub>i</sub><sup>2</sup>. Note what this
+  says about experimental design: variation in the regressor is not a nuisance, it is the
+  thing that buys precision. A sample in which every household earns roughly the same income
+  can tell you almost nothing about the slope.
+</div>
+
+<div class="box warn">
+  <span class="box-label">Everything so far depends on σ<sup>2</sup>, which nobody has</span>
+  The variance and covariance of the OLS estimators all depend on the variance of the
+  disturbance, E(u<sub>i</sub><sup>2</sup>) = σ<sup>2</sup> — a population quantity, and
+  unknown. This is a clear demonstration of how the sampling error introduced in the sample
+  regression function shows up in the OLS estimators. To get any further, σ<sup>2</sup> has
+  to be estimated from the sample as well.
+</div>
+
+<h2>7 · Estimating σ<sup>2</sup></h2>
+
+<p>The natural guess is to use the <a class="gt" href="../reference/glossary.html#residual">residuals</a>, since û<sub>i</sub> is the only observable
+stand-in for u<sub>i</sub>. The derivation below shows that the natural guess needs one
+correction — the divisor is n − 2, not n.</p>
+
+<ol class="steps">
+  <li>Start from the population regression function <span class="small">(Equation 7)</span>:
+    <p class="math">Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> + u<sub>i</sub></p>
+    Averaging over the sample gives <span class="small">(Equation 8)</span>:
+    <p class="math">Ȳ = β<sub>1</sub> + β<sub>2</sub>X̄ + ū</p>
+  </li>
+  <li>Subtracting Equation 8 from Equation 7 gives the PRF in deviation form
+    <span class="small">(Equation 9)</span>:
+    <p class="math">y<sub>i</sub> = β<sub>2</sub>x<sub>i</sub> + (u<sub>i</sub> − ū)</p>
+  </li>
+  <li>The SRF can be written in deviation form too <span class="small">(Equation 10)</span>:
+    <p class="math">y<sub>i</sub> = β̂<sub>2</sub>x<sub>i</sub> + û<sub>i</sub></p>
+  </li>
+  <li>Setting the two expressions for y<sub>i</sub> equal and rearranging
+    <span class="small">(Equation 11)</span>:
+    <p class="math">û<sub>i</sub> = − (β̂<sub>2</sub> − β<sub>2</sub>)x<sub>i</sub> + (u<sub>i</sub> − ū)</p>
+  </li>
+  <li>Square and sum over the sample <span class="small">(Equation 12)</span>:
+    <p class="math">Σ û<sub>i</sub><sup>2</sup> =
+      (β̂<sub>2</sub> − β<sub>2</sub>)<sup>2</sup> Σ x<sub>i</sub><sup>2</sup>
+      − 2(β̂<sub>2</sub> − β<sub>2</sub>) Σ x<sub>i</sub>(u<sub>i</sub> − ū)
+      + Σ (u<sub>i</sub> − ū)<sup>2</sup></p>
+  </li>
+  <li>Take expectations of both sides <span class="small">(Equation 13)</span>. Each term is
+    already known:
+    <p class="math">E[(β̂<sub>2</sub> − β<sub>2</sub>)<sup>2</sup>] Σx<sub>i</sub><sup>2</sup>
+      = ( σ<sup>2</sup> / Σx<sub>i</sub><sup>2</sup> ) Σx<sub>i</sub><sup>2</sup> = σ<sup>2</sup></p>
+    <p class="math">E[ 2(β̂<sub>2</sub> − β<sub>2</sub>) Σ x<sub>i</sub>(u<sub>i</sub> − ū) ] = 2σ<sup>2</sup></p>
+    <p class="math">E[ Σ (u<sub>i</sub> − ū)<sup>2</sup> ] = (n − 1)σ<sup>2</sup></p>
+    <details>
+      <summary>The middle term, in full</summary>
+      <div class="solution">
+        <p>Σx<sub>i</sub>(u<sub>i</sub> − ū) = Σx<sub>i</sub>u<sub>i</sub> − ūΣx<sub>i</sub> =
+        Σx<sub>i</sub>u<sub>i</sub>, because Σx<sub>i</sub> = 0. And from section 5,
+        β̂<sub>2</sub> − β<sub>2</sub> = Σk<sub>i</sub>u<sub>i</sub> =
+        Σx<sub>i</sub>u<sub>i</sub> / Σx<sub>i</sub><sup>2</sup>. So the term is</p>
+        <p class="math">2 E[ (Σx<sub>i</sub>u<sub>i</sub>)<sup>2</sup> ] / Σx<sub>i</sub><sup>2</sup>
+          = 2 σ<sup>2</sup> Σx<sub>i</sub><sup>2</sup> / Σx<sub>i</sub><sup>2</sup> = 2σ<sup>2</sup></p>
+        <p>using assumptions 5 and 6 once more to clear the cross terms out of the squared
+        sum. The last of the three results, E[Σ(u<sub>i</sub> − ū)<sup>2</sup>] =
+        (n − 1)σ<sup>2</sup>, is the standard sample-variance result from ECON 2026.</p>
+      </div>
+    </details>
+  </li>
+  <li>Collecting them <span class="small">(Equation 14)</span>:
+    <p class="math">E( Σ û<sub>i</sub><sup>2</sup> ) = σ<sup>2</sup> − 2σ<sup>2</sup> + (n − 1)σ<sup>2</sup>
+      = <strong>(n − 2)σ<sup>2</sup></strong></p>
+  </li>
+  <li>So dividing the residual sum of squares by n − 2 defines an estimator
+    <span class="small">(Equation 15)</span> that is unbiased for σ<sup>2</sup>
+    <span class="small">(Equation 16)</span>:
+    <p class="math"><strong>σ̂<sup>2</sup> = Σ û<sub>i</sub><sup>2</sup> / (n − 2)</strong>
+      &nbsp;with&nbsp; E(σ̂<sup>2</sup>) = σ<sup>2</sup></p>
+  </li>
+</ol>
+
+<div class="box def">
+  <span class="box-label">Degrees of freedom</span>
+  The residuals are not free to be anything: the two normal equations of Unit 1B impose
+  Σû<sub>i</sub> = 0 and Σû<sub>i</sub>X<sub>i</sub> = 0. Fix any n − 2 of them and the last
+  two are determined. Two degrees of freedom have been spent estimating β̂<sub>1</sub> and
+  β̂<sub>2</sub>, which is why n − 2 is the divisor here and why the same n − 2 turns up as
+  the degrees of freedom of the t-test in Unit 1F. In multiple regression with k parameters
+  the divisor becomes n − k.<br>
+  Replacing σ<sup>2</sup> with σ̂<sup>2</sup> in Equation 5 gives the
+  <strong>estimated</strong> standard error, se(β̂<sub>2</sub>) = σ̂ /
+  √(Σx<sub>i</sub><sup>2</sup>) — the number reported in the parentheses beneath every
+  coefficient in this course.
+</div>
+
+<h2>8 · Minimum variance — the last leg of Gauss–Markov</h2>
+
+<p>Linearity and unbiasedness are established. What remains is to show that OLS has the
+<em>smallest</em> variance in the class of linear unbiased estimators. The strategy is to
+invent a rival and prove it cannot win.</p>
+
+<ol class="steps">
+  <li>The OLS estimator, with its weights <span class="small">(Equation 17)</span>:
+    <p class="math">β̂<sub>2</sub> = Σ k<sub>i</sub>Y<sub>i</sub>,
+      &nbsp; k<sub>i</sub> = x<sub>i</sub> / Σ x<sub>i</sub><sup>2</sup></p>
+    Now suppose someone proposes an alternative <span class="small">(Equation 18)</span>,
+    also a weighted average of Y but with weights w<sub>i</sub> not necessarily equal to
+    k<sub>i</sub>:
+    <p class="math">β<sub>2</sub>* = Σ w<sub>i</sub>Y<sub>i</sub></p>
+  </li>
+  <li>Substitute the PRF and take expectations <span class="small">(Equation 19)</span>:
+    <p class="math">E(β<sub>2</sub>*) = β<sub>1</sub>Σw<sub>i</sub> +
+      β<sub>2</sub>Σw<sub>i</sub>X<sub>i</sub></p>
+    For β<sub>2</sub>* to be unbiased, the rival's weights must satisfy exactly the same two
+    conditions the k<sub>i</sub> do:
+    <p class="math">Σ w<sub>i</sub> = 0 &nbsp;·&nbsp; Σ w<sub>i</sub>X<sub>i</sub> = 1</p>
+  </li>
+  <li>Its variance follows the same route as Equation 5:
+    <p class="math">var(β<sub>2</sub>*) = σ<sup>2</sup> Σ w<sub>i</sub><sup>2</sup></p>
+    Now write w<sub>i</sub> as the OLS weight plus a deviation from it, and expand:
+    <p class="math">Σ w<sub>i</sub><sup>2</sup> = Σ (w<sub>i</sub> − k<sub>i</sub> + k<sub>i</sub>)<sup>2</sup>
+      = Σ (w<sub>i</sub> − k<sub>i</sub>)<sup>2</sup> + 2Σ(w<sub>i</sub> − k<sub>i</sub>)k<sub>i</sub>
+      + Σ k<sub>i</sub><sup>2</sup></p>
+  </li>
+  <li>The cross term is zero.
+    <details>
+      <summary>Why the cross term vanishes</summary>
+      <div class="solution">
+        <p>Σ(w<sub>i</sub> − k<sub>i</sub>)k<sub>i</sub> = Σw<sub>i</sub>k<sub>i</sub> −
+        Σk<sub>i</sub><sup>2</sup>. For the first piece,</p>
+        <p class="math">Σ w<sub>i</sub>k<sub>i</sub> = Σ w<sub>i</sub>x<sub>i</sub> / Σ x<sub>i</sub><sup>2</sup>
+          = ( Σw<sub>i</sub>X<sub>i</sub> − X̄Σw<sub>i</sub> ) / Σ x<sub>i</sub><sup>2</sup>
+          = 1 / Σ x<sub>i</sub><sup>2</sup></p>
+        <p>using the two unbiasedness conditions on the w<sub>i</sub>. But
+        Σk<sub>i</sub><sup>2</sup> is also 1/Σx<sub>i</sub><sup>2</sup>, so the two pieces
+        cancel exactly. This step is where unbiasedness of the rival is spent — it is not a
+        free algebraic simplification.</p>
+      </div>
+    </details>
+    What is left is
+    <p class="math">var(β<sub>2</sub>*) = σ<sup>2</sup> Σ (w<sub>i</sub> − k<sub>i</sub>)<sup>2</sup>
+      + σ<sup>2</sup> Σ k<sub>i</sub><sup>2</sup>
+      = σ<sup>2</sup> Σ (w<sub>i</sub> − k<sub>i</sub>)<sup>2</sup> + var(β̂<sub>2</sub>)</p>
+  </li>
+  <li>The second term is fixed — it is the OLS variance, and nothing the rival does can
+    change it. So the only way to minimise var(β<sub>2</sub>*) is to minimise the first term,
+    a sum of squares, whose smallest possible value is zero and which reaches zero only when
+    <p class="math"><strong>w<sub>i</sub> = k<sub>i</sub> for every i</strong></p>
+  </li>
+</ol>
+
+<div class="box key">
+  <span class="box-label">The takeaway</span>
+  When the weights w<sub>i</sub> equal the least-squares weights k<sub>i</sub>, the two
+  estimators have the same variance — they are the same estimator. In every other case
+  var(β<sub>2</sub>*) &gt; var(β̂<sub>2</sub>). Put simply, <strong>β̂<sub>2</sub> is the
+  minimum-variance unbiased estimator of β<sub>2</sub></strong> in the class of linear
+  estimators. Linear, unbiased, minimum variance: the Gauss–Markov theorem of Unit 1B is now
+  proved rather than asserted.
+</div>
+
+<h2>9 · Goodness of fit: the coefficient of determination</h2>
+
+<p>Up to this point the concern has been deriving estimators for the population regression
+function, and establishing that they are BLUE. A different question remains. The <a class="gt" href="../reference/glossary.html#srf">sample
+regression function</a> <em>approximates</em> the population regression function; we need some
+way of determining how well the sample regression line fits the sampled data. That is
+<strong><a class="gt" href="../reference/glossary.html#goodness-of-fit">goodness of fit</a></strong>.</p>
+
+<p>Picture the variation in Y and the variation in X as two circles. The degree of overlap is
+the part of the movement in Y that the movement in X accounts for. r<sup>2</sup> measures that
+overlap.</p>
+
+<ol class="steps">
+  <li>Every observation splits into a fitted value and a residual
+    <span class="small">(Equation 20)</span>, and the same holds in deviation form
+    <span class="small">(Equation 21)</span>:
+    <p class="math">Y<sub>i</sub> = Ŷ<sub>i</sub> + û<sub>i</sub>
+      &nbsp;⟹&nbsp; y<sub>i</sub> = ŷ<sub>i</sub> + û<sub>i</sub></p>
+  </li>
+  <li>Square and sum over the whole sample:
+    <p class="math">Σ y<sub>i</sub><sup>2</sup> = Σ ŷ<sub>i</sub><sup>2</sup>
+      + Σ û<sub>i</sub><sup>2</sup> + 2 Σ ŷ<sub>i</sub>û<sub>i</sub></p>
+    The cross term disappears, because Σŷ<sub>i</sub>û<sub>i</sub> = 0 — recall
+    ŷ<sub>i</sub> = β̂<sub>2</sub>x<sub>i</sub>, so
+    Σŷ<sub>i</sub>û<sub>i</sub> = β̂<sub>2</sub>Σx<sub>i</sub>û<sub>i</sub>, and the normal
+    equations force Σx<sub>i</sub>û<sub>i</sub> = 0. The fitted values and the residuals carry
+    no information in common; that is what it means for OLS to have squeezed everything out
+    of X.
+  </li>
+  <li>The three surviving terms each have a name <span class="small">(Equation 22)</span>:
+    <div class="assumption-grid">
+      <div class="ag-item"><span class="ag-n">TSS</span><span>
+        Σy<sub>i</sub><sup>2</sup> = Σ(Y<sub>i</sub> − Ȳ)<sup>2</sup> — the
+        <strong>total</strong> variation of Y about its mean.
+      </span></div>
+      <div class="ag-item"><span class="ag-n">ESS</span><span>
+        Σŷ<sub>i</sub><sup>2</sup> = Σ(Ŷ<sub>i</sub> − Ȳ)<sup>2</sup> =
+        β̂<sub>2</sub><sup>2</sup>Σx<sub>i</sub><sup>2</sup> — the variation of the fitted
+        values about the mean, i.e. the part <strong>explained</strong> by the regression.
+      </span></div>
+      <div class="ag-item"><span class="ag-n">RSS</span><span>
+        Σû<sub>i</sub><sup>2</sup> — the <strong>unexplained</strong> variation left in the
+        residuals.
+      </span></div>
+    </div>
+    <p class="math"><strong>TSS = ESS + RSS</strong></p>
+  </li>
+  <li>Divide throughout by TSS <span class="small">(Equation 23)</span>:
+    <p class="math">1 = ESS/TSS + RSS/TSS</p>
+    and define the <strong>coefficient of determination</strong> as the explained share:
+    <p class="math"><strong>r<sup>2</sup> = ESS/TSS = 1 − RSS/TSS =
+      β̂<sub>2</sub><sup>2</sup> Σ x<sub>i</sub><sup>2</sup> / Σ y<sub>i</sub><sup>2</sup></strong></p>
+  </li>
+  <li>An equivalent expression, useful when you already have the raw sums
+    <span class="small">(Equation 24)</span>:
+    <p class="math">r<sup>2</sup> = ( Σ x<sub>i</sub>y<sub>i</sub> )<sup>2</sup> /
+      ( Σ x<sub>i</sub><sup>2</sup> · Σ y<sub>i</sub><sup>2</sup> )</p>
+  </li>
+</ol>
+
+<p>The figure below is that decomposition with a dial on it. The bar underneath is <a class="gt" href="../reference/glossary.html#tss">TSS</a>,
+split into the part the line accounts for and the part it does not.</p>
+
+<div class="viz" data-viz="r2-decomposition">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It shows a scatter with the sample mean of Y,
+    the fitted line and the residual drops, together with a bar splitting the total sum of
+    squares into its explained and residual parts as the scatter is widened or narrowed.
+  </p>
+</div>
+
+<div class="box def">
+  <span class="box-label">Three things to know about r<sup>2</sup></span>
+  <strong>i.</strong> r<sup>2</sup> is never negative — it is a ratio of two sums of
+  squares.<br>
+  <strong>ii.</strong> It is bounded: 0 ≤ r<sup>2</sup> ≤ 1.<br>
+  <strong>iii.</strong> A value of 1 is a perfect fit, with every observation on the line; a
+  value of 0 means no linear relationship between the dependent and independent variable —
+  that is, β̂<sub>2</sub> = 0.<br>
+  The correlation coefficient is recovered as r = √(r<sup>2</sup>), taking the sign of
+  β̂<sub>2</sub>: a fit of r<sup>2</sup> = 0.80 on a downward-sloping line gives r = −0.89, not
+  +0.89. In the simple two-variable model only — with more than one regressor there is no
+  single r to recover.
+</div>
+
+<h2>10 · Interpreting the fitted regression</h2>
+
+<p>In the population regression function Y<sub>i</sub> = β<sub>1</sub> +
+β<sub>2</sub>X<sub>i</sub> + u<sub>i</sub>, β<sub>1</sub> is the intercept — the value of
+Y<sub>i</sub> when X<sub>i</sub> = 0 — and β<sub>2</sub> is the slope, telling you how much
+Y<sub>i</sub> changes for a one unit change in X<sub>i</sub>. Formally β<sub>2</sub> is the
+derivative of Y with respect to X:</p>
+
+<p class="math">∂Y<sub>i</sub> / ∂X<sub>i</sub> = β<sub>2</sub>,
+&nbsp; assuming ∂u<sub>i</sub> / ∂X<sub>i</sub> = 0</p>
+
+<p>That side condition is not decoration. It is assumption 3 doing its work: the slope can be
+read as "the change in Y for a one unit change in X" only if nothing in the disturbance moves
+when X moves.</p>
+
+<h3>A worked example</h3>
+
+<p>An estimated simple regression of consumption on income:</p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>Consumption&#770;<sub>i</sub> =</span><span>s.e.</span><span>t =</span></span>
+  <span class="er-col"><span>90.18</span><span>(0.12)</span><span>751.50</span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>0.75 Income<sub>i</sub></span><span>(0.20)</span><span>3.75</span></span>
+  <span class="er-note">n not reported &nbsp;·&nbsp; r<sup>2</sup> = 0.80 &nbsp;·&nbsp; r = 0.89</span>
+</div>
+
+<div class="box def">
+  <span class="box-label">Reading every number in that display</span>
+  <strong>90.18</strong> — when income is zero, predicted consumption is 90.18.<br>
+  <strong>0.75</strong> — for every additional dollar of income, consumption rises by 75
+  cents. This is the marginal propensity to consume.<br>
+  <strong>(0.12) and (0.20)</strong> — the standard errors of β̂<sub>1</sub> and
+  β̂<sub>2</sub>, showing that there is uncertainty attached to both estimates. The average
+  deviation of the estimator from its mean is 12 cents and 20 cents respectively.<br>
+  <strong>751.50 and 3.75</strong> — the t-statistics, each the coefficient divided by its own
+  standard error. What they are used for is the subject of Unit 1F; the house reporting format
+  carries them from the start so the habit is formed early.<br>
+  <strong>r<sup>2</sup> = 0.80</strong> — the regression explains 80% of the variation in
+  consumption. Equivalently, the variation in income accounts for 80% of the variation in
+  consumption.<br>
+  <strong>r = 0.89</strong> — the correlation coefficient, √0.80, positive because the slope
+  is.
+</div>
+
+<div class="box warn">
+  <span class="box-label">Reproduce this layout in the exam</span>
+  Coefficients on the first line, standard errors in parentheses directly beneath their own
+  coefficient, t-statistics below those, and r<sup>2</sup> reported alongside. A list of
+  numbers with no indication of which belongs to which parameter earns very little, however
+  correct the arithmetic behind it.
+</div>
+
+<h2>11 · Why a high r<sup>2</sup> is not a good model</h2>
+
+<p>The r<sup>2</sup> of 0.80 above suggests the consumption model fits well. Students should
+not be quick to judge a model good on that basis. It is quite possible for a model that is
+useless from a theoretical perspective to have a very high r<sup>2</sup>.</p>
+
+<p>The standard demonstration: the divorce rate in Maine and per-capita consumption of
+margarine move together almost perfectly over the 2000s, with a <a class="gt" href="../reference/glossary.html#correlation-coefficient">correlation coefficient</a> of
+r = 0.9926. Regress one on the other and r<sup>2</sup> = 0.9852 — a fit far better than
+almost anything in applied economics. The regression is nonetheless worthless. Nothing links
+the two series; they simply both trended downwards over the same decade.</p>
+
+<div class="box warn">
+  <span class="box-label">What r<sup>2</sup> is, and what it is not</span>
+  r<sup>2</sup> measures how closely the observations cluster around the fitted line. It is
+  <em>not</em> a test of whether the model is correctly specified, whether the right variables
+  are included, whether the assumptions of section 2 hold, or whether X causes Y. A model with
+  a low r<sup>2</sup> may have a perfectly reliable and interesting slope coefficient; a model
+  with a high r<sup>2</sup> may be nonsense. Judge a specification on the theory behind it, the
+  diagnostic tests of Unit 2, and the significance of individual coefficients — then look at
+  r<sup>2</sup>.
+</div>
+
+<h2>12 · Tutorial</h2>
+
+<p style="font-size:0.85rem; color:var(--ink-soft); font-style:italic;">
+Draft questions, to be replaced by the tutorial sheet issued in class.</p>
+
+<div class="tutorial">
+
+  <div class="tq">
+    <span class="qtext">Prove the three properties of the weights: Σk<sub>i</sub> = 0,
+    Σk<sub>i</sub>X<sub>i</sub> = 1 and Σk<sub>i</sub><sup>2</sup> =
+    1/Σx<sub>i</sub><sup>2</sup>. For each one, state where in the unit it is used.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>Σk<sub>i</sub> = 0.</strong> k<sub>i</sub> = x<sub>i</sub> /
+        Σx<sub>i</sub><sup>2</sup>, so Σk<sub>i</sub> = Σx<sub>i</sub> /
+        Σx<sub>i</sub><sup>2</sup>, and Σx<sub>i</sub> = Σ(X<sub>i</sub> − X̄) = 0.
+        <em>Used</em> in section 5 to kill the β<sub>1</sub>Σk<sub>i</sub> term, and again in
+        the covariance derivation.</p>
+        <p><strong>Σk<sub>i</sub>X<sub>i</sub> = 1.</strong> Write X<sub>i</sub> =
+        x<sub>i</sub> + X̄. Then Σk<sub>i</sub>X<sub>i</sub> = Σk<sub>i</sub>x<sub>i</sub> +
+        X̄Σk<sub>i</sub> = Σx<sub>i</sub><sup>2</sup>/Σx<sub>i</sub><sup>2</sup> + 0 = 1.
+        <em>Used</em> in section 5 to reduce β<sub>2</sub>Σk<sub>i</sub>X<sub>i</sub> to
+        β<sub>2</sub>, which is the step that delivers unbiasedness.</p>
+        <p><strong>Σk<sub>i</sub><sup>2</sup> = 1/Σx<sub>i</sub><sup>2</sup>.</strong>
+        Σk<sub>i</sub><sup>2</sup> = Σx<sub>i</sub><sup>2</sup> /
+        (Σx<sub>i</sub><sup>2</sup>)<sup>2</sup> = 1/Σx<sub>i</sub><sup>2</sup>.
+        <em>Used</em> in section 6 to turn σ<sup>2</sup>Σk<sub>i</sub><sup>2</sup> into
+        σ<sup>2</sup>/Σx<sub>i</sub><sup>2</sup>, and again in section 8 to cancel the cross
+        term.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">Show that β̂<sub>2</sub> = β<sub>2</sub> +
+    Σk<sub>i</sub>u<sub>i</sub>, and use it to explain in words why β̂<sub>2</sub> is a random
+    variable, why it is unbiased, and which assumption you relied on for each of the two
+    claims.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p>Substituting the PRF into β̂<sub>2</sub> = Σk<sub>i</sub>Y<sub>i</sub> gives
+        β<sub>1</sub>Σk<sub>i</sub> + β<sub>2</sub>Σk<sub>i</sub>X<sub>i</sub> +
+        Σk<sub>i</sub>u<sub>i</sub>. The first term is zero and the second is β<sub>2</sub>,
+        leaving β̂<sub>2</sub> = β<sub>2</sub> + Σk<sub>i</sub>u<sub>i</sub>.</p>
+        <p><strong>Random.</strong> β<sub>2</sub> is a fixed population constant; the
+        estimator differs from it by Σk<sub>i</sub>u<sub>i</sub>, a weighted sum of the
+        disturbances. Because the disturbances are random and differ from sample to sample,
+        so does β̂<sub>2</sub>. This relies on <em>assumption 2</em> — the k<sub>i</sub> are
+        constants, so all the randomness sits in u.</p>
+        <p><strong>Unbiased.</strong> E(β̂<sub>2</sub>) = β<sub>2</sub> +
+        Σk<sub>i</sub>E(u<sub>i</sub>) = β<sub>2</sub>, which needs
+        <em>assumption 4</em>, E(u<sub>i</sub>) = 0. Note that neither <a class="gt" href="../reference/glossary.html#homoscedasticity">homoscedasticity</a> nor
+        the absence of <a class="gt" href="../reference/glossary.html#autocorrelation">autocorrelation</a> is needed for unbiasedness — those are spent on the
+        variance in section 6, which is exactly why heteroscedastic errors leave OLS unbiased
+        but inefficient.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">A researcher wants a more precise estimate of the slope and can afford
+    to collect more data. Using var(β̂<sub>2</sub>) = σ<sup>2</sup>/Σx<sub>i</sub><sup>2</sup>,
+    advise them on how to choose the new observations, and say what they cannot fix by
+    sampling.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p>Precision improves as Σx<sub>i</sub><sup>2</sup> = Σ(X<sub>i</sub> − X̄)<sup>2</sup>
+        rises. More observations help, but <em>where</em> they are taken matters as much as
+        how many: observations at values of X far from X̄ add large terms to the sum, while
+        observations bunched near X̄ add almost nothing. The advice is to deliberately sample
+        across a wide range of X — for a consumption function, to include both low- and
+        high-income households rather than concentrating on the middle.</p>
+        <p>What sampling cannot fix is σ<sup>2</sup>, the variance of the disturbance. That is
+        a feature of the population relationship — how much of Y is driven by things outside
+        the model — not of the sample. Reducing it means improving the <em>model</em>: better
+        measurement, or explanatory variables that are currently sitting in u. That is the
+        subject of Unit 2A.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">Explain why σ̂<sup>2</sup> divides by n − 2. What would go wrong if
+    Σû<sub>i</sub><sup>2</sup>/n were used instead, and in which direction would the reported
+    standard errors be wrong?</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p>Section 7 shows E(Σû<sub>i</sub><sup>2</sup>) = (n − 2)σ<sup>2</sup>. Dividing by
+        n − 2 therefore produces an estimator whose expected value is exactly σ<sup>2</sup>.
+        The intuition is <a class="gt" href="../reference/glossary.html#degrees-of-freedom">degrees of freedom</a>: the residuals must satisfy Σû<sub>i</sub> = 0 and
+        Σû<sub>i</sub>X<sub>i</sub> = 0, two restrictions imposed by the <a class="gt" href="../reference/glossary.html#normal-equations">normal equations</a>, so
+        only n − 2 of them are free to vary. Two were spent estimating β̂<sub>1</sub> and
+        β̂<sub>2</sub>.</p>
+        <p>Using n instead gives E(Σû<sub>i</sub><sup>2</sup>/n) = (n − 2)σ<sup>2</sup>/n,
+        which is smaller than σ<sup>2</sup> — the estimator is biased
+        <strong>downwards</strong>. Standard errors would therefore be reported too small,
+        <a class="gt" href="../reference/glossary.html#t-statistic">t-statistics</a> too large, and coefficients would look more significant than the evidence
+        warrants. The bias shrinks as n grows, which is why the correction matters most in
+        exactly the small samples where it is most tempting to ignore it.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">Two regressions of the same dependent variable are reported. Model A
+    has r<sup>2</sup> = 0.94 and a slope coefficient with a t-statistic of 0.6. Model B has
+    r<sup>2</sup> = 0.31 and a slope with a t-statistic of 5.2. Which would you rather have,
+    and what else would you want to know?</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>Model B, on this evidence.</strong> r<sup>2</sup> reports how tightly the
+        observations cluster around the line; it says nothing about whether the estimated
+        relationship is reliable. Model A's slope is indistinguishable from zero — its high
+        r<sup>2</sup> is being produced by something other than a dependable link between X
+        and Y, very often a shared trend, which is precisely the margarine-and-divorce case in
+        section 11. Model B has a low fit but a slope estimated precisely enough to build on;
+        a low r<sup>2</sup> is common and unalarming in cross-section data, where individual
+        behaviour is genuinely noisy.</p>
+        <p><strong>What else to ask.</strong> What each model says theoretically — a
+        coefficient worth having must correspond to a mechanism you can name. Whether the
+        assumptions of section 2 survive testing, since a significant t-statistic computed
+        from a wrong variance formula is not evidence of anything (Units 2C and 2D). Whether
+        either regression is in levels of trending series. What the units are, so that "0.75"
+        can be judged economically and not just statistically. And the sample size, without
+        which neither t-statistic can be placed against a <a class="gt" href="../reference/glossary.html#critical-value">critical value</a>.</p>
+      </div>
+    </details>
+  </div>
+
+</div>
+
+<h2>13 · Check yourself</h2>
+
+<div class="quiz" data-answer="1">
+  <div class="q">The variance of the disturbance rises steadily with income. Which assumption has failed?</div>
+  <button class="opt">Assumption 4 — the errors no longer average out to zero</button>
+  <button class="opt">Assumption 5 — the errors no longer share one variance</button>
+  <button class="opt">Assumption 6 — the errors are now correlated with each other</button>
+  <button class="opt">Assumption 3 — the errors now move together with the regressor</button>
+  <div class="feedback right">Correct — this is heteroscedasticity. OLS stays unbiased, but every variance formula in section 6 is now wrong.</div>
+  <div class="feedback wrong">Assumption 5 is the constant-variance assumption, var(u<sub>i</sub>) = σ². A spread that fans out with X leaves the conditional means on the line — so unbiasedness survives — but invalidates var(β̂₂) = σ²/Σx².</div>
+</div>
+
+<div class="quiz" data-answer="0">
+  <div class="q">Given var(β̂<sub>2</sub>) = σ<sup>2</sup>/Σx<sub>i</sub><sup>2</sup>, and holding everything else fixed, the slope is estimated more precisely when</div>
+  <button class="opt">the values of X are spread more widely about their mean</button>
+  <button class="opt">the values of X are packed more tightly about their mean</button>
+  <button class="opt">the variance of the disturbance term is allowed to rise</button>
+  <button class="opt">the intercept β<sub>1</sub> is larger relative to the slope β<sub>2</sub></button>
+  <div class="feedback right">Correct — Σx<sub>i</sub>² sits in the denominator, so a widely spread regressor shrinks the variance of the estimator.</div>
+  <div class="feedback wrong">Σx<sub>i</sub>² = Σ(X<sub>i</sub> − X̄)² is the denominator, so anything that makes X vary more makes β̂₂ more precise. Observations bunched near X̄ contribute almost nothing, which is why sampling across a wide range of X is worth designing for.</div>
+</div>
+
+<div class="quiz" data-answer="0">
+  <div class="q">In σ̂<sup>2</sup> = Σû<sub>i</sub><sup>2</sup>/(n − 2), the divisor is n − 2 because</div>
+  <button class="opt">two degrees of freedom went on estimating β̂<sub>1</sub> and β̂<sub>2</sub></button>
+  <button class="opt">two observations are always dropped before the sum is taken</button>
+  <button class="opt">the sample has to contain at least two observations to fit</button>
+  <button class="opt">two of the residuals are set to zero by the normal equations</button>
+  <div class="feedback right">Correct — E(Σû²) = (n − 2)σ², because the normal equations impose two restrictions on the residuals.</div>
+  <div class="feedback wrong">Nothing is dropped from the sum. All n residuals are used, but they must satisfy Σû<sub>i</sub> = 0 and Σû<sub>i</sub>X<sub>i</sub> = 0, so only n − 2 of them are free — which is exactly what E(Σû²) = (n − 2)σ² records.</div>
+</div>
+
+<div class="quiz" data-answer="1">
+  <div class="q">Margarine consumption and the divorce rate in Maine give r<sup>2</sup> = 0.985. This tells you</div>
+  <button class="opt">that one of the two series must be causing the other one</button>
+  <button class="opt">that the two series happen to move together over the period</button>
+  <button class="opt">that the regression has passed the goodness-of-fit criterion</button>
+  <button class="opt">that the model is well specified from a theoretical standpoint</button>
+  <div class="feedback right">Correct — r² measures clustering about the line and nothing else. Both series simply trended in the same direction.</div>
+  <div class="feedback wrong">r² measures how closely the observations sit around the fitted line. It is not a test of specification, of the assumptions, or of causation — and there is no "goodness-of-fit criterion" a regression can pass. Two series that trend together will produce a high r² whether or not anything connects them.</div>
+</div>
+
+<p class="deck-link" data-unit="1C"></p>
+
+<div class="ask-teacher">
+  <strong>Sections 5 to 8 are the derivations most often examined, and the ones most worth
+  saying out loud.</strong>
+  Bring them to the tutorial, or to office hours — <span data-course="officeHours"></span>.
+</div>
+
+<ol class="sources">
+  <li id="s1">Gujarati, D. &amp; Porter, D. (2008), <em>Basic Econometrics</em>, Chapter 3 — the assumptions, the precision of the OLS estimators, the Gauss–Markov theorem and the coefficient of determination. The definition of the standard error in section 3 is quoted from Chapter 3.</li>
+  <li id="s2">Wooldridge, J. (2016), <em>Introductory Econometrics: A Modern Approach</em>, Chapters 2 and 3.</li>
+  <li id="s3">Vigen, T., <em>Spurious Correlations</em> — the source of the margarine and divorce series in section 11.</li>
+</ol>
+
+<div class="lesson-nav" data-unit="1C"></div>
+
+</div>
+</body>
+</html>

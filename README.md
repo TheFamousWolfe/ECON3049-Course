@@ -1,0 +1,221 @@
+# ECON 3049 — Econometrics I
+
+The course notes for ECON 3049 (UWI Cave Hill), written out as a small static
+website. These pages replace the lecture slide decks: each unit page carries the
+theory in full, the algebra worked through, an interactive figure, a worked
+example in the reporting format used in the exam, tutorial questions with
+revealable solutions, and a short self-test.
+
+## Running it
+
+There is no build step, no npm, no dependencies. Open `index.html`.
+
+To check it the way GitHub Pages will serve it:
+
+```sh
+python3 -m http.server 8000     # then browse http://localhost:8000/
+```
+
+Do this before pushing — macOS is case-insensitive locally and Pages is not.
+
+## Checking it
+
+`dev/check-site.mjs` loads every written unit in a headless browser and checks it.
+It derives its expectations from the manifest, so it keeps working as units are
+added — no test to update when a unit flips to `ready`.
+
+```sh
+cd dev && npm install jsdom && cd .. && node dev/check-site.mjs
+```
+
+It verifies that the roadmap matches the manifest, that every figure actually
+renders (and contains no `NaN` geometry), that tutorial solutions ship closed,
+that quiz options obey the equal-length rule and every `data-answer` is in range,
+that no navigation arrow points at an unwritten unit, and that Wooldridge's β₀
+has not leaked in outside the notation warning.
+
+For `reference/` it also checks that every linked page exists, that every
+cross-link and in-page anchor resolves, and that the glossary cites every unit
+that has been written and none that has not. Run it before every push.
+
+**The site itself has no dependencies.** jsdom is a dev-only install and is
+gitignored; nothing in `assets/`, `units/` or `reference/` requires it.
+
+## Structure
+
+```
+index.html            roadmap, rendered from the manifest
+assets/course.js      THE MANIFEST — course structure, dates, unit list
+assets/nav.js         renders roadmap, breadcrumbs, prev/next from the manifest
+assets/viz.js         interactive SVG figures, one per unit
+assets/quiz.js        multiple-choice self-test widget
+assets/glossary.js    glossary filter (progressive enhancement only)
+assets/lesson.css     base typography and palette
+assets/course.css     course-site components (.eqn-report, .tutorial, .viz …)
+units/                one page per unit, 1A through 3C
+reference/            glossary (written); EViews guide, formula sheet (planned)
+```
+
+## Writing a new unit — the actual sequence
+
+Units are built from the lecture decks in `../Econ3049/LectureNotes/`, **not**
+from the course outline (see the note at the end of this file). The decks are the
+source of truth for what is taught and in what order.
+
+```sh
+pdftotext -layout "../Econ3049/LectureNotes/UNIT 2B - Multicollinearity.pdf" -
+```
+
+Then, in this order — the checker enforces most of it, so a missed step fails
+loudly rather than silently:
+
+1. **Write `units/<slug>.html`.** Copy the shape of an existing unit: learning
+   objectives in a `.box.key`, numbered sections, `.eqn-report` for every set of
+   results, a `.tutorial` block, a "Check yourself" block, an `.ask-teacher`
+   note, an `<ol class="sources">`, and the `.lesson-nav` footer. Every
+   `data-unit` attribute must carry the manifest's unit code exactly —
+   `"2A Part 1"`, not `"2A"`.
+2. **Add the figures to `assets/viz.js`.** One `VIZ.register(name, fn)` per
+   figure, with a `.viz-fallback` paragraph in the page so it degrades. Shared
+   helpers already there: `ols`, `ols3`, `olsk` (k-variable, Gauss–Jordan),
+   `tPdf` / `tCdf` / `tCrit`, `chart`, `pointAt`.
+3. **Flip `status` to `"ready"`** in `assets/course.js`.
+4. **Add the unit's new terms to the glossary**, each citing the new unit. If a
+   term is only *named* in an earlier unit but *derived* in this one, re-point
+   its `.g-unit` link here.
+5. **`node dev/link-glossary.mjs`** to back-link the prose.
+6. **`node dev/check-site.mjs`** until it is clean.
+
+Step 6 catches, in practice: quiz options whose lengths give the answer away,
+a unit the glossary forgot, missing back-links, figures that render `NaN`, and
+`data-unit` codes that do not match the manifest.
+
+**Verify the figures against theory before trusting them.** Every figure so far
+has been checked by driving its controls from jsdom and comparing the readouts
+with the closed-form result — the omitted-variable figure against
+β₃δ̃₁, the variance-inflation figure against √(1/(1 − R²₂₃)), the t-distribution
+against printed tables, the Chow figure against F(2, 96) = 3.09. Two figures were
+wrong in ways that only showed up that way.
+
+## Adding or changing a unit
+
+Edit `assets/course.js` and nothing else. The roadmap, the breadcrumb, the
+week labels and the prev/next arrows all read from it.
+
+```js
+{ unit: "2C", part: "2", week: 9, slug: "2c-heteroscedasticity",
+  title: "Heteroscedasticity", blurb: "…",
+  wooldridge: "Ch. 8", gujarati: "Ch. 11", slides: 32,
+  deck: "UNIT 2C - Heteroscedasticity.pdf", status: "ready" }
+```
+
+- `status`: `"planned"` (listed, not linked) → `"draft"` (linked, amber pill)
+  → `"ready"` (linked, green pill).
+- `week`: `null` renders as an em dash. Re-timetabling means editing these
+  numbers; because URLs are keyed to the unit code, no link ever breaks.
+- `deckBaseUrl` at the top of the manifest: set it to your eLearning folder URL
+  and every unit page grows a link to the original slides.
+
+## The glossary
+
+`reference/glossary.html` is written **as each unit is written**, not at the end.
+It links in both directions: out to the unit that defines each term, and back
+from the units to the glossary.
+Every unit page introduces terms in bold; those terms belong in the glossary the
+same day, each with a `<dt id="...">` and a `.g-unit` link back to the unit that
+defines it.
+
+```html
+<dt id="autocorrelation">Autocorrelation <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>Correlation between the disturbances of different observations …</dd>
+```
+
+`check-site.mjs` fails if a written unit is never cited, or if an entry links to a
+unit that does not exist yet, so a forgotten unit shows up on the next run.
+
+### Linking the units back
+
+Do not hand-write the back-links. After writing a unit:
+
+```sh
+node dev/link-glossary.mjs --dry     # show what it would link
+node dev/link-glossary.mjs           # do it
+node dev/link-glossary.mjs --unlink  # strip them all out again
+```
+
+It links the **first** occurrence of each glossary term in each unit, and only in
+running prose — bare `<p>` blocks. Headings, `<p class="math">`, `.eqn-report`
+displays, tutorial question text and quiz options are left alone: a link inside a
+self-test is a distraction, and a link inside an equation is noise. Running it
+twice changes nothing, so it is safe in a loop; if you re-flow a unit's prose and
+want the links redistributed, `--unlink` first.
+
+Spellings come from the glossary itself. A `<dt>` is matched by its own text plus
+an optional plural; where that is not how the term reads in prose, give it a
+`data-match` list:
+
+```html
+<dt id="endogeneity" data-match="endogeneity, endogenous">
+<dt id="prf" data-match="population regression function, PRF">
+```
+
+ALL-CAPS phrases match case-sensitively, so the word "blue" is never mistaken for
+BLUE. `check-site.mjs` verifies every back-link resolves to a real entry, that no
+term is linked twice on a page, and that none landed somewhere it should not.
+
+Entries are grouped `<h2>` + `<dl>` inside `<section class="gloss">` — headings
+cannot sit inside a `<dl>`. `assets/glossary.js` adds the search box on top of that
+markup and nothing else: **the page must read completely with JavaScript off.**
+
+Reference pages are listed in the manifest's `reference` array with the same
+`status` field the units use, so one that has not been written yet is named on the
+home page but not linked.
+
+## House conventions
+
+These are not stylistic preferences — breaking them creates real confusion for
+students, so they are worth keeping.
+
+- **Notation is Gujarati's.** β₁ is the intercept, β₂ the slope, with β₂X₂ᵢ +
+  β₃X₃ᵢ in multiple regression and α's in auxiliary regressions. Wooldridge's
+  β₀/β₁ must never appear, even though Wooldridge is a recommended text.
+- **Results are reported as equations**, using `.eqn-report`: coefficients on
+  the first row, standard errors in parentheses beneath, t-statistics below
+  that. This is the form students must reproduce under exam conditions.
+- **Spelling:** *heteroscedasticity*, with the `sc`, matching the course
+  outline and the deck filenames.
+- **Quiz options must all be about the same length.** Option length is a tell,
+  and a widget that leaks the answer teaches nothing. The markup contract is
+  documented at the top of `assets/quiz.js`.
+- **Every figure degrades.** A unit page must still read correctly with
+  JavaScript off; figures are illustration, never the only place an idea
+  appears.
+
+## What must not go in this repository
+
+- **The textbooks.** `*.pdf` is in `.gitignore` for that reason. Gujarati &
+  Porter and Wooldridge are copyrighted; students get them from eLearning.
+- **Anything that answers the graded group assignment.** The EViews guide
+  teaches the software; it does not work the assignment.
+
+## Where things stand
+
+Progress is recorded in the manifest, not here — `status: "ready"` is the
+authority, and `node dev/check-site.mjs` prints every written unit. As of the
+last session: **Unit 1 complete (1A–1F), Unit 2A complete (both parts)**, with
+2B, 2C, 2D and all of Unit 3 still `"planned"`.
+
+Three things are deliberately unfinished, and all three need input rather than
+writing:
+
+- **The calendar is empty.** `teachingPeriod`, every `when` in `assessment`, and
+  every `week` from 1C onwards are `null`, so the home page says "teaching period
+  to be confirmed" and the roadmap shows em dashes. This is one edit to
+  `assets/course.js` once the dates are known — no page changes.
+- **`reference/formula-sheet.html`** is `"planned"`. Units 1C to 1F have now
+  derived essentially everything that belongs on it, so it is assembly work.
+- **`reference/eviews-guide.html`** is `"planned"`. This is the one with stakes:
+  the 25% group assignment is graded on EViews.
+
+Both unwritten reference pages are named but not linked on the home page, so
+nothing is broken by their absence.

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 1A — Introducing Econometrics · ECON 3049</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/course.js"></script>
+<script src="../assets/nav.js" defer></script>
+<script src="../assets/quiz.js" defer></script>
+<script src="../assets/viz.js" defer></script>
+</head>
+<body>
+<div class="masthead" data-unit="1A"></div>
+<div class="wrap">
+
+<h1>Introducing Econometrics</h1>
+<p class="subtitle">What the subject is for, and why every economic relationship needs an error term.</p>
+<p class="unit-meta" data-unit="1A"></p>
+
+<div class="box key">
+  <span class="box-label">By the end of this unit you should be able to</span>
+  <ul style="margin:0.3rem 0 0; padding-left:1.1rem;">
+    <li>say what econometrics is, and which four disciplines it draws on;</li>
+    <li>take an economic theory and carry it through to an econometric model;</li>
+    <li>explain why the disturbance term <em>u</em> is not a mistake but a necessity;</li>
+    <li>tell cross-sectional, time series, pooled and panel data apart, and write each correctly;</li>
+    <li>set out the stages of an applied econometric study in order.</li>
+  </ul>
+</div>
+
+<h2>1 · What econometrics is</h2>
+
+<p>Read literally, <em><a class="gt" href="../reference/glossary.html#econometrics">econometrics</a></em> means "economic measurement". That reading is
+deceptively simple — the practice of the subject is much wider in scope. A fuller
+definition:</p>
+
+<div class="box def">
+  <span class="box-label">Definition</span>
+  Econometrics consists of the application of <strong>mathematical statistics</strong> to
+  <strong>economic data</strong> to lend <strong>empirical support</strong> to the
+  <strong>models</strong> constructed by <strong>mathematical economics</strong> and to obtain
+  <strong>numerical results</strong>.<sup class="cite"><a href="#s1">1</a></sup>
+</div>
+
+<p>Unpack that definition and econometrics turns out to sit at the meeting point of four
+separate things: <strong>economic theory</strong>, which tells you what relationships to
+expect; <strong>mathematical economics</strong>, which writes those relationships as
+equations; <strong>mathematical statistics</strong>, which supplies the estimation and
+testing machinery; and <strong>economic statistics</strong>, which supplies the data. Take
+away any one of the four and you cannot do the work.</p>
+
+<p>In practice the subject gets used for four things:</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">1</span><span><strong>Describing economic reality.</strong> How large is the effect of income on consumption in Barbados, in dollars?</span></div>
+  <div class="ag-item"><span class="ag-n">2</span><span><strong>Testing economic theories.</strong> Keynes says the marginal propensity to consume lies between zero and one. Does it?</span></div>
+  <div class="ag-item"><span class="ag-n">3</span><span><strong>Forecasting economic activity.</strong> Given next year's projected income, what consumption should we expect?</span></div>
+  <div class="ag-item"><span class="ag-n">4</span><span><strong>Evaluating policies.</strong> If the tax rate changes, what happens — and by how much?</span></div>
+</div>
+
+<p>Notice that all four demand a <em>number</em>, not a direction. Economic theory will
+happily tell you that consumption rises with income. It will not tell you whether the
+figure is 0.6 or 0.9, and the difference between those two matters enormously for policy.
+Supplying the number is the job of econometrics.</p>
+
+<h2>2 · From a theory to a model you can estimate</h2>
+
+<p>Empirical analysis moves through four stages, and it is worth seeing them with one
+example carried the whole way.</p>
+
+<h3>Stage 1 · Economic theory</h3>
+
+<p>Theory suggests important relationships, often with policy implications, but without the
+quantitative magnitude of the effect. Keynes postulated that</p>
+
+<div class="box def">
+  <span class="box-label">Keynes' conjecture</span>
+  The <strong>marginal propensity to consume</strong> (MPC) — the rate of change of
+  consumption for a unit change in income — is greater than zero but less than one.
+</div>
+
+<p>Keynes gave no <a class="gt" href="../reference/glossary.html#functional-form">functional form</a>, so at this stage the relationship can only be written
+informally:</p>
+
+<p class="math">Consumption = <span style="font-style:normal">f</span>(income)</p>
+
+<p>That is all theory provides: the rationale for why these variables should move together,
+and the sign of the relationship.</p>
+
+<h3>Stage 2 · The mathematical model</h3>
+
+<p>The role of mathematical economics is to take the conjecture and give it a definite
+form. The simplest choice is a straight line:</p>
+
+<p class="math">Y = β<sub>1</sub> + β<sub>2</sub>X</p>
+
+<p>where <em>Y</em> is consumption expenditure and <em>X</em> is income. The unknowns
+β<sub>1</sub> and β<sub>2</sub> are the <strong><a class="gt" href="../reference/glossary.html#parameter">parameters</a></strong>: β<sub>1</sub> is the
+intercept and β<sub>2</sub> is the slope — which, in this model, <em>is</em> the <a class="gt" href="../reference/glossary.html#mpc">marginal
+propensity to consume</a>. Keynes' conjecture has now become a testable statement about a
+single number: 0 &lt; β<sub>2</sub> &lt; 1.</p>
+
+<div class="box warn">
+  <span class="box-label">Notation — fix this now</span>
+  In this course <strong>β<sub>1</sub> is always the intercept and β<sub>2</sub> the
+  slope</strong>, and in multiple regression the regressors carry matching subscripts:
+  β<sub>2</sub>X<sub>2i</sub> + β<sub>3</sub>X<sub>3i</sub>. Wooldridge, one of the
+  recommended texts, numbers from zero instead — β<sub>0</sub> for the intercept,
+  β<sub>1</sub> for the first slope. The mathematics is identical; only the labels differ.
+  When you read Wooldridge, translate as you go, and use this course's numbering in
+  everything you submit.
+</div>
+
+<p>But there is a problem with the mathematical model, and it is fatal. It asserts a
+<strong><a class="gt" href="../reference/glossary.html#deterministic">deterministic</a></strong> relationship: given income, consumption follows exactly.
+Every household in the country with the same income would spend precisely the same amount.
+Perfect relationships of that kind do not exist among economic variables, and a model that
+claims one cannot be tested against data that contradicts it on every single observation.</p>
+
+<h3>Stage 3 · The econometric model</h3>
+
+<p>To allow for inexact relationships, the econometrician modifies the equation:</p>
+
+<p class="math">Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> + u<sub>i</sub></p>
+
+<div class="box def">
+  <span class="box-label">Definition</span>
+  <em>u</em> is the <strong>disturbance</strong>, or <strong>error term</strong>: a
+  <strong>random (stochastic) variable</strong> with well-defined probabilistic properties.
+  It represents all those factors that affect consumption but are not taken into account
+  explicitly.
+</div>
+
+<p>This equation is an <strong>econometric model</strong> — more precisely, a
+<strong>linear regression model</strong>, which is the major concern of this course.</p>
+
+<p>The move from Stage 2 to Stage 3 is the single most important idea in this unit, so it
+is worth doing rather than reading. Below is the same consumption function twice. Start
+with the <a class="gt" href="../reference/glossary.html#disturbance">disturbance</a> set to zero and you have the mathematical model of Stage 2: every
+household sits exactly on the line. Increase it and you have the econometric model.</p>
+
+<div class="viz" data-viz="deterministic-vs-stochastic">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It shows a consumption function with no
+    disturbance (every observation on the line) becoming one where each observation
+    departs from the line by its own <em>u</em>.
+  </p>
+</div>
+
+<p>Two things are worth noticing as you move the slider. First, the line does not move.
+It is the <strong>average</strong> relationship, and adding disturbances scatters
+observations around it without changing it. That average relationship has a name and a
+notation you will use constantly from Unit 1B onwards:</p>
+
+<p class="math">E(Y | X) = β<sub>1</sub> + β<sub>2</sub>X</p>
+
+<p>Read it as "the expected value of Y, given X". Second, the disturbance for each
+household is the <em>vertical</em> distance from its point to the line — not the
+perpendicular distance. That detail matters when you meet least squares in Unit 1B.</p>
+
+<h3>What is actually inside <em>u</em></h3>
+
+<p>The disturbance is not a confession of failure. It is a container, and it is worth
+knowing what it holds, because several later units are about one of these leaking into
+your results:</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span><strong>Omitted variables.</strong> Consumption depends on wealth, household size and expectations too. None are in the model.</span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span><strong>Incorrect specification.</strong> The true relationship may not be a straight line. <em>Taken up in Unit 2A Part 2.</em></span></div>
+  <div class="ag-item"><span class="ag-n">iii</span><span><strong>Errors in measurement.</strong> Reported income is not true income.</span></div>
+  <div class="ag-item"><span class="ag-n">iv</span><span><strong>Intrinsic randomness.</strong> Human behaviour is simply not perfectly predictable.</span></div>
+</div>
+
+<h3>A practical wrinkle: proxies</h3>
+
+<p>When specifying an econometric model we often have to use <strong><a class="gt" href="../reference/glossary.html#proxy">proxies</a></strong> for
+the variables the theory names, because the exact data cannot be found. The Phillips curve
+holds that the <em>expected</em> rate of inflation influences current inflation. But how
+would you measure inflation expectations? What data would you actually use? Every applied
+study faces a version of this question, and the answer you choose becomes part of what your
+results mean.</p>
+
+<h3>Stage 4 · Data</h3>
+
+<p>Having specified the model we want to <a class="gt" href="../reference/glossary.html#estimate">estimate</a> it, and to carry out statistical
+inference we must have data. Which raises the question of where data come from, and what
+kind of real process generates them.</p>
+
+<h2>3 · Data</h2>
+
+<h3>Experimental and observational data</h3>
+
+<p>In an <strong>experimental</strong> study, researchers impose treatments and controls,
+then observe the characteristic of interest and take measurements. In an
+<strong>observational</strong> study, researchers simply observe what is happening, or has
+happened in the past, and try to draw conclusions from it. Observational studies examine
+variables as they were observed and recorded.</p>
+
+<div class="box warn">
+  <span class="box-label">The consequence for everything that follows</span>
+  Economists work in a complex world where data on variables are "observed" and rarely
+  obtained from a controlled experiment. With observational data, cause and effect are hard
+  — often impossible — to establish. Associations and predictabilities among variables can
+  still be investigated, and that is what this course teaches you to do. Keep the
+  distinction in mind whenever you are tempted to describe a regression coefficient as an
+  effect.
+</div>
+
+<h3>Types of variable, types of dataset</h3>
+
+<p>Variables are either <strong>qualitative</strong> (gender, race — categories) or
+<strong>quantitative</strong> (data you can perform mathematical operations on). Qualitative
+variables can still be used in a regression, but they need special handling, which is the
+subject of Unit 3A.</p>
+
+<p>Datasets come in four kinds, and the methods you are allowed to use depend on which one
+you have:</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">1</span><span><strong>Cross-sectional.</strong> Many units, one point in time. 40 households surveyed this year.</span></div>
+  <div class="ag-item"><span class="ag-n">2</span><span><strong>Time series.</strong> One unit, many periods. Barbadian aggregate consumption, 1970 to 2016.</span></div>
+  <div class="ag-item"><span class="ag-n">3</span><span><strong>Pooled cross sections.</strong> Independent cross-sections from different periods, stacked together. A fresh sample of households each year.</span></div>
+  <div class="ag-item"><span class="ag-n">4</span><span><strong>Panel (longitudinal).</strong> The same units followed over several periods. The same 40 households, every year for ten years.</span></div>
+</div>
+
+<div class="box warn">
+  <span class="box-label">Why this is not just terminology</span>
+  Econometric methods depend on the nature of the data used, and the use of inappropriate
+  methods may lead to misleading results. Autocorrelation (Unit 2D) is a time series
+  problem; heteroscedasticity (Unit 2C) is most often a cross-sectional one. Identifying
+  your data type is the first step in choosing a method.
+</div>
+
+<h3>Notation</h3>
+
+<p>The subscript tells the reader which kind of data you have, so it is never optional:</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">t</span><span>Time series: <em>Y<sub>t</sub></em> &nbsp;where&nbsp; t = 1990, 1991, …, 2012</span></div>
+  <div class="ag-item"><span class="ag-n">i</span><span>Cross-sectional: <em>Y<sub>i</sub></em> &nbsp;where&nbsp; i = 1, 2, 3, …, 40</span></div>
+  <div class="ag-item"><span class="ag-n">it</span><span>Panel: <em>Y<sub>it</sub></em> &nbsp;where&nbsp; i and t are as defined above</span></div>
+</div>
+
+<h2>4 · Handling data before you model it</h2>
+
+<p>Before getting into the statistical and econometric tools, a preliminary analysis is
+extremely important. The aim is to "get the feel" of your data, and there are four
+activities: looking at the raw data, graphical analysis, summary statistics, and data
+transformations.</p>
+
+<h3>Looking at the raw data</h3>
+
+<p>Compute the summary statistics — mean, mode, median, maximum, minimum. Then ask two
+questions that the summary statistics alone will not answer. Are there
+<strong>outliers</strong>, or are those extreme values <a class="gt" href="../reference/glossary.html#measurement-error">measurement errors</a>? And is there
+<strong>missingness</strong> — observations that are simply absent, and if so, are they
+absent for a reason that is related to what you are studying?</p>
+
+<h3>Graphical analysis</h3>
+
+<p>Graphs facilitate the inspection process and let you see the big picture. Three earn
+their place:</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">1</span><span><strong>Histograms</strong> indicate the distribution of a single variable, and make outliers obvious.</span></div>
+  <div class="ag-item"><span class="ag-n">2</span><span><strong>Line graphs</strong> facilitate comparison of series, and are particularly useful for time series analysis.</span></div>
+  <div class="ag-item"><span class="ag-n">3</span><span><strong>Scatter plots</strong> give combinations of values from two series, for determining their relationship — if any.</span></div>
+</div>
+
+<p>The scatter plot is the one to reach for first in this course. Every regression you
+estimate is, at bottom, a line drawn through a scatter plot, and looking at the scatter
+before estimating tells you whether a straight line was ever a sensible idea.</p>
+
+<h2>5 · Putting it together</h2>
+
+<p>Suppose you are studying the consumption function using aggregate household consumption
+in Barbados between 1970 and 2016. Three questions have to be answered before any software
+is opened: <strong>what is the model specification?</strong> <strong>what is the
+econometric specification?</strong> and <strong>what data will you use?</strong> Work
+through those and you have followed Stages 1 to 4 of this unit.</p>
+
+<p>The full sequence of an applied econometric study looks like this:</p>
+
+<ol class="stages">
+  <li>Decide what you want to do<span class="aside">Describe, test, forecast or evaluate — the four uses from section 1.</span></li>
+  <li>Economic theory</li>
+  <li>Econometric model<span class="aside">Data feed in here.</span></li>
+  <li>Model estimation</li>
+  <li>Specification testing and diagnostics<span class="aside">All of Unit 2 lives at this step.</span></li>
+  <li class="decision">Is the model adequate?<span class="loop">No → return to the econometric model and respecify.</span></li>
+  <li>Test any hypothesis<span class="aside">Unit 1F.</span></li>
+  <li>Use for predictions and policy making<span class="loop">Findings feed back into economic theory, and the cycle begins again.</span></li>
+</ol>
+
+<p>Two features of that diagram are easy to miss. It contains a <strong>loop</strong>: a
+model that fails its diagnostics sends you back to respecify, and this happens routinely
+rather than exceptionally. And it <strong>ends where it began</strong> — results feed back
+into economic theory, which is how a discipline learns.</p>
+
+<div class="box key">
+  <span class="box-label">In this course</span>
+  Econometrics I introduces you to the methods needed to conduct empirical analysis. The
+  focus point is <strong>regression analysis</strong>, the starting point in econometrics.
+  Unit 1B begins it in earnest.
+</div>
+
+<h2>6 · Tutorial</h2>
+
+<p style="font-size:0.85rem; color:var(--ink-soft); font-style:italic;">
+Draft questions, to be replaced by the tutorial sheet issued in class.</p>
+
+<div class="tutorial">
+
+  <div class="tq">
+    <span class="qtext">Explain, in your own words, why the mathematical model
+    Y = β<sub>1</sub> + β<sub>2</sub>X cannot be used to test Keynes' conjecture, while
+    Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> + u<sub>i</sub> can.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p>The mathematical model is deterministic: it asserts that every household with a
+        given income consumes exactly β<sub>1</sub> + β<sub>2</sub>X. Real data will
+        contradict it at essentially every observation, so any test of it fails
+        immediately, and fails for a reason that has nothing to do with whether Keynes was
+        right.</p>
+        <p>Adding u<sub>i</sub> changes the claim being made. The econometric model says
+        that the line is the <em>average</em> relationship, E(Y | X) = β<sub>1</sub> +
+        β<sub>2</sub>X, and that individual households depart from it for reasons the model
+        does not capture. That is a claim data can be <a class="gt" href="../reference/glossary.html#consistency">consistent</a> with, and it makes
+        β<sub>2</sub> a quantity that can be estimated and tested against Keynes' prediction
+        that 0 &lt; β<sub>2</sub> &lt; 1.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">List four distinct things the disturbance term may represent, and
+    for each give an example in the context of a consumption function.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong><a class="gt" href="../reference/glossary.html#omitted-variable">Omitted variables</a></strong> — household wealth affects consumption but
+        does not appear in the model. <strong>Incorrect functional form</strong> — the true
+        consumption function may curve, so that fitting a straight line leaves a systematic
+        remainder. <strong>Errors of measurement</strong> — survey respondents misreport
+        their income, and the mismatch between reported and true income lands in
+        <em>u</em>. <strong><a class="gt" href="../reference/glossary.html#intrinsic-randomness">Intrinsic randomness</a></strong> — two identical households simply
+        make different choices in a given month.</p>
+        <p>The first two are the dangerous ones, because they are systematic rather than
+        random. Both are taken up in Unit 2A.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">For each of the following, state the type of dataset and write the
+    dependent variable with the correct subscript: (a) the unemployment rate for Barbados
+    for each quarter from 2000 to 2020; (b) the wages of 500 workers surveyed in
+    Bridgetown in June; (c) GDP and inflation for 15 CARICOM members in each year from 2010
+    to 2020.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p>(a) <a class="gt" href="../reference/glossary.html#time-series">Time series</a> — one unit, many periods: <em>Y<sub>t</sub></em>, t = 2000Q1, …,
+        2020Q4.</p>
+        <p>(b) <a class="gt" href="../reference/glossary.html#cross-sectional">Cross-sectional</a> — many units, one point in time: <em>Y<sub>i</sub></em>,
+        i = 1, 2, …, 500.</p>
+        <p>(c) Panel (longitudinal) — the same 15 countries followed over 11 years:
+        <em>Y<sub>it</sub></em>, i = 1, …, 15 and t = 2010, …, 2020. Note that if a
+        <em>different</em> sample of countries were drawn each year, it would be pooled
+        cross sections rather than a panel.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">A researcher finds a strong positive relationship between ice cream
+    sales and drowning deaths across months, using observational data. Explain what is
+    wrong with concluding that ice cream causes drowning, and relate your answer to the
+    contents of <em>u</em>.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p>The data are observational, not experimental: nobody assigned ice cream
+        consumption to months. With <a class="gt" href="../reference/glossary.html#observational">observational data</a>, cause and effect are very hard to
+        establish — associations can be investigated, but a coefficient is not an effect
+        merely because it is significant.</p>
+        <p>In the language of this unit, temperature is an <strong>omitted variable</strong>.
+        It drives both ice cream sales and swimming, so it sits inside <em>u</em> while also
+        being related to the regressor. That is precisely the condition under which the
+        disturbance stops being harmless — the case taken up formally in Unit 2A Part 1 as
+        omitted-variable bias, and in Unit 3B as <a class="gt" href="../reference/glossary.html#endogeneity">endogeneity</a>.</p>
+      </div>
+    </details>
+  </div>
+
+</div>
+
+<h2>7 · Check yourself</h2>
+
+<div class="quiz" data-answer="2">
+  <div class="q">Which of these is <em>not</em> one of the four disciplines econometrics is said to combine?</div>
+  <button class="opt">Mathematical statistics, which supplies estimation and testing</button>
+  <button class="opt">Economic statistics, which supplies the data to be analysed</button>
+  <button class="opt">Experimental design, which assigns treatments to subjects</button>
+  <button class="opt">Mathematical economics, which writes theory as equations</button>
+  <div class="feedback right">Correct — the four are economic theory, mathematical economics, mathematical statistics and economic statistics. Economists rarely control who gets the treatment.</div>
+  <div class="feedback wrong">The four are economic theory, mathematical economics, mathematical statistics and economic statistics. Experimental design is not among them — economic data are overwhelmingly observational.</div>
+</div>
+
+<div class="quiz" data-answer="1">
+  <div class="q">In Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> + u<sub>i</sub>, the line β<sub>1</sub> + β<sub>2</sub>X gives</div>
+  <button class="opt">the consumption of any household that reports income of X</button>
+  <button class="opt">the mean consumption of households with income X</button>
+  <button class="opt">the largest consumption observed among those with income X</button>
+  <button class="opt">the consumption of a household whose u happens to be large</button>
+  <div class="feedback right">Correct — the line is the conditional mean, E(Y | X). Individual households scatter around it by their own u.</div>
+  <div class="feedback wrong">The line is the conditional mean E(Y | X) — the average over all households at that income. Any single household departs from it by its disturbance u, so the line predicts no individual exactly.</div>
+</div>
+
+<div class="quiz" data-answer="3">
+  <div class="q">You have annual data on the same 15 countries from 2010 to 2020. This is</div>
+  <button class="opt">a time series, correctly written Y<sub>t</sub> for each year</button>
+  <button class="opt">a cross section, correctly written Y<sub>i</sub> for each state</button>
+  <button class="opt">pooled cross sections, since each year is a new sample</button>
+  <button class="opt">a panel, correctly written Y<sub>it</sub> for country and year</button>
+  <div class="feedback right">Correct — the same units followed over several periods is a panel, and both subscripts are needed.</div>
+  <div class="feedback wrong">Because the <em>same</em> 15 countries appear in every year, this is a panel: Y<sub>it</sub>. It would be pooled cross sections only if a different sample were drawn each year.</div>
+</div>
+
+<p class="deck-link" data-unit="1A"></p>
+
+<div class="ask-teacher">
+  <strong>Stuck on something here?</strong> Bring it to the tutorial, or come to office
+  hours — <span data-course="officeHours"></span>.
+</div>
+
+<ol class="sources">
+  <li id="s1">Tintner, G. (1968), quoted in the definition of econometrics used throughout this course.</li>
+  <li id="s2">Wooldridge, J. (2016), <em>Introductory Econometrics: A Modern Approach</em>, Chapter 1. Note that Wooldridge numbers parameters from β<sub>0</sub>.</li>
+  <li id="s3">Gujarati, D. &amp; Porter, D. (2008), <em>Basic Econometrics</em>, Chapter 1 — the Keynesian consumption function example and the stages of applied analysis.</li>
+</ol>
+
+<div class="lesson-nav" data-unit="1A"></div>
+
+</div>
+</body>
+</html>

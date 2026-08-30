@@ -1,0 +1,233 @@
+/* ============================================================
+   ECON3049 — Shared lesson stylesheet
+   Tufte-inspired: generous margins, readable serif body,
+   restrained palette, prints cleanly. Linked by every lesson.
+   ============================================================ */
+
+:root {
+  --ink:        #1a1a1a;
+  --ink-soft:   #555;
+  --paper:      #fffff8;   /* warm off-white, Tufte */
+  --rule:       #e4e0d4;
+  --accent:     #7a1f2b;   /* deep maroon, matches the textbook */
+  --accent-2:   #2c5f7c;   /* slate blue for R/code accents */
+  --key-bg:     #fbf6e9;
+  --def-bg:     #eef3f6;
+  --refresh-bg: #f1f6ee;
+  --warn-bg:    #fcefec;
+  --code-bg:    #f6f4ec;
+  --maxw:       720px;
+}
+
+html { font-size: 18px; }
+
+body {
+  font-family: et-book, Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  color: var(--ink);
+  background: var(--paper);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0 2rem 6rem;
+}
+
+.wrap { max-width: var(--maxw); margin: 0 auto; }
+
+/* ---------- Masthead / breadcrumb ---------- */
+.masthead {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 1.4rem 0 0.6rem;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.masthead a { color: var(--ink-soft); text-decoration: none; }
+.masthead a:hover { color: var(--accent); }
+.masthead .course { font-weight: 600; color: var(--accent); }
+
+/* ---------- Headings ---------- */
+h1, h2, h3 { font-weight: 400; line-height: 1.2; }
+h1 {
+  font-size: 2.2rem;
+  margin: 2rem 0 0.3rem;
+}
+.subtitle {
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--ink-soft);
+  margin: 0 0 0.4rem;
+}
+.lesson-meta {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  letter-spacing: 0.03em;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 1rem;
+}
+h2 {
+  font-size: 1.5rem;
+  margin: 2.6rem 0 0.6rem;
+  color: var(--accent);
+}
+h3 { font-size: 1.2rem; margin: 1.8rem 0 0.4rem; }
+
+p { margin: 0.8rem 0; }
+a { color: var(--accent); }
+
+/* ---------- Callout boxes ---------- */
+.box {
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  margin: 1.4rem 0;
+  font-size: 0.97rem;
+}
+.box .box-label {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+  font-family: -apple-system, system-ui, sans-serif;
+}
+.box.def      { background: var(--def-bg);     border-left: 4px solid var(--accent-2); }
+.box.def      .box-label { color: var(--accent-2); }
+.box.key      { background: var(--key-bg);     border-left: 4px solid #b8860b; }
+.box.key      .box-label { color: #8a6508; }
+.box.refresh  { background: var(--refresh-bg); border-left: 4px solid #4a7c3a; }
+.box.refresh  .box-label { color: #3a6230; }
+.box.warn     { background: var(--warn-bg);    border-left: 4px solid var(--accent); }
+.box.warn     .box-label { color: var(--accent); }
+
+/* ---------- Math (display) ---------- */
+.math {
+  text-align: center;
+  font-style: italic;
+  font-size: 1.1rem;
+  margin: 1.2rem 0;
+  color: var(--ink);
+}
+.math .small { font-style: normal; font-size: 0.8rem; color: var(--ink-soft); }
+
+/* ---------- R code blocks ---------- */
+pre.code, code.inline {
+  font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  background: var(--code-bg);
+}
+pre.code {
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--accent-2);
+  border-radius: 5px;
+  padding: 0.9rem 1.1rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  overflow-x: auto;
+  margin: 1.2rem 0;
+}
+pre.code .cmt  { color: #7a8a6a; font-style: italic; }
+pre.code .out  { color: var(--ink-soft); }
+code.inline {
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  font-size: 0.85em;
+}
+
+/* ---------- Citations ---------- */
+.cite { font-size: 0.95em; }
+sup.cite a { text-decoration: none; color: var(--accent); font-size: 0.75em; }
+.sources {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  border-top: 1px solid var(--rule);
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+}
+.sources li { margin: 0.3rem 0; }
+
+/* ---------- Primary-source spotlight ---------- */
+.primary-source {
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--accent);
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  margin: 2rem 0;
+}
+.primary-source .ps-label {
+  font-family: -apple-system, system-ui, sans-serif;
+  font-size: 0.72rem; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--accent); font-weight: 700;
+}
+
+/* ---------- Quiz widget (paired with assets/quiz.js) ---------- */
+.quiz { margin: 1.6rem 0; }
+.quiz .q { font-weight: 600; margin-bottom: 0.7rem; }
+.quiz .opt {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  padding: 0.6rem 0.9rem;
+  margin: 0.45rem 0;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.quiz .opt:hover { border-color: var(--accent-2); }
+.quiz .opt.correct   { background: #e8f3e3; border-color: #4a7c3a; }
+.quiz .opt.incorrect { background: #fbe6e2; border-color: var(--accent); }
+.quiz .opt:disabled  { cursor: default; }
+.quiz .feedback {
+  margin-top: 0.6rem;
+  font-size: 0.92rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 5px;
+  display: none;
+}
+.quiz .feedback.show { display: block; }
+.quiz .feedback.right { background: #e8f3e3; color: #2c5022; }
+.quiz .feedback.wrong { background: #fbe6e2; color: #6e1b22; }
+
+/* ---------- Ask-your-teacher reminder ---------- */
+.ask-teacher {
+  background: #f4f1e8;
+  border: 1px dashed var(--accent-2);
+  border-radius: 6px;
+  padding: 0.9rem 1.2rem;
+  margin: 2.2rem 0 1rem;
+  font-size: 0.95rem;
+}
+.ask-teacher strong { color: var(--accent-2); }
+
+/* ---------- Lesson nav footer ---------- */
+.lesson-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.9rem;
+}
+.lesson-nav a { text-decoration: none; }
+
+/* ---------- Print ---------- */
+@media print {
+  body { background: #fff; color: #000; padding: 0; }
+  .ask-teacher, .lesson-nav, .masthead { display: none; }
+  .box, pre.code, .primary-source { break-inside: avoid; }
+  a { color: #000; text-decoration: none; }
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 600px) {
+  html { font-size: 16px; }
+  body { padding: 0 1rem 4rem; }
+}

@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 1F — Statistical Inference and Hypothesis Testing · ECON 3049</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/course.js"></script>
+<script src="../assets/nav.js" defer></script>
+<script src="../assets/quiz.js" defer></script>
+<script src="../assets/viz.js" defer></script>
+</head>
+<body>
+<div class="masthead" data-unit="1F"></div>
+<div class="wrap">
+
+<h1>Statistical Inference and Hypothesis Testing</h1>
+<p class="subtitle">t-tests, confidence intervals and F-tests — deciding what the data will support.</p>
+<p class="unit-meta" data-unit="1F"></p>
+
+<div class="box key">
+  <span class="box-label">By the end of this unit you should be able to</span>
+  <ul style="margin:0.3rem 0 0; padding-left:1.1rem;">
+    <li>explain why the t-distribution replaces the normal once σ is estimated;</li>
+    <li>set out a hypothesis test in full, and say why the null must contain an equality;</li>
+    <li>carry out one-tailed and two-tailed t-tests and state the decision rule for each;</li>
+    <li>test a hypothesis that a coefficient equals a value other than zero;</li>
+    <li>construct and interpret a confidence interval, and use it to conduct a test;</li>
+    <li>test a linear combination of two coefficients, using the variance–covariance matrix;</li>
+    <li>test joint significance with an F-test, by either the RSS or the R<sup>2</sup> formula;</li>
+    <li>use p-values, and read the output of a regression package.</li>
+  </ul>
+</div>
+
+<div class="box refresh">
+  <span class="box-label">Back to basics</span>
+  In this unit we return to the essence of econometrics: the effort to quantify economic
+  relationships by analysing sample data — and the question of what conclusions we can draw
+  from that quantification. Economic theory suggests that certain coefficients should take
+  particular values. In the consumption function C = β<sub>1</sub> + β<sub>2</sub>Y + u, theory
+  says β<sub>2</sub> &gt; 0. Hypothesis testing is how we find out whether the relationships
+  suggested by theory are upheld by the data to hand.
+</div>
+
+<h2>1 · What the sample can and cannot settle</h2>
+
+<p>Consider an estimated equation for years of education:</p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>EDUC&#770; =</span><span></span><span></span></span>
+  <span class="er-col"><span>7.779</span><span></span><span></span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>0.278 MOTHEDUC</span><span></span><span></span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>0.189 FATHEDUC</span><span></span><span></span></span>
+  <span class="er-col er-op"><span>−</span><span></span><span></span></span>
+  <span class="er-col"><span>0.161 SIBS</span><span></span><span></span></span>
+</div>
+
+<p>The estimated coefficients are specific to the sample used. How reliable are they? Are the
+observed <a class="gt" href="../reference/glossary.html#estimate">estimates</a> the product of chance, or is the sample estimate actually in line with
+theory? The information in the coefficients and their <a class="gt" href="../reference/glossary.html#standard-error">standard errors</a> is what lets us decide.</p>
+
+<div class="box warn">
+  <span class="box-label">What a test can never do</span>
+  The sample is used to make inferences about the population, but we can
+  <strong>never really prove that a theory is "correct"</strong> with hypothesis testing. A
+  test either finds enough evidence to reject a stated position or it does not. This is why
+  most economists say "do not reject" rather than "accept" the null — and it is worth reading
+  Wooldridge section 4.2 for the argument.
+</div>
+
+<h2>2 · Why t, and not Z</h2>
+
+<p>The whole procedure rests on Unit 1E. We need the <a class="gt" href="../reference/glossary.html#cnlrm">normality assumption</a></p>
+
+<p class="math">u<sub>i</sub> ~ N(0, σ<sup>2</sup>)</p>
+
+<p>and, provided the other classical assumptions hold, each estimated coefficient is normally
+distributed around its own true value:</p>
+
+<p class="math">β̂<sub>j</sub> ~ N( β<sub>j</sub>, var(β̂<sub>j</sub>) )</p>
+
+<p>Standardising in the usual way — subtract the mean, divide by the standard deviation —
+gives a standard normal:</p>
+
+<p class="math">( β̂<sub>j</sub> − β<sub>j</sub> ) / σ<sub>β̂j</sub> ~ N(0, 1)
+&nbsp;where&nbsp; σ<sub>β̂j</sub> = √var(β̂<sub>j</sub>)</p>
+
+<p>There is one problem, and it is the same problem as in Units 1C and 1D. var(β̂<sub>j</sub>)
+requires σ<sup>2</sup>, the variance of the <a class="gt" href="../reference/glossary.html#disturbance">disturbance</a>, which cannot be observed. We replace
+it with the estimate σ̂<sup>2</sup> built from the <a class="gt" href="../reference/glossary.html#residual">residuals</a>, and the resulting estimate of the
+standard deviation of β̂<sub>j</sub> is what we call the <strong>standard error</strong>,
+se(β̂<sub>j</sub>). Making that substitution costs us the normal distribution:</p>
+
+<div class="box key">
+  <span class="box-label">The result the whole unit uses</span>
+  <p class="math" style="margin:0.4rem 0;">( β̂<sub>j</sub> − β<sub>j</sub> ) / se(β̂<sub>j</sub>)
+    ~ t<sub>n−k</sub> = t<sub>df</sub></p>
+  Because the denominator is <em>estimated</em> rather than known, the standard normal is
+  replaced by the <strong>t-distribution</strong> with n − k degrees of freedom, k being the
+  number of parameters including the intercept. The extra uncertainty in σ̂ is what makes the
+  tails of the t fatter than the normal's — and it is why critical values are larger in small
+  samples. As n grows, t → Z.
+</div>
+
+<div class="box warn">
+  <span class="box-label">n − k or n − k − 1?</span>
+  This course follows <strong>Gujarati</strong>: k counts all parameters including the
+  intercept, so the degrees of freedom are <strong>n − k</strong>. Wooldridge counts k slopes
+  and writes <strong>n − k − 1</strong>. The two give the same number for the same model.
+  Decide which convention you are using before you open the tables, and say so in your answer.
+</div>
+
+<h2>3 · Setting out a test</h2>
+
+<p><a class="gt" href="../reference/glossary.html#hypothesis-test">Hypothesis testing</a> in a regression resembles the steps from Introductory Statistics and
+Statistical Methods II. State the hypothesis to be tested, then formulate it algebraically as a
+null and an alternative.</p>
+
+<div class="box def">
+  <span class="box-label">As a rule, there must always be some form of equality in the null</span>
+  <table class="cal" style="margin-top:0.5rem;">
+    <tr><th></th><td class="cov"><strong>Two-tailed</strong></td><td class="cov"><strong>Left-tailed</strong></td><td class="cov"><strong>Right-tailed</strong></td></tr>
+    <tr><th>Null H<sub>0</sub></th><td class="cov">=</td><td class="cov">= or ≥</td><td class="cov">= or ≤</td></tr>
+    <tr><th>Alternative H<sub>1</sub></th><td class="cov">≠</td><td class="cov">&lt;</td><td class="cov">&gt;</td></tr>
+  </table>
+  Gujarati uses ≤ or ≥ in the null for one-tailed tests; Wooldridge sticks to "=". Either is
+  acceptable, provided the alternative is its strict complement.
+</div>
+
+<p>The reason the null carries the equality is practical: the null is the hypothesis you
+compute <em>under</em>. "β<sub>2</sub> = 0" gives a specific number to build a test statistic
+around; "β<sub>2</sub> ≠ 0" does not.</p>
+
+<h3>The test statistic</h3>
+
+<p>The <a class="gt" href="../reference/glossary.html#t-statistic">t-test</a> — or t-ratio — takes the estimate, subtracts the value the null asserts, and
+expresses the gap in units of the estimate's own imprecision:</p>
+
+<p class="math"><strong>t<sub>β̂j</sub> = ( β̂<sub>j</sub> − β<sub>j</sub> ) / se(β̂<sub>j</sub>)</strong></p>
+
+<p>If the estimated coefficient is close to the value stated in the null, the hypothesis is not
+rejected. If it is far from it, the hypothesis is rejected. The standard error is what defines
+"far": a gap of 0.5 is enormous if the standard error is 0.05 and negligible if it is 2.</p>
+
+<div class="box warn">
+  <span class="box-label">Hypotheses are about β, never about β̂</span>
+  The hypothesis is always stated in terms of the <strong>population parameters</strong>
+  β<sub>j</sub> — never the regression estimates β̂<sub>j</sub>. Why? Because β̂<sub>j</sub> is
+  a number you already have; there is nothing to test about it. The unknown is the population
+  parameter, and the estimate is the evidence being brought to bear on it.
+</div>
+
+<h2>4 · The decision rules</h2>
+
+<p>Compare the calculated t to the <strong><a class="gt" href="../reference/glossary.html#critical-value">critical value</a></strong> from the t-tables, at
+n − k <a class="gt" href="../reference/glossary.html#degrees-of-freedom">degrees of freedom</a> and a <a class="gt" href="../reference/glossary.html#significance-level">significance level</a> α — where α is the probability of rejecting
+H<sub>0</sub> when H<sub>0</sub> is true.</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">two</span><span>
+    <strong>Two-tailed</strong> (H<sub>1</sub>: β<sub>j</sub> ≠ b). Reject if
+    |t<sub>β̂j</sub>| &gt; crit, using α/2 in each tail. Otherwise do not reject.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">left</span><span>
+    <strong>Left-tailed</strong> (H<sub>1</sub> contains "&lt;"). No absolute values here:
+    reject if t<sub>β̂j</sub> &lt; −crit, making the tabulated value negative.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">right</span><span>
+    <strong>Right-tailed</strong> (H<sub>1</sub> contains "&gt;"). Reject if
+    t<sub>β̂j</sub> &gt; crit, using the value exactly as it appears in the table.
+  </span></div>
+</div>
+
+<p>Those three rules are one picture at three settings. Move the controls rather than memorise
+them separately:</p>
+
+<div class="viz" data-viz="t-critical-regions">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It draws the t-distribution with controls for the
+    tail, the significance level, the degrees of freedom and the test statistic, shades the
+    rejection region, reports the critical value and states the decision.
+  </p>
+</div>
+
+<div class="box warn">
+  <span class="box-label">One-tailed tests, in this course</span>
+  A one-tailed test puts the whole of α into a single tail, which lowers the critical value and
+  makes rejection easier. That is legitimate <em>only</em> if the direction was chosen before
+  looking at the estimate. In practice, one-sided alternatives are rarely used, and they should
+  be used only where there is a clear reason from economic theory, prior empirical evidence, or
+  both. <strong>In this course, use a one-tailed test only if explicitly asked to.</strong>
+</div>
+
+<h2>5 · Worked example: one-tailed tests</h2>
+
+<p>Consider a model of the demand for a normal good over time:</p>
+
+<p class="math">D<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>Price<sub>t</sub> + β<sub>3</sub>Income<sub>t</sub> + u<sub>t</sub></p>
+
+<p><strong>A-priori expectations.</strong> Economic theory says that for a normal good, demand
+falls as price rises and rises as income rises: β<sub>2</sub> &lt; 0 and β<sub>3</sub> &gt; 0.
+Stating those before estimating is what entitles us to a one-tailed test here.</p>
+
+<p>Monthly data for the last 200 months gives:</p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>D&#770;<sub>t</sub> =</span><span>s.e.</span><span>t =</span></span>
+  <span class="er-col"><span>2.102</span><span>(0.911)</span><span>2.308</span></span>
+  <span class="er-col er-op"><span>−</span><span></span><span></span></span>
+  <span class="er-col"><span>0.356 Price<sub>t</sub></span><span>(0.110)</span><span>−3.236</span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>0.521 Income<sub>t</sub></span><span>(0.213)</span><span>2.446</span></span>
+  <span class="er-note">n = 200 &nbsp;·&nbsp; k = 3 &nbsp;·&nbsp; df = 197</span>
+</div>
+
+<h3>Own price — a left-tailed test</h3>
+
+<ol class="steps">
+  <li>H<sub>0</sub>: β<sub>2</sub> = 0 &nbsp;·&nbsp; H<sub>1</sub>: β<sub>2</sub> &lt; 0.
+    The null says own price has zero impact once income is accounted for. The alternative says
+    the relationship is the negative one theory predicts.
+  </li>
+  <li>α = 0.05. <em>If no significance level is given, always default to 5%.</em></li>
+  <li>Test statistic and critical value:
+    <p class="math">t<sub>β̂2</sub> = ( −0.356 − 0 ) / 0.110 = <strong>−3.236</strong></p>
+    <p class="math">crit = t<sub>α, n−k</sub> = t<sub>0.05, 197</sub> ≈ 1.645</p>
+  </li>
+  <li><strong>Decision:</strong> t<sub>β̂2</sub> &lt; −crit, since −3.236 &lt; −1.645. Reject
+    the null that β<sub>2</sub> = 0.
+  </li>
+  <li><strong>Conclusion:</strong> the evidence suggests that the partial effect of own price
+    on demand for this good is negative and statistically significant, <em>ceteris paribus</em>.
+  </li>
+</ol>
+
+<h3>Income — a right-tailed test</h3>
+
+<ol class="steps">
+  <li>H<sub>0</sub>: β<sub>3</sub> = 0 &nbsp;·&nbsp; H<sub>1</sub>: β<sub>3</sub> &gt; 0,
+    having been explicitly asked to test one-sided.
+  </li>
+  <li>Test statistic and critical value, α = 0.05 as before:
+    <p class="math">t<sub>β̂3</sub> = ( 0.521 − 0 ) / 0.213 = <strong>2.446</strong>
+      &nbsp;·&nbsp; crit = t<sub>0.05, 197</sub> ≈ 1.645</p>
+  </li>
+  <li><strong>Decision:</strong> t<sub>β̂3</sub> &gt; crit, since 2.446 &gt; 1.645 — right tail,
+    so the critical value stays positive. Reject the null.
+  </li>
+  <li><strong>Conclusion:</strong> the results are in line with economic theory. There is a
+    positive and statistically significant relationship between income and demand for this
+    good, holding own price fixed.
+  </li>
+</ol>
+
+<h2>6 · Why the two-tailed test is the default</h2>
+
+<p>We began by assuming the good was normal, and that assumption drove the hypotheses. But
+biscuits may not be a normal good — they could be inferior, in which case the signs differ.
+More often than not, economic theory admits more than one sign for a coefficient, or common
+sense says it could go either way. So we usually test</p>
+
+<p class="math">H<sub>0</sub>: β<sub>j</sub> = 0 &nbsp;·&nbsp; H<sub>1</sub>: β<sub>j</sub> ≠ 0</p>
+
+<p>which says either the variable has no effect, or it has an effect that could be positive or
+negative. Note that you may have clear a-priori expectations and <em>still</em> use a two-tailed
+test — and in this course that is the default.</p>
+
+<div class="box def">
+  <span class="box-label">Wooldridge's argument, which is the real reason</span>
+  "At minimum, using a two-sided alternative prevents us from looking at the estimated equation
+  and then basing the alternative on whether β̂<sub>j</sub> is positive or negative."<br>
+  <strong>We should never use our regression estimates to help inform our hypothesis.</strong>
+  We should have a hypothesis, and then use the data to test it. Choosing the tail after seeing
+  the sign is not a slightly weaker procedure; it invalidates the stated α altogether.
+</div>
+
+<h2>7 · Worked example: two-tailed tests</h2>
+
+<p>A model of labour supply in Jamaica, estimating hours worked as a function of education in
+years of schooling and age in years, on 1,438 observations. Use α = 0.01:</p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>hours&#770; =</span><span>s.e.</span><span>t =</span></span>
+  <span class="er-col"><span>0.836</span><span>(0.373)</span><span>2.241</span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>0.161 Education</span><span>(0.025)</span><span>6.440</span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>0.001 Age</span><span>(0.005)</span><span>0.200</span></span>
+  <span class="er-note">n = 1,438 &nbsp;·&nbsp; k = 3 &nbsp;·&nbsp; df = 1,435 &nbsp;·&nbsp; α = 0.01</span>
+</div>
+
+<h3>Education</h3>
+
+<p>H<sub>0</sub>: β<sub>2</sub> = 0 against H<sub>1</sub>: β<sub>2</sub> ≠ 0.</p>
+
+<p class="math">t<sub>β̂2</sub> = ( 0.161 − 0 ) / 0.025 = 6.440
+&nbsp;·&nbsp; crit = t<sub>α/2, n−k</sub> = t<sub>0.005, 1435</sub> ≈ 2.576</p>
+
+<p><strong>Decision:</strong> |t<sub>β̂2</sub>| &gt; crit, so reject the null.
+<strong>Conclusion:</strong> the evidence suggests a <a class="gt" href="../reference/glossary.html#practical-significance">statistically significant</a> relationship
+between education and labour supply in Jamaica at the 1% level. The sign is positive, so more
+education is associated with more hours worked, <em><a class="gt" href="../reference/glossary.html#ceteris-paribus">ceteris paribus</a></em>.</p>
+
+<h3>Age</h3>
+
+<p>H<sub>0</sub>: β<sub>3</sub> = 0 against H<sub>1</sub>: β<sub>3</sub> ≠ 0.</p>
+
+<p class="math">t<sub>β̂3</sub> = 0.001 / 0.005 = 0.200 &nbsp;·&nbsp; crit ≈ 2.576</p>
+
+<p><strong>Decision:</strong> |t<sub>β̂3</sub>| &lt; crit, so we do not reject the null.
+<strong>Conclusion:</strong> age has a statistically insignificant impact on labour supply,
+ceteris paribus, at the 1% level; there is no evidence of a relationship between age and hours
+worked in Jamaica.</p>
+
+<div class="box key">
+  <span class="box-label">Notice what the second conclusion does not say</span>
+  It says nothing about the <em>sign</em>. We are less concerned about signs when we find
+  statistical insignificance — a coefficient we cannot distinguish from zero has no direction
+  worth reporting. Writing "age has a small positive effect, though insignificant" is a common
+  and costly error.
+</div>
+
+<h2>8 · Statistical significance is not importance</h2>
+
+<p>If a variable is statistically significant, go on to discuss the <em>magnitude</em> of the
+coefficient, to get a sense of its economic or practical importance. The two are different
+questions, and a large sample can make a trivial effect significant.</p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>wages&#770; =</span><span>s.e.</span><span>t =</span></span>
+  <span class="er-col"><span>1000</span><span>(256.2)</span><span>3.903</span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>0.002 Education</span><span>(0.001)</span><span>2.000</span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>0.061 Experience</span><span>(0.025)</span><span>2.440</span></span>
+  <span class="er-note">wages in dollars &nbsp;·&nbsp; education and experience in years</span>
+</div>
+
+<p>The coefficient on education is statistically significant at the 5% level. It is also
+<strong>two-tenths of a cent per year of schooling</strong>. No policy follows from that,
+and no student should choose a degree on the strength of it. Significance and importance are
+separate findings, and a good answer reports both.</p>
+
+<div class="box warn">
+  <span class="box-label">And if the sign is wrong</span>
+  If a variable is statistically significant and practically important but carries the "wrong"
+  sign, you must search for a plausible explanation of why it is contrary to the literature.
+  Without one, a reader will reasonably suspect the model is misspecified — which is where
+  Unit 2A begins.
+</div>
+
+<h2>9 · Testing a value other than zero</h2>
+
+<p>Nothing about the procedure requires the hypothesised value to be zero. Economic theory may
+imply a specific number b:</p>
+
+<p class="math">H<sub>0</sub>: β<sub>j</sub> = b<sub>j</sub>
+&nbsp;⟹&nbsp; t<sub>β̂j</sub> = ( estimate − hypothesised value ) / standard error
+= ( β̂<sub>j</sub> − b<sub>j</sub> ) / se(β̂<sub>j</sub>)</p>
+
+<p>Suppose we want to test whether there is a one-to-one relationship between income and
+consumption — if income rises by $1, consumption rises by $1. For
+C = β<sub>1</sub> + β<sub>2</sub>Y + u, the null is H<sub>0</sub>: β<sub>2</sub> = 1.</p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>C&#770; =</span><span>s.e.</span><span>t =</span></span>
+  <span class="er-col"><span>100</span><span>(50.123)</span><span>1.995</span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>0.891 Y</span><span>(0.214)</span><span>4.164</span></span>
+  <span class="er-note">n = 31 &nbsp;·&nbsp; k = 2 &nbsp;·&nbsp; R<sup>2</sup> = 0.578</span>
+</div>
+
+<p>The estimate 0.891 looks different from 1 — but is it <em>statistically</em> different from
+1? Testing H<sub>0</sub>: β<sub>2</sub> = 1 against H<sub>1</sub>: β<sub>2</sub> ≠ 1:</p>
+
+<p class="math">t<sub>β̂2</sub> = ( 0.891 − 1 ) / 0.214 = <strong>−0.509</strong></p>
+
+<p><strong>Decision:</strong> the null cannot be rejected at the 1%, 5% or 10% level. Note the
+contrast with the t of 4.164 printed in the display: the same coefficient is comfortably
+distinguishable from <em>zero</em> and entirely indistinguishable from <em>one</em>. The
+t-statistic a package prints is always for a null of zero, and that is often not the
+interesting null.</p>
+
+<h2>10 · Confidence intervals</h2>
+
+<p>A <a class="gt" href="../reference/glossary.html#confidence-interval">confidence interval</a> around a <a class="gt" href="../reference/glossary.html#parameter">parameter</a> gives a range of values the true population
+parameter can reasonably be expected to take. With (1 − α) percent confidence:</p>
+
+<p class="math"><strong>β̂<sub>j</sub> ± C · se(β̂<sub>j</sub>)</strong></p>
+
+<p>where C is the critical value corresponding to a <em>two-tailed</em> test at the α level.</p>
+
+<h3>Worked, on the consumption model</h3>
+
+<p>A 95% interval for β<sub>2</sub>, with n = 31 so n − k = 29:</p>
+
+<p class="math">C = t<sub>0.05/2, 29</sub> = 2.045</p>
+<p class="math">0.891 ± 2.045 (0.214) = <strong>(0.453, 1.329)</strong></p>
+
+<p>We are 95% confident that β<sub>2</sub> lies between 0.453 and 1.329.</p>
+
+<div class="box key">
+  <span class="box-label">An interval is a test, and a test is an interval</span>
+  If the hypothesised value of β<sub>j</sub> is <strong>not</strong> in the interval, reject
+  H<sub>0</sub>: β<sub>j</sub> = b<sub>j</sub> at the α level. If it <strong>is</strong> in the
+  interval, do not reject.<br>
+  Both earlier results follow immediately. Testing β<sub>2</sub> = 0: zero is not in
+  (0.453, 1.329), so reject at 5%. Testing β<sub>2</sub> = 1: one <em>is</em> in the interval,
+  so do not reject — which is precisely what t = −0.509 said.
+</div>
+
+<div class="viz" data-viz="ci-coverage">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It draws a confidence interval from each of forty
+    independent samples against the fixed true parameter, marking those that fail to cover it,
+    with controls for the confidence level and for redrawing the samples.
+  </p>
+</div>
+
+<div class="box warn">
+  <span class="box-label">What the width depends on — and the caveat</span>
+  The width of the interval depends on the value of α, the residual sum of squares, the sample
+  size, and the variation of the independent variables around their means. Three of those four
+  are the same levers on precision identified in Unit 1C, which is no coincidence: the interval
+  is built from se(β̂<sub>j</sub>).<br>
+  And confidence intervals are only as good as the assumptions underneath them. An interval
+  computed from a heteroscedastic or autocorrelated model is the wrong width, and being
+  confidently wrong is worse than being uncertain.
+</div>
+
+<h2>11 · Testing a linear combination of parameters</h2>
+
+<p>Sometimes the interesting hypothesis involves more than one coefficient at once. In the
+model Y = β<sub>1</sub> + β<sub>2</sub>X<sub>2</sub> + β<sub>3</sub>X<sub>3</sub> +
+β<sub>4</sub>X<sub>4</sub> + u we might want to test</p>
+
+<p class="math">H<sub>0</sub>: β<sub>2</sub> = β<sub>3</sub>, i.e. β<sub>2</sub> − β<sub>3</sub> = 0
+&nbsp;·&nbsp; or &nbsp; H<sub>0</sub>: β<sub>2</sub> + β<sub>3</sub> = 1</p>
+
+<p>The structure is the same as before:</p>
+
+<p class="math">t = ( linear combination of estimates − hypothesised value ) / ( standard error of the combination )</p>
+
+<h3>Worked example</h3>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>Y&#770; =</span><span>s.e.</span><span></span></span>
+  <span class="er-col"><span>75.321</span><span>(70.123)</span><span></span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>0.725 X<sub>2</sub></span><span>(0.104)</span><span></span></span>
+  <span class="er-col er-op"><span>−</span><span></span><span></span></span>
+  <span class="er-col"><span>0.278 X<sub>3</sub></span><span>(0.124)</span><span></span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>0.524 X<sub>4</sub></span><span>(0.145)</span><span></span></span>
+  <span class="er-note">n = 64 &nbsp;·&nbsp; k = 4 &nbsp;·&nbsp; R<sup>2</sup> = 0.778</span>
+</div>
+
+<p>Test H<sub>0</sub>: β<sub>2</sub> = 1 + β<sub>3</sub> against H<sub>1</sub>: β<sub>2</sub> ≠
+1 + β<sub>3</sub>. Rewrite it as a statement about a single combination — H<sub>0</sub>:
+β<sub>2</sub> − β<sub>3</sub> = 1 — and the statistic is</p>
+
+<p class="math">t = [ ( β̂<sub>2</sub> − β̂<sub>3</sub> ) − ( β<sub>2</sub> − β<sub>3</sub> ) ] / se( β̂<sub>2</sub> − β̂<sub>3</sub> )
+= [ ( 0.725 − (−0.278) ) − 1 ] / se( β̂<sub>2</sub> − β̂<sub>3</sub> )
+= 0.003 / se( β̂<sub>2</sub> − β̂<sub>3</sub> )</p>
+
+<div class="box warn">
+  <span class="box-label">The standard error of a difference is not the difference of the standard errors</span>
+  <p class="math" style="margin:0.4rem 0;">se( β̂<sub>2</sub> − β̂<sub>3</sub> ) ≠ se(β̂<sub>2</sub>) − se(β̂<sub>3</sub>)</p>
+  <p class="math" style="margin:0.4rem 0;">se( β̂<sub>2</sub> − β̂<sub>3</sub> ) = √var( β̂<sub>2</sub> − β̂<sub>3</sub> )
+    = √[ var(β̂<sub>2</sub>) + var(β̂<sub>3</sub>) − 2 cov(β̂<sub>2</sub>, β̂<sub>3</sub>) ]</p>
+  The covariance term is essential and is <em>not</em> printed in a standard regression table.
+  It comes from the <strong>variance–covariance matrix</strong>, which has the variances on the
+  diagonal and the covariances off it — in EViews, <em>View → Covariance Matrix</em>. For
+  k = 4 the matrix is 4 × 4 and symmetric, so cov(β̂<sub>2</sub>, β̂<sub>3</sub>) appears in
+  both off-diagonal positions.
+</div>
+
+<p>Note the sign trap in this example: β̂<sub>3</sub> is itself negative, so β̂<sub>2</sub> −
+β̂<sub>3</sub> = 0.725 − (−0.278) = 1.003, not 0.447. With the numerator only 0.003, this null
+will not be rejected unless the standard error of the combination is extraordinarily small.</p>
+
+<h2>12 · Joint significance and the F-test</h2>
+
+<p>Sometimes we want to test a null about several parameters <strong>simultaneously</strong> —
+a <em>joint</em> test. The commonest form is a set of <strong><a class="gt" href="../reference/glossary.html#restricted-model">exclusion restrictions</a></strong>.
+In</p>
+
+<p class="math">Y = β<sub>1</sub> + β<sub>2</sub>X<sub>2</sub> + β<sub>3</sub>X<sub>3</sub> + β<sub>4</sub>X<sub>4</sub> + β<sub>5</sub>X<sub>5</sub> + u</p>
+
+<p>we might ask whether β<sub>2</sub>, β<sub>3</sub> and β<sub>4</sub> are all zero:</p>
+
+<p class="math">H<sub>0</sub>: β<sub>2</sub> = β<sub>3</sub> = β<sub>4</sub> = 0
+&nbsp;·&nbsp; H<sub>1</sub>: β<sub>2</sub> ≠ 0 <em>or</em> β<sub>3</sub> ≠ 0 <em>or</em> β<sub>4</sub> ≠ 0</p>
+
+<p>The alternative contains "or" because it takes only one non-zero parameter to make the null
+false. In this course, <a class="gt" href="../reference/glossary.html#f-test">joint significance</a> is tested with the <strong>F-test</strong>.</p>
+
+<div class="box def">
+  <span class="box-label">The two formulas — use whichever the output gives you</span>
+  <p class="math" style="margin:0.4rem 0;">F<sub>test</sub> = [ (RSS<sub>R</sub> − RSS<sub>UR</sub>) / q ] / [ RSS<sub>UR</sub> / (n − k) ]</p>
+  <p class="math" style="margin:0.4rem 0;">F<sub>test</sub> = [ (R<sup>2</sup><sub>UR</sub> − R<sup>2</sup><sub>R</sub>) / q ] / [ (1 − R<sup>2</sup><sub>UR</sub>) / (n − k) ]</p>
+  UR is the <strong>unrestricted</strong> regression — the full model. R is the
+  <strong>restricted</strong> one, re-estimated with the q restrictions imposed, which for
+  exclusion restrictions simply means dropping those variables and running it again.
+  <strong>k always comes from the unrestricted model.</strong>
+</div>
+
+<p>The critical value is F<sup>q</sup><sub>n−k</sub> at the chosen α: q is the numerator
+degrees of freedom, being the number of restrictions, and n − k is the denominator degrees of
+freedom. <strong>Reject if F<sub>test</sub> &gt; F<sub>crit</sub></strong>, and do not reject
+otherwise.</p>
+
+<div class="box key">
+  <span class="box-label">The intuition</span>
+  Does the unrestricted model do a better job of explaining the variation in Y than the
+  restricted one? Dropping variables can only make the fit worse, so RSS<sub>R</sub> ≥
+  RSS<sub>UR</sub> always; the question is whether it gets worse by <em>enough</em> to be worth
+  the q parameters. If it does, we reject the null that the restrictions can be imposed.
+</div>
+
+<h3>Worked example</h3>
+
+<p>A researcher models wages as a function of education (EDUC), experience (EXPER), father's
+education (FATHEDUC), mother's education (MOTHEDUC) and number of siblings (SIBS), on
+n = 1,230 observations. From the unrestricted regression:</p>
+
+<p class="math">RSS<sub>UR</sub> = 85,013.30 &nbsp;·&nbsp; R<sup>2</sup><sub>UR</sub> = 0.1614</p>
+
+<p>To test whether MOTHEDUC and SIBS are <em>jointly</em> significant at α = 0.10 —
+H<sub>0</sub>: β<sub>5</sub> = β<sub>6</sub> = 0 against H<sub>1</sub>: β<sub>5</sub> ≠ 0 or
+β<sub>6</sub> ≠ 0 — re-run the model without those two variables:</p>
+
+<p class="math">RSS<sub>R</sub> = 85,125.77 &nbsp;·&nbsp; R<sup>2</sup><sub>R</sub> = 0.1602</p>
+
+<ol class="steps">
+  <li>Two restrictions, so q = 2. The unrestricted model has k = 6, so n − k = 1,224.</li>
+  <li>From the F-tables, F<sup>2</sup><sub>1,224</sub> at α = 0.10 gives crit = 2.30.</li>
+  <li>The test statistic, by the RSS formula:
+    <p class="math">F<sub>test</sub> = [ (85,125.77 − 85,013.30) / 2 ] / [ 85,013.30 / 1,224 ]
+      = 56.235 / 69.455 = <strong>0.809</strong></p>
+  </li>
+  <li><strong>Decision:</strong> F<sub>test</sub> &lt; F<sub>crit</sub>, so we do not reject the
+    null. MOTHEDUC and SIBS are jointly insignificant.
+  </li>
+</ol>
+
+<details>
+  <summary>The same test by the R<sup>2</sup> formula</summary>
+  <div class="solution">
+    <p class="math">F<sub>test</sub> = [ (0.1614 − 0.1602) / 2 ] / [ (1 − 0.1614) / 1,224 ]
+      = 0.0006 / 0.000685 ≈ 0.876</p>
+    <p>Slightly different from 0.809, but the same decision. The gap is rounding: the
+    R<sup>2</sup> values are quoted to four decimal places, and their difference — 0.0012 — has
+    only two significant figures left in it. <strong>Prefer the <a class="gt" href="../reference/glossary.html#rss">RSS</a> formula when both are
+    available</strong>, and never report an F to three decimals that was computed from
+    R<sup>2</sup>s rounded to four.</p>
+  </div>
+</details>
+
+<div class="box def">
+  <span class="box-label">t and F are the same test when q = 1</span>
+  H<sub>0</sub>: β<sub>j</sub> = 0 against H<sub>1</sub>: β<sub>j</sub> ≠ 0 can be run as an
+  F-test with q = 1. It gives the same answer, because
+  <p class="math" style="margin:0.4rem 0;">F<sub>test</sub> = ( t<sub>test</sub> )<sup>2</sup> &nbsp;when there is one restriction</p>
+  So a t of 2.446 corresponds to an F of 5.983. The F-test is the generalisation; the t-test is
+  the case everyone runs by hand.
+</div>
+
+<h2>13 · p-values</h2>
+
+<p>So far we have used the critical-value approach: compute a statistic, compare it to the
+value from the table at a chosen α. The alternative is the <strong><a class="gt" href="../reference/glossary.html#p-value">p-value</a></strong>.</p>
+
+<div class="box def">
+  <span class="box-label">Definition</span>
+  The p-value for a test statistic is the probability of observing a test statistic
+  <strong>that size or more extreme, if the null hypothesis is true</strong>. Equivalently, it
+  is the smallest significance level at which the null would still be rejected.<br>
+  A <strong>large</strong> p-value is evidence in favour of the null. A <strong>small</strong>
+  one is evidence against it. The rule is: <strong>reject if p &lt; α</strong>, do not reject
+  otherwise — and it holds for t-tests, F-tests, chi-square tests alike.
+</div>
+
+<h3>Reading regression output</h3>
+
+<p>A software package estimating a regression reports, for each coefficient: the estimate, its
+standard error, its t-statistic, and the p-value associated with that t — along with a good
+deal else. Two habits are worth forming now:</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span>
+    <strong>The default p-value is for a two-tailed test of H<sub>0</sub>: β<sub>j</sub> = 0.</strong>
+    If your null is one-sided, halve it. If your null is β<sub>j</sub> = 1, the printed p-value
+    is answering a different question entirely and must be recomputed.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span>
+    <strong>Report the p-value alongside the decision, not instead of it.</strong> "p = 0.043,
+    so we reject at the 5% level" tells the reader both what was found and how close it was;
+    "significant" on its own does not.
+  </span></div>
+</div>
+
+<h2>14 · Tutorial</h2>
+
+<p style="font-size:0.85rem; color:var(--ink-soft); font-style:italic;">
+Draft questions, to be replaced by the tutorial sheet issued in class.</p>
+
+<div class="tutorial">
+
+  <div class="tq">
+    <span class="qtext">Explain why the test statistic follows a t-distribution rather than a
+    standard normal. What exactly changes, and why does the difference shrink as n grows?</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p>Under normality, (β̂<sub>j</sub> − β<sub>j</sub>)/σ<sub>β̂j</sub> ~ N(0, 1) — but
+        that uses the <em>true</em> standard deviation, which contains the unobservable
+        σ<sup>2</sup>. In practice σ<sup>2</sup> is replaced by σ̂<sup>2</sup> =
+        Σû<sub>i</sub><sup>2</sup>/(n − k), giving se(β̂<sub>j</sub>) in the denominator
+        instead.</p>
+        <p><strong>What changes:</strong> the denominator is now itself a random variable
+        rather than a constant. A normal numerator divided by the square root of an independent
+        chi-square divided by its degrees of freedom is, by definition, a t. This is where the
+        result from Unit 1E — that β̂ is distributed independently of σ̂<sup>2</sup>, and that
+        (n − 2)σ̂<sup>2</sup>/σ<sup>2</sup> is chi-square — earns its place.</p>
+        <p><strong>Why it shrinks:</strong> the extra variability comes entirely from
+        estimating σ. As n grows, σ̂<sup>2</sup> becomes an ever more precise estimate of
+        σ<sup>2</sup>, the denominator behaves more like a constant, and the t converges on the
+        normal — t → Z as n → ∞. In practice the two are close by about df = 30 and nearly
+        indistinguishable by df = 120, which is why large-sample work quotes 1.96 without
+        apology.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">Using the consumption model Ĉ = 100 + 0.891Y with se(β̂<sub>2</sub>) =
+    0.214 and n = 31, construct a 99% confidence interval for β<sub>2</sub>. Compare it with the
+    95% interval (0.453, 1.329) and say what you can and cannot conclude at each level.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p>With n − k = 29 degrees of freedom, the two-tailed critical value at α = 0.01 is
+        t<sub>0.005, 29</sub> = 2.756. So</p>
+        <p class="math">0.891 ± 2.756 (0.214) = 0.891 ± 0.590 = <strong>(0.301, 1.481)</strong></p>
+        <p><strong>Comparison.</strong> The 99% interval is wider — it must be, since buying
+        more confidence means saying less. Both intervals exclude zero, so β<sub>2</sub> = 0 is
+        rejected at both the 5% and the 1% level. Both contain 1, so the hypothesis of a
+        one-to-one relationship between income and consumption cannot be rejected at either
+        level.</p>
+        <p><strong>What cannot be concluded:</strong> that the <a class="gt" href="../reference/glossary.html#mpc">marginal propensity to consume</a>
+        <em>is</em> 1. Failing to reject a null is not evidence for it — this interval is
+        <a class="gt" href="../reference/glossary.html#consistency">consistent</a> with an MPC anywhere from 0.30 to 1.48, which is almost the whole
+        economically plausible range. The honest reading is that with n = 31 and this much
+        residual variation, the data simply cannot pin the MPC down.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">A model of house prices is estimated with 5 regressors on 45
+    observations, giving R<sup>2</sup> = 0.62. Dropping three of them gives R<sup>2</sup> =
+    0.55. Test whether the three belong in the model at the 5% level, stating H<sub>0</sub>,
+    H<sub>1</sub>, q, both degrees of freedom, and your conclusion.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>Hypotheses.</strong> Numbering the dropped coefficients β<sub>4</sub>,
+        β<sub>5</sub>, β<sub>6</sub>: H<sub>0</sub>: β<sub>4</sub> = β<sub>5</sub> =
+        β<sub>6</sub> = 0 against H<sub>1</sub>: at least one of them is non-zero.</p>
+        <p><strong>Degrees of freedom.</strong> q = 3 restrictions. The unrestricted model has
+        5 slopes plus an intercept, so k = 6 and n − k = 45 − 6 = 39.</p>
+        <p><strong>Test statistic</strong>, by the R<sup>2</sup> formula:</p>
+        <p class="math">F = [ (0.62 − 0.55) / 3 ] / [ (1 − 0.62) / 39 ] = 0.02333 / 0.009744 = <strong>2.394</strong></p>
+        <p><strong>Decision.</strong> The critical value F<sup>3</sup><sub>39</sub> at α = 0.05
+        is approximately 2.85. Since 2.394 &lt; 2.85, we do not reject the null: the three
+        variables are jointly insignificant at the 5% level, and there is no strong evidence
+        that they belong in the model.</p>
+        <p>Two remarks. The decision is fairly close, and at α = 0.10 (critical value about
+        2.23) it would reverse — which is worth saying rather than hiding. And joint
+        insignificance is not the same as each being individually insignificant; the reverse
+        situation, where each t is small but the F is large, is the classic symptom of
+        <a class="gt" href="../reference/glossary.html#multicollinearity">multicollinearity</a> in Unit 2B.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">A researcher runs a regression, sees that β̂<sub>2</sub> is positive,
+    and then decides to test H<sub>0</sub>: β<sub>2</sub> = 0 against H<sub>1</sub>:
+    β<sub>2</sub> &gt; 0 at the 5% level "because a one-tailed test is more powerful". Explain
+    what is wrong, and what the true size of their test is.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>What is wrong.</strong> The alternative was chosen <em>after</em> looking at
+        the estimate. A one-tailed test at 5% is only a 5% test if the direction was fixed in
+        advance; here the researcher would have tested the left tail had the sign come out
+        negative, so their procedure rejects whenever |t| exceeds the one-tailed critical value
+        in <em>either</em> direction.</p>
+        <p><strong>The true size.</strong> That procedure has 5% in each tail, so its actual
+        significance level is <strong>10%</strong>, not 5% — twice the stated risk of a false
+        rejection. This is exactly the practice Wooldridge's argument for defaulting to
+        two-tailed tests is designed to prevent, and it is why this course requires an explicit
+        instruction before a one-tailed test may be used.</p>
+        <p><strong>What they should do:</strong> either fix the direction from theory before
+        estimating and say so, or use the two-tailed test — where the same t would be compared
+        against the larger critical value, which is the honest price of not having committed in
+        advance.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">In the model Y = β<sub>1</sub> + β<sub>2</sub>X<sub>2</sub> +
+    β<sub>3</sub>X<sub>3</sub> + u you are told var(β̂<sub>2</sub>) = 0.0100,
+    var(β̂<sub>3</sub>) = 0.0064 and cov(β̂<sub>2</sub>, β̂<sub>3</sub>) = −0.0048. Test
+    H<sub>0</sub>: β<sub>2</sub> = β<sub>3</sub> given β̂<sub>2</sub> = 0.42 and β̂<sub>3</sub> =
+    0.18, with n = 60. Explain why ignoring the covariance would mislead you.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p>Rewrite the null as H<sub>0</sub>: β<sub>2</sub> − β<sub>3</sub> = 0. Then</p>
+        <p class="math">var(β̂<sub>2</sub> − β̂<sub>3</sub>) = 0.0100 + 0.0064 − 2(−0.0048) = 0.0260</p>
+        <p class="math">se(β̂<sub>2</sub> − β̂<sub>3</sub>) = √0.0260 = 0.1612</p>
+        <p class="math">t = (0.42 − 0.18 − 0) / 0.1612 = 0.24 / 0.1612 = <strong>1.489</strong></p>
+        <p>With n − k = 57, the two-tailed 5% critical value is about 2.002. Since
+        |1.489| &lt; 2.002 we do not reject: the two <a class="gt" href="../reference/glossary.html#partial-coefficient">partial effects</a> are not significantly
+        different from each other.</p>
+        <p><strong>Why the covariance matters.</strong> It is negative here, and it enters with
+        a minus sign, so −2(−0.0048) = +0.0096 <em>adds</em> to the variance — over a third of
+        the total. Ignoring it would give var = 0.0164, se = 0.128, and t = 1.875, which is
+        still short of 2.002 but much closer, and at the 10% level the two approaches would
+        disagree. A negative covariance between two estimates means they tend to move in
+        opposite directions across samples, which makes their <em>difference</em> more variable,
+        not less — precisely the case where dropping the term flatters you.</p>
+      </div>
+    </details>
+  </div>
+
+</div>
+
+<h2>15 · Check yourself</h2>
+
+<div class="quiz" data-answer="0">
+  <div class="q">In a regression hypothesis test, the null hypothesis must always contain</div>
+  <button class="opt">some form of equality, whichever alternative is being used</button>
+  <button class="opt">a strict inequality, so the alternative can contain equality</button>
+  <button class="opt">the value the estimated coefficient actually took in the sample</button>
+  <button class="opt">a statement about the estimate β̂<sub>j</sub> and not the parameter</button>
+  <div class="feedback right">Correct — the null is the hypothesis you compute under, so it must supply a specific number to build the statistic around.</div>
+  <div class="feedback wrong">The null needs an equality because it has to give you a value to subtract: t = (β̂<sub>j</sub> − β<sub>j</sub>)/se. "β<sub>2</sub> ≠ 0" supplies no number. Hypotheses are also always about the population parameter β, never the estimate β̂.</div>
+</div>
+
+<div class="quiz" data-answer="0">
+  <div class="q">In this course, a one-tailed test should be used only when</div>
+  <button class="opt">you are explicitly asked to do so in the question</button>
+  <button class="opt">the estimated coefficient turns out to have one sign</button>
+  <button class="opt">the sample is too small for a two-tailed test to work</button>
+  <button class="opt">the standard error is smaller than the coefficient value</button>
+  <div class="feedback right">Correct — the two-tailed test is the default, and a one-tailed alternative must be justified from theory before the estimates are seen.</div>
+  <div class="feedback wrong">Choosing the tail after seeing the sign doubles the true size of the test: a "5%" test run that way rejects 10% of the time when the null is true. The direction must be fixed in advance, which in this course means being explicitly asked.</div>
+</div>
+
+<div class="quiz" data-answer="0">
+  <div class="q">Wages rise by 0.002 dollars per year of education, with t = 2.0 on n = 1,000. This means</div>
+  <button class="opt">the effect is statistically significant but tiny in size</button>
+  <button class="opt">the effect is large enough to matter for policy decisions</button>
+  <button class="opt">the coefficient must have been measured with a large error</button>
+  <button class="opt">the null that education has no effect cannot be rejected</button>
+  <div class="feedback right">Correct — significance and importance are separate findings, and a large sample can make a trivial effect significant.</div>
+  <div class="feedback wrong">t = 2.0 clears the 5% critical value, so the null <em>is</em> rejected — the effect is statistically significant. But it is two-tenths of a cent per year of schooling. Always report the magnitude alongside the test.</div>
+</div>
+
+<div class="quiz" data-answer="0">
+  <div class="q">An F-test of H<sub>0</sub>: β<sub>2</sub> = β<sub>3</sub> = 0 differs from two separate t-tests because it</div>
+  <button class="opt">tests the two restrictions jointly rather than one at a time</button>
+  <button class="opt">uses the residual sum of squares instead of the coefficients</button>
+  <button class="opt">requires a larger sample than a t-test on the same model does</button>
+  <button class="opt">always gives the same answer as running the two t-tests would</button>
+  <div class="feedback right">Correct — and the two can disagree: small individual t-statistics alongside a large F is the classic signature of multicollinearity.</div>
+  <div class="feedback wrong">The F-test asks whether the restrictions can be imposed <em>together</em>, which is a different question from asking about each separately. When q = 1 the two coincide, with F = t², but with two or more restrictions they can and do disagree.</div>
+</div>
+
+<p class="deck-link" data-unit="1F"></p>
+
+<div class="ask-teacher">
+  <strong>This unit is the whole of the midterm's second half, and the F-test is the part most
+  worth rehearsing on real output.</strong>
+  Bring your working to the tutorial, or to office hours — <span data-course="officeHours"></span>.
+</div>
+
+<ol class="sources">
+  <li id="s1">Wooldridge, J. (2016), <em>Introductory Econometrics: A Modern Approach</em>, Chapter 4 — the t-test, confidence intervals, linear combinations, joint restrictions and p-values. Section 4.2 gives the argument against saying "accept the null".</li>
+  <li id="s2">Gujarati, D. &amp; Porter, D. (2008), <em>Basic Econometrics</em>, Chapters 5 and 8. Gujarati writes the degrees of freedom as n − k with k counting the intercept; Wooldridge writes n − k − 1.</li>
+  <li id="s3">The demand, labour supply and wage examples, and the EViews output behind the F-test, are from the Unit 1F lecture slides.</li>
+</ol>
+
+<div class="lesson-nav" data-unit="1F"></div>
+
+</div>
+</body>
+</html>

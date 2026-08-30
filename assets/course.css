@@ -1,0 +1,418 @@
+/* ============================================================
+   ECON 3049 — Course-site components
+   Layered on top of lesson.css, which supplies the palette
+   (--ink, --paper, --accent …), the serif body and the boxes.
+
+   Everything here is either NEW to the student site or a
+   component the personal study folder never needed:
+     .eqn-report   equation-with-standard-errors (house style)
+     .tutorial     questions with revealable solutions
+     .viz          interactive SVG figure frame
+     ol.units      the index roadmap
+     table.cal     dates and assessment weights
+   ============================================================ */
+
+/* ---------- Index hero ---------- */
+.hero { text-align: center; padding: 2.5rem 0 1rem; border-bottom: 1px solid var(--rule); }
+.hero h1 { font-size: 2.6rem; margin-bottom: 0.2rem; }
+.hero .subtitle { font-size: 1.25rem; }
+.hero .tagline {
+  font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink-soft); font-family: -apple-system, system-ui, sans-serif;
+}
+.links-row { text-align: center; margin: 1.5rem 0 2rem; font-size: 0.95rem; }
+.links-row a { margin: 0 0.6rem; text-decoration: none; }
+
+/* ---------- Dates + assessment ---------- */
+.cal-period {
+  text-align: center; font-size: 0.9rem; color: var(--ink-soft);
+  margin: 0 0 1rem;
+}
+table.cal {
+  width: 100%; border-collapse: collapse; font-size: 0.88rem;
+  margin: 0 auto 1rem;
+}
+table.cal th, table.cal td {
+  text-align: left; padding: 0.4rem 0.6rem;
+  border-bottom: 1px dotted var(--rule); font-weight: 400;
+}
+table.cal th { font-weight: 600; white-space: nowrap; }
+table.cal .wt { color: var(--accent); font-weight: 600; white-space: nowrap; }
+table.cal .cov { color: var(--ink-soft); }
+table.cal .when { text-align: right; white-space: nowrap; color: var(--ink-soft); }
+
+/* ---------- Roadmap ---------- */
+.part { margin-top: 2.5rem; }
+.part h2 { margin-bottom: 0.2rem; }
+.part .part-sub {
+  font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--ink-soft); margin: 0 0 0.8rem;
+  font-family: -apple-system, system-ui, sans-serif;
+}
+ol.units { list-style: none; padding: 0; margin: 0; }
+ol.units li {
+  display: grid;
+  grid-template-columns: 4.6rem 1fr auto;
+  grid-template-areas: "num title pill" ".  blurb wk";
+  gap: 0.15rem 0.7rem;
+  align-items: baseline;
+  padding: 0.6rem 0.2rem;
+  border-bottom: 1px dotted var(--rule);
+}
+ol.units .num {
+  grid-area: num;
+  font-family: -apple-system, system-ui, sans-serif; font-size: 0.7rem;
+  color: #fff; background: var(--accent-2); border-radius: 4px;
+  padding: 0.15rem 0.4rem; text-align: center; letter-spacing: 0.03em;
+}
+ol.units .u-title { grid-area: title; font-weight: 600; text-decoration: none; }
+ol.units .blurb   { grid-area: blurb; font-size: 0.85rem; color: var(--ink-soft); }
+ol.units .wk      { grid-area: wk; font-size: 0.75rem; color: var(--ink-soft); white-space: nowrap; }
+ol.units li.todo .num { background: #cfcabb; }
+ol.units li.todo .u-title { color: var(--ink-soft); }
+
+.status-pill {
+  grid-area: pill;
+  font-size: 0.62rem; font-family: -apple-system, system-ui, sans-serif;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 0.12rem 0.4rem; border-radius: 3px; white-space: nowrap;
+}
+.status-pill.ready { background: #e8f3e3; color: #3a6230; }
+.status-pill.draft { background: #fbf888e0; color: #6b5a08; }
+
+/* ============================================================
+   .eqn-report — the house way of reporting a fitted equation
+
+   Coefficients on row 1, standard errors in parentheses on
+   row 2, t-statistics on row 3, each aligned under its own term.
+   Fixed row heights are what guarantee the alignment; every
+   column emits exactly three spans, empty ones included.
+
+   <div class="eqn-report">
+     <span class="er-col er-lhs"><span>PCON<sub>i</sub> =</span><span></span><span>t =</span></span>
+     <span class="er-col"><span>4101</span><span></span><span></span></span>
+     <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+     <span class="er-col"><span>0.16REG<sub>i</sub></span><span>(0.01)</span><span>12.4</span></span>
+   </div>
+   ============================================================ */
+.eqn-report {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0 0.15rem;
+  margin: 1.4rem 0;
+  padding: 0.9rem 0.6rem;
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--accent-2);
+  border-radius: 5px;
+  font-style: italic;
+  font-size: 1.02rem;
+  overflow-x: auto;
+}
+.er-col {
+  display: inline-grid;
+  grid-template-rows: 1.7rem 1.3rem 1.3rem;
+  justify-items: center;
+  align-items: baseline;
+  white-space: nowrap;
+}
+.er-col > span:nth-child(2) { font-size: 0.82rem; color: var(--ink-soft); font-style: normal; }
+.er-col > span:nth-child(3) { font-size: 0.82rem; color: var(--accent);   font-style: normal; }
+.er-lhs { font-style: italic; }
+.er-lhs > span:nth-child(3) { color: var(--ink-soft); }
+.er-op  { padding: 0 0.15rem; }
+.eqn-report .er-note {
+  flex-basis: 100%;
+  text-align: center;
+  font-style: normal;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  margin-top: 0.4rem;
+}
+
+/* ---------- Interactive figure frame ---------- */
+.viz {
+  margin: 1.6rem 0;
+  padding: 0.9rem;
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+.viz svg { display: block; width: 100%; height: auto; }
+.viz-controls {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.1rem;
+  margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px solid var(--rule);
+  font-family: -apple-system, system-ui, sans-serif; font-size: 0.8rem;
+}
+.viz-controls label { display: flex; align-items: center; gap: 0.4rem; }
+.viz-controls input[type="range"] { width: 8rem; accent-color: var(--accent-2); }
+.viz-controls button {
+  font: inherit; padding: 0.25rem 0.6rem; cursor: pointer;
+  background: #fff; border: 1px solid var(--rule); border-radius: 4px;
+}
+.viz-controls button:hover { border-color: var(--accent-2); }
+.viz-readout {
+  font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  font-size: 0.78rem; color: var(--accent-2);
+}
+.viz-caption {
+  font-size: 0.82rem; color: var(--ink-soft); margin: 0.6rem 0 0; text-align: center;
+}
+.viz-fallback { font-size: 0.85rem; color: var(--ink-soft); font-style: italic; }
+
+/* ---------- Tutorial ---------- */
+.tutorial { counter-reset: tq; margin: 1.2rem 0; }
+.tq {
+  counter-increment: tq;
+  border-top: 1px solid var(--rule);
+  padding: 1rem 0 0.4rem;
+}
+.tq > .qtext { display: block; margin-bottom: 0.5rem; }
+.tq > .qtext::before {
+  content: "Q" counter(tq) ".";
+  font-family: -apple-system, system-ui, sans-serif;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+  color: var(--accent); margin-right: 0.5rem;
+}
+.tq details { margin-top: 0.5rem; }
+.tq summary {
+  cursor: pointer; display: inline-block;
+  font-family: -apple-system, system-ui, sans-serif;
+  font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--accent-2); padding: 0.2rem 0;
+}
+.tq summary:hover { color: var(--accent); }
+.tq details[open] summary { margin-bottom: 0.4rem; }
+.tq .solution {
+  background: var(--def-bg);
+  border-left: 3px solid var(--accent-2);
+  border-radius: 0 5px 5px 0;
+  padding: 0.7rem 1rem;
+  font-size: 0.95rem;
+}
+
+/* ---------- Slide provenance ---------- */
+.deck-link {
+  font-size: 0.8rem; color: var(--ink-soft);
+  border-top: 1px solid var(--rule); padding-top: 0.8rem; margin-top: 2rem;
+}
+
+/* ---------- Assumption / procedure grids ---------- */
+.assumption-grid { margin: 1.2rem 0; }
+.assumption-grid .ag-item {
+  display: grid; grid-template-columns: 2.4rem 1fr; gap: 0.7rem;
+  padding: 0.55rem 0; border-bottom: 1px dotted var(--rule);
+}
+.assumption-grid .ag-n {
+  font-family: -apple-system, system-ui, sans-serif; font-size: 0.7rem;
+  color: #fff; background: var(--accent-2); border-radius: 4px;
+  padding: 0.15rem 0; text-align: center; height: 1.2rem;
+}
+
+ol.steps { padding-left: 1.3rem; }
+ol.steps li { margin: 0.5rem 0; }
+
+/* ---------- Stages flow (Unit 1A) ----------
+   A vertical flowchart in plain HTML rather than SVG, so it reflows
+   on a phone, prints, and is read correctly by a screen reader. */
+ol.stages {
+  list-style: none;
+  padding: 0;
+  margin: 1.4rem auto;
+  max-width: 26rem;
+  counter-reset: stage;
+}
+ol.stages li {
+  counter-increment: stage;
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent-2);
+  border-radius: 5px;
+  padding: 0.55rem 0.9rem 0.55rem 2.4rem;
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+}
+ol.stages li::before {
+  content: counter(stage);
+  position: absolute; left: 0.7rem; top: 0.6rem;
+  font-family: -apple-system, system-ui, sans-serif;
+  font-size: 0.7rem; font-weight: 700; color: var(--accent-2);
+}
+ol.stages li:not(:last-child)::after {
+  content: "↓";
+  position: absolute; left: 50%; bottom: -1.35rem;
+  transform: translateX(-50%);
+  color: var(--accent-2); font-size: 1rem; line-height: 1;
+}
+ol.stages li.decision {
+  border-left-color: var(--accent);
+  background: var(--key-bg);
+}
+ol.stages li.decision::before { color: var(--accent); }
+ol.stages .loop {
+  display: block; margin-top: 0.3rem;
+  font-size: 0.82rem; color: var(--accent); font-style: italic;
+}
+ol.stages .aside {
+  display: block; margin-top: 0.25rem;
+  font-size: 0.82rem; color: var(--ink-soft);
+}
+
+/* ---------- End-of-course nav placeholder ---------- */
+.nav-end { color: var(--ink-soft); font-size: 0.9rem; }
+
+/* ---------- Footer ---------- */
+footer.site {
+  margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--rule);
+  font-size: 0.82rem; color: var(--ink-soft); text-align: center;
+}
+
+/* ---------- Print ---------- */
+@media print {
+  .viz-controls, .deck-link { display: none; }
+  .viz, .eqn-report, .tq { break-inside: avoid; }
+  /* Solutions print only if you left them open on screen.
+     To always print them, add: .tq details { display: block }
+     and remove the summary marker below. */
+  .tq summary { display: none; }
+  .tq details:not([open]) .solution { display: none; }
+  table.cal { font-size: 0.8rem; }
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 600px) {
+  ol.units li {
+    grid-template-columns: 3.6rem 1fr;
+    grid-template-areas: "num title" ".  blurb" ".  wk";
+  }
+  .status-pill { display: none; }
+  .eqn-report { justify-content: flex-start; font-size: 0.92rem; }
+}
+
+/* ============================================================
+   Reference pages
+   ============================================================ */
+
+/* A reference page that has not been written yet is named but not
+   linked, exactly as a planned unit is on the roadmap. */
+.links-row .pending {
+  color: var(--ink-soft);
+  opacity: 0.55;
+  cursor: help;
+}
+
+/* ---------- Notation key ---------- */
+.notation {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 0.35rem 0.9rem;
+  margin: 1.2rem 0 2rem;
+  padding: 1rem 1.1rem;
+  background: var(--def-bg);
+  border-left: 4px solid var(--accent-2);
+  border-radius: 4px;
+  font-size: 0.92rem;
+}
+.notation dt {
+  font-weight: 600;
+  text-align: right;
+  font-size: 1.02rem;
+}
+.notation dd { margin: 0; }
+
+/* ---------- Glossary ---------- */
+.g-tools {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--paper);
+  padding: 0.7rem 0 0.5rem;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 1.4rem;
+}
+.g-tools input {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: #fff;
+}
+.g-tools input:focus { outline: 2px solid var(--accent-2); outline-offset: -1px; }
+.g-count { display: block; font-size: 0.8rem; color: var(--ink-soft); margin-top: 0.35rem; }
+
+.g-index { margin: 0.6rem 0 0; font-size: 0.9rem; letter-spacing: 0.08em; }
+.g-index a { text-decoration: none; margin-right: 0.35rem; }
+.g-index .off { color: var(--rule); margin-right: 0.35rem; }
+
+.gloss { margin: 0 0 2.5rem; }
+.gloss dl { margin: 0; }
+.gloss dl.hidden { display: none; }
+.gloss h2 {
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.2rem;
+  margin: 2rem 0 0.8rem;
+}
+.gloss dt {
+  font-weight: 600;
+  margin-top: 1.1rem;
+}
+.gloss dd {
+  margin: 0.2rem 0 0;
+  font-size: 0.97rem;
+}
+.g-unit {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.08rem 0.4rem;
+  margin-left: 0.45rem;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  vertical-align: 0.1rem;
+  white-space: nowrap;
+}
+.g-unit:hover { border-color: var(--accent); color: var(--accent); }
+.g-see { font-style: italic; color: var(--ink-soft); }
+
+.gloss dt.hidden, .gloss dd.hidden, .gloss h2.hidden { display: none; }
+.g-empty { color: var(--ink-soft); font-style: italic; display: none; }
+.g-empty.show { display: block; }
+
+@media print {
+  .g-tools, .g-index { display: none; }
+  .gloss dt { break-after: avoid; }
+  .g-unit { border: none; }
+}
+
+/* ---------- Glossary back-links ----------
+   Terms in the units link to their glossary entry. Deliberately quieter
+   than an ordinary link: a dotted rule that says "there is a definition
+   here" without pulling the eye out of the sentence. Generated by
+   dev/link-glossary.mjs — see the notes at the top of that file. */
+.gt {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px dotted var(--accent-2);
+}
+.gt:hover,
+.gt:focus {
+  color: var(--accent-2);
+  border-bottom-style: solid;
+}
+
+@media print {
+  .gt { border-bottom: none; }
+}

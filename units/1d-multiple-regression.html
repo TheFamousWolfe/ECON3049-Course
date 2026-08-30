@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 1D — Multiple Regression · ECON 3049</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/course.js"></script>
+<script src="../assets/nav.js" defer></script>
+<script src="../assets/quiz.js" defer></script>
+<script src="../assets/viz.js" defer></script>
+</head>
+<body>
+<div class="masthead" data-unit="1D"></div>
+<div class="wrap">
+
+<h1>Multiple Regression</h1>
+<p class="subtitle">Holding other things equal — several regressors at once, and what a partial slope means.</p>
+<p class="unit-meta" data-unit="1D"></p>
+
+<div class="box key">
+  <span class="box-label">By the end of this unit you should be able to</span>
+  <ul style="margin:0.3rem 0 0; padding-left:1.1rem;">
+    <li>say why the two-variable model is almost never an adequate representation of economic reality;</li>
+    <li>read the three-variable model in the course's subscript notation, and interpret β<sub>2</sub> as a partial coefficient;</li>
+    <li>state the nine assumptions of the multiple regression model, and say which three are new;</li>
+    <li>derive the normal equations and write β̂<sub>1</sub>, β̂<sub>2</sub> and β̂<sub>3</sub> in deviation form;</li>
+    <li>state the variances and covariance of the partial slopes, and why the divisor of σ̂<sup>2</sup> is now n − 3;</li>
+    <li>show that the regression surface passes through the point of means and that Ȳ̂ = Ȳ;</li>
+    <li>derive R<sup>2</sup>, explain why it never falls when a regressor is added, and use adjusted R<sup>2</sup> instead.</li>
+  </ul>
+</div>
+
+<div class="box refresh">
+  <span class="box-label">Where we are</span>
+  Units 1B and 1C derived the OLS estimators for the two-variable model, established their
+  properties under the classical assumptions, calculated their variances, and measured
+  goodness of fit. Every one of those results is about to be done again with one more
+  regressor. Almost nothing new happens conceptually — but the notation changes, one
+  assumption is added, and one measure of fit stops working.
+</div>
+
+<h2>1 · The results being carried forward</h2>
+
+<p>Worth having in view, because everything below is these formulas with a subscript added:</p>
+
+<div class="box def">
+  <span class="box-label">Unit 1C, in one box</span>
+  <p class="math" style="margin:0.3rem 0;">β̂<sub>2</sub> = Σ x<sub>i</sub>y<sub>i</sub> / Σ x<sub>i</sub><sup>2</sup>
+    &nbsp;·&nbsp; β̂<sub>1</sub> = Ȳ − β̂<sub>2</sub>X̄</p>
+  <p class="math" style="margin:0.3rem 0;">var(β̂<sub>2</sub>) = σ<sup>2</sup> / Σx<sub>i</sub><sup>2</sup>
+    &nbsp;·&nbsp; var(β̂<sub>1</sub>) = σ<sup>2</sup> ΣX<sub>i</sub><sup>2</sup> / (n Σx<sub>i</sub><sup>2</sup>)
+    &nbsp;·&nbsp; cov(β̂<sub>1</sub>, β̂<sub>2</sub>) = − X̄ σ<sup>2</sup> / Σx<sub>i</sub><sup>2</sup></p>
+  <p class="math" style="margin:0.3rem 0;">σ̂<sup>2</sup> = Σ û<sub>i</sub><sup>2</sup> / (n − 2)
+    &nbsp;·&nbsp; r<sup>2</sup> = ESS/TSS = 1 − RSS/TSS</p>
+</div>
+
+<h2>2 · Why multiple regression</h2>
+
+<p>There is nearly never a case where the two-variable model is an adequate representation of
+economic reality. By specifying consumption as a function of income alone, we are implicitly
+assuming that income is the <em>only</em> important factor driving consumption.</p>
+
+<p>That is not the case. Other known factors — wealth, prices — can be important determinants
+of consumption. The two-variable model assumes, unrealistically, that all of them have no
+statistical impact on consumption <em>and</em> that they are uncorrelated with income. The
+second half of that sentence is the dangerous one, and section 3 of this unit is about what it
+costs.</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span>Incorporate <strong>more explanatory factors</strong> into the model.</span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span>Explicitly <strong>hold fixed</strong> other factors that would otherwise be in the error term.</span></div>
+  <div class="ag-item"><span class="ag-n">iii</span><span>Allow for more <strong>flexible functional forms</strong>.</span></div>
+</div>
+
+<h3>Two examples</h3>
+
+<p class="math">wage = β<sub>1</sub> + β<sub>2</sub> education + β<sub>3</sub> experience + u</p>
+
+<p>Here <em>wage</em> is the hourly wage, <em>education</em> is years of education,
+<em>experience</em> is years of experience, and <em>u</em> is everything else affecting the
+average hourly wage. β<sub>2</sub> measures the impact of education on the hourly wage
+<strong>holding experience constant</strong>, and β<sub>3</sub> measures the impact of
+experience <strong>holding education constant</strong>. That phrase is what the whole unit is
+buying.</p>
+
+<p class="math">average score = β<sub>1</sub> + β<sub>2</sub> student_spend + β<sub>3</sub> average_income + u</p>
+
+<p>Per-student spending is likely to be correlated with average family income at a given
+school, because of how schools are financed. Omitting average family income would lead to a
+<strong>biased</strong> <a class="gt" href="../reference/glossary.html#estimate">estimate</a> of the effect of spending on test scores: in a simple
+regression, the effect attributed to spending would partly include the effect of family income
+on scores. The figure below is that sentence with a dial on it.</p>
+
+<div class="viz" data-viz="omitted-variable-bias">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It shows test scores against per-student
+    spending, comparing the true partial slope with the slope recovered when average family
+    income is omitted, as the correlation between the two regressors is increased.
+  </p>
+</div>
+
+<h2>3 · The three-variable model</h2>
+
+<p class="math">Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>2i</sub> + β<sub>3</sub>X<sub>3i</sub> + u<sub>i</sub></p>
+
+<p>As in the two-variable case, Y<sub>i</sub> is the <a class="gt" href="../reference/glossary.html#dependent-variable">dependent variable</a>, β<sub>1</sub> is the
+intercept and u<sub>i</sub> is the <a class="gt" href="../reference/glossary.html#stochastic">stochastic</a> error term. What is new is that there are now two
+<a class="gt" href="../reference/glossary.html#independent-variable">independent variables</a>, X<sub>2i</sub> and X<sub>3i</sub>, whose impact on Y<sub>i</sub> is
+measured by the <strong><a class="gt" href="../reference/glossary.html#partial-coefficient">partial coefficients</a></strong> β<sub>2</sub> and β<sub>3</sub>.</p>
+
+<div class="box warn">
+  <span class="box-label">Note the change in notation</span>
+  There are only two explanatory variables, but they are numbered <strong>2 and 3</strong>, not
+  1 and 2. The subscripts on the Xs are chosen so that each variable carries the same number as
+  its own parameter: β<sub>2</sub> goes with X<sub>2i</sub>, β<sub>3</sub> with X<sub>3i</sub>.
+  The intercept keeps β<sub>1</sub> and has no X. Get this straight now — every formula in this
+  unit and in Unit 2 depends on it.
+</div>
+
+<p>Taking conditional expectations, and using E(u<sub>i</sub> | X<sub>2i</sub>, X<sub>3i</sub>) = 0:</p>
+
+<p class="math">E(Y<sub>i</sub> | X<sub>2i</sub>, X<sub>3i</sub>) = β<sub>1</sub> + β<sub>2</sub>X<sub>2i</sub> + β<sub>3</sub>X<sub>3i</sub></p>
+
+<p>The interpretation is exactly as in the two-variable case: the model gives the <a class="gt" href="../reference/glossary.html#conditional-mean">conditional
+mean</a> of Y given fixed values of X<sub>2i</sub> and X<sub>3i</sub>.</p>
+
+<div class="box def">
+  <span class="box-label">Partial coefficient</span>
+  β<sub>2</sub> and β<sub>3</sub> are called <strong>partial coefficients</strong> because each
+  represents the partial or <em>net</em> effect of its own variable on Y, holding the other
+  variable constant — <em>ceteris paribus</em>. Formally, β<sub>2</sub> measures the change in
+  the mean value of Y per unit change in X<sub>2</sub>, with X<sub>3</sub> held constant, and
+  symmetrically for β<sub>3</sub>. This is why a regression coefficient reported from a
+  multiple regression must always be read together with the list of what else was in the model.
+</div>
+
+<h3>Generalising, and a warning about k</h3>
+
+<p>The three-variable model is used here because the algebra stays readable. Everything
+generalises to the k-variable case:</p>
+
+<p class="math">Ŷ<sub>i</sub> = β̂<sub>1</sub> + β̂<sub>2</sub>X<sub>2i</sub> + β̂<sub>3</sub>X<sub>3i</sub> + … + β̂<sub>k</sub>X<sub>ki</sub> + û<sub>i</sub></p>
+
+<div class="box warn">
+  <span class="box-label">k means different things in your two textbooks</span>
+  In this course, following <strong>Gujarati and Porter</strong>, <strong>k is the number of
+  unknown parameters including the intercept</strong>. A three-variable model has k = 3.
+  <strong>Wooldridge</strong> writes the same model with k + 1 parameters, where k counts only
+  the slopes. Both are internally consistent; they give different-looking degrees of freedom
+  for the same model, so check which book a formula came from before using its n − k.
+</div>
+
+<h2>4 · The assumptions, restated</h2>
+
+<p>We work in the same framework as Unit 1C. Two of the nine below are refinements of
+assumption 7, and one — the last — is new:</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">1</span><span>The regression model is <strong>linear in parameters</strong>.</span></div>
+  <div class="ag-item"><span class="ag-n">2</span><span>The values of the independent variables are <strong>fixed / non-stochastic</strong>.</span></div>
+  <div class="ag-item"><span class="ag-n">3</span><span><strong>No relationship between the regressors and the disturbance:</strong> cov(X<sub>2i</sub>, u<sub>i</sub>) = cov(X<sub>3i</sub>, u<sub>i</sub>) = 0.</span></div>
+  <div class="ag-item"><span class="ag-n">4</span><span>The disturbance has a <strong>mean of zero</strong>: E(u<sub>i</sub> | X<sub>2i</sub>, X<sub>3i</sub>) = 0.</span></div>
+  <div class="ag-item"><span class="ag-n">5</span><span><strong>Homoscedasticity:</strong> var(u<sub>i</sub>) = σ<sup>2</sup>.</span></div>
+  <div class="ag-item"><span class="ag-n">6</span><span><strong>No autocorrelation:</strong> cov(u<sub>i</sub>, u<sub>j</sub>) = 0 for i ≠ j.</span></div>
+  <div class="ag-item"><span class="ag-n">7</span><span>There must be <strong>variation in the independent variables</strong>.</span></div>
+  <div class="ag-item"><span class="ag-n">8</span><span><strong>No perfect collinearity</strong> between the explanatory variables.</span></div>
+  <div class="ag-item"><span class="ag-n">9</span><span><strong>No specification bias</strong> — the model is correctly specified.</span></div>
+</div>
+
+<div class="box def">
+  <span class="box-label">7, 8 and 9 read off the formulas</span>
+  Assumptions 7 and 8 are not decoration: the denominator of every partial slope below is
+  Σx<sub>2i</sub><sup>2</sup>Σx<sub>3i</sub><sup>2</sup> − (Σx<sub>2i</sub>x<sub>3i</sub>)<sup>2</sup>.
+  With no variation in a regressor, or with one regressor an exact multiple of another, that
+  denominator is zero and the estimators simply do not exist. Assumption 9 is the one the
+  figure in section 2 was about — and it is the subject of Unit 2A.
+</div>
+
+<h2>5 · Estimating the model</h2>
+
+<ol class="steps">
+  <li>Write the sample regression function corresponding to the PRF:
+    <p class="math">Y<sub>i</sub> = β̂<sub>1</sub> + β̂<sub>2</sub>X<sub>2i</sub> + β̂<sub>3</sub>X<sub>3i</sub> + û<sub>i</sub></p>
+    where û<sub>i</sub> is the residual, the sample counterpart of u<sub>i</sub>.
+  </li>
+  <li>Exactly as in the two-variable case, choose the unknown parameters to minimise the sum of
+    squared residuals:
+    <p class="math">min &nbsp; Σ û<sub>i</sub><sup>2</sup> =
+      Σ (Y<sub>i</sub> − β̂<sub>1</sub> − β̂<sub>2</sub>X<sub>2i</sub> − β̂<sub>3</sub>X<sub>3i</sub>)<sup>2</sup></p>
+  </li>
+  <li>Differentiate with respect to each unknown parameter in turn and set each derivative to
+    zero. Three parameters give three <strong>normal equations</strong>:
+    <p class="math">Σ Y<sub>i</sub> = n β̂<sub>1</sub> + β̂<sub>2</sub> Σ X<sub>2i</sub> + β̂<sub>3</sub> Σ X<sub>3i</sub></p>
+    <p class="math">Σ Y<sub>i</sub>X<sub>2i</sub> = β̂<sub>1</sub> Σ X<sub>2i</sub> + β̂<sub>2</sub> Σ X<sub>2i</sub><sup>2</sup> + β̂<sub>3</sub> Σ X<sub>2i</sub>X<sub>3i</sub></p>
+    <p class="math">Σ Y<sub>i</sub>X<sub>3i</sub> = β̂<sub>1</sub> Σ X<sub>3i</sub> + β̂<sub>2</sub> Σ X<sub>2i</sub>X<sub>3i</sub> + β̂<sub>3</sub> Σ X<sub>3i</sub><sup>2</sup></p>
+  </li>
+  <li>The first normal equation, divided by n, gives the intercept immediately — and says that
+    the fitted <em>surface</em> passes through the point of means:
+    <p class="math"><strong>β̂<sub>1</sub> = Ȳ − β̂<sub>2</sub>X̄<sub>2</sub> − β̂<sub>3</sub>X̄<sub>3</sub></strong></p>
+  </li>
+  <li>Writing the remaining two in deviation form and solving the pair simultaneously:
+    <p class="math"><strong>β̂<sub>2</sub> =
+      [ (Σx<sub>2i</sub>y<sub>i</sub>)(Σx<sub>3i</sub><sup>2</sup>) − (Σx<sub>3i</sub>y<sub>i</sub>)(Σx<sub>2i</sub>x<sub>3i</sub>) ]
+      / [ (Σx<sub>2i</sub><sup>2</sup>)(Σx<sub>3i</sub><sup>2</sup>) − (Σx<sub>2i</sub>x<sub>3i</sub>)<sup>2</sup> ]</strong></p>
+    <p class="math"><strong>β̂<sub>3</sub> =
+      [ (Σx<sub>3i</sub>y<sub>i</sub>)(Σx<sub>2i</sub><sup>2</sup>) − (Σx<sub>2i</sub>y<sub>i</sub>)(Σx<sub>2i</sub>x<sub>3i</sub>) ]
+      / [ (Σx<sub>2i</sub><sup>2</sup>)(Σx<sub>3i</sub><sup>2</sup>) − (Σx<sub>2i</sub>x<sub>3i</sub>)<sup>2</sup> ]</strong></p>
+  </li>
+</ol>
+
+<div class="box key">
+  <span class="box-label">Two things to notice, both examinable</span>
+  <strong>They are symmetrical.</strong> One is obtained from the other by interchanging the
+  roles of X<sub>2</sub> and X<sub>3</sub>. If you can write one you can write both.<br>
+  <strong>The denominators are identical</strong>, and the three-variable case is a natural
+  extension of the two-variable one: set Σx<sub>2i</sub>x<sub>3i</sub> = 0 — the regressors
+  uncorrelated — and β̂<sub>2</sub> collapses straight back to
+  Σx<sub>2i</sub>y<sub>i</sub>/Σx<sub>2i</sub><sup>2</sup>, the Unit 1C formula. Correlation
+  between the regressors is the <em>only</em> thing that makes multiple regression different
+  arithmetic, and when it becomes severe it is Unit 2B.
+</div>
+
+<h2>6 · Variances, and the new degrees of freedom</h2>
+
+<p>Having obtained the <a class="gt" href="../reference/glossary.html#estimator">estimators</a>, their variances follow by the same route as Unit 1C. Write
+D for the common denominator, D = Σx<sub>2i</sub><sup>2</sup>Σx<sub>3i</sub><sup>2</sup> −
+(Σx<sub>2i</sub>x<sub>3i</sub>)<sup>2</sup>:</p>
+
+<div class="box def">
+  <span class="box-label">The variance and covariance formulas</span>
+  <p class="math" style="margin:0.35rem 0;">var(β̂<sub>2</sub>) = σ<sup>2</sup> Σx<sub>3i</sub><sup>2</sup> / D
+    &nbsp;·&nbsp; var(β̂<sub>3</sub>) = σ<sup>2</sup> Σx<sub>2i</sub><sup>2</sup> / D</p>
+  <p class="math" style="margin:0.35rem 0;">cov(β̂<sub>2</sub>, β̂<sub>3</sub>) = − σ<sup>2</sup> Σx<sub>2i</sub>x<sub>3i</sub> / D</p>
+  <p class="math" style="margin:0.35rem 0;">var(β̂<sub>1</sub>) = σ<sup>2</sup> [ 1/n +
+    ( X̄<sub>2</sub><sup>2</sup>Σx<sub>3i</sub><sup>2</sup> + X̄<sub>3</sub><sup>2</sup>Σx<sub>2i</sub><sup>2</sup>
+    − 2X̄<sub>2</sub>X̄<sub>3</sub>Σx<sub>2i</sub>x<sub>3i</sub> ) / D ]</p>
+  The standard error of each is the square root of its variance, with σ<sup>2</sup> replaced by
+  σ̂<sup>2</sup>.
+</div>
+
+<p>Two observations carry over unchanged from Unit 1C. The variance and covariance of the
+estimated <a class="gt" href="../reference/glossary.html#parameter">parameters</a> still rely on the unknown population variance σ<sup>2</sup>, so it still
+has to be estimated. And there is still a positive relationship between the variance of the
+error term and the variance of the model parameters — noisier data, less precise estimates.</p>
+
+<p>A third observation is new, and it is the seed of Unit 2B. As the two regressors become more
+strongly correlated, Σx<sub>2i</sub>x<sub>3i</sub> grows, D shrinks towards zero, and
+<em>both</em> partial variances blow up. The data is being asked to separate two things that
+move together, and it says so by returning enormous <a class="gt" href="../reference/glossary.html#standard-error">standard errors</a>.</p>
+
+<h3>Estimating σ<sup>2</sup></h3>
+
+<p class="math"><strong>σ̂<sup>2</sup> = Σ û<sub>i</sub><sup>2</sup> / (n − 3)</strong></p>
+
+<p>Note the similarity to its two-variable counterpart. The <a class="gt" href="../reference/glossary.html#degrees-of-freedom">degrees of freedom</a> are now n − 3
+because in estimating Σû<sub>i</sub><sup>2</sup> we must first estimate β̂<sub>1</sub>,
+β̂<sub>2</sub> and β̂<sub>3</sub>, which consume three degrees of freedom. The argument is
+quite general: <strong>in the k-variable case the degrees of freedom are n − k</strong>, with k
+counting the intercept.</p>
+
+<h2>7 · Properties of the fitted surface</h2>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span>
+    The regression <strong>surface passes through the means</strong> Ȳ, X̄<sub>2</sub> and
+    X̄<sub>3</sub> — which is just β̂<sub>1</sub> = Ȳ − β̂<sub>2</sub>X̄<sub>2</sub> −
+    β̂<sub>3</sub>X̄<sub>3</sub> rearranged. It generalises to the k-variable model.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span>
+    The <strong>mean of the fitted values equals the mean of the actual values</strong>:
+    Ȳ̂ = Ȳ.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">iii</span><span>
+    The residuals have <strong>zero mean</strong>, Σû<sub>i</sub> = 0, and are
+    <strong>uncorrelated with every regressor</strong> and with Ŷ<sub>i</sub>.
+  </span></div>
+</div>
+
+<details>
+  <summary>Proof that Ȳ̂ = Ȳ, and the deviation form of the model</summary>
+  <div class="solution">
+    <p>Sum the <a class="gt" href="../reference/glossary.html#srf">SRF</a> over the sample: ΣY<sub>i</sub> = nβ̂<sub>1</sub> +
+    β̂<sub>2</sub>ΣX<sub>2i</sub> + β̂<sub>3</sub>ΣX<sub>3i</sub> + Σû<sub>i</sub>, and the
+    first normal equation says Σû<sub>i</sub> = 0. Dividing by n gives Ȳ = β̂<sub>1</sub> +
+    β̂<sub>2</sub>X̄<sub>2</sub> + β̂<sub>3</sub>X̄<sub>3</sub>, and the right-hand side is
+    precisely Ȳ̂. So Ȳ̂ = Ȳ.</p>
+    <p>Subtracting that from the SRF term by term puts the whole model in deviation form,
+    which is the form the derivations use:</p>
+    <p class="math">y<sub>i</sub> = β̂<sub>2</sub>x<sub>2i</sub> + β̂<sub>3</sub>x<sub>3i</sub> + û<sub>i</sub>
+      &nbsp;·&nbsp; ŷ<sub>i</sub> = β̂<sub>2</sub>x<sub>2i</sub> + β̂<sub>3</sub>x<sub>3i</sub></p>
+    <p>Note that the intercept has vanished. That is the point of deviation form: it is
+    already absorbed in the means.</p>
+  </div>
+</details>
+
+<h2>8 · Goodness of fit: R<sup>2</sup></h2>
+
+<p>In the two-variable case, r<sup>2</sup> gives the percentage of the total variation in Y
+explained by the single explanatory variable X. With three variables we want the percentage of
+the variation in Y explained by X<sub>2</sub> and X<sub>3</sub> <strong>jointly</strong>. That
+quantity is the <strong><a class="gt" href="../reference/glossary.html#multiple-r2">multiple coefficient of determination</a></strong>, written with a capital
+R<sup>2</sup>.</p>
+
+<ol class="steps">
+  <li>Start from the deviation form, square and sum. The cross terms vanish for the same reason
+    as in Unit 1C — the residuals are uncorrelated with the fitted values:
+    <p class="math">Σ y<sub>i</sub><sup>2</sup> = Σ ŷ<sub>i</sub><sup>2</sup> + Σ û<sub>i</sub><sup>2</sup>
+      &nbsp;⟹&nbsp; <strong>TSS = ESS + RSS</strong></p>
+  </li>
+  <li>With ŷ<sub>i</sub> = β̂<sub>2</sub>x<sub>2i</sub> + β̂<sub>3</sub>x<sub>3i</sub>, the
+    explained sum of squares has a convenient closed form:
+    <p class="math">ESS = β̂<sub>2</sub> Σ x<sub>2i</sub>y<sub>i</sub> + β̂<sub>3</sub> Σ x<sub>3i</sub>y<sub>i</sub></p>
+  </li>
+  <li>Dividing through by TSS gives the definition:
+    <p class="math"><strong>R<sup>2</sup> = ESS/TSS = 1 − RSS/TSS =
+      ( β̂<sub>2</sub> Σ x<sub>2i</sub>y<sub>i</sub> + β̂<sub>3</sub> Σ x<sub>3i</sub>y<sub>i</sub> )
+      / Σ y<sub>i</sub><sup>2</sup></strong></p>
+    Every quantity on the right is computed routinely, so R<sup>2</sup> costs nothing extra.
+  </li>
+</ol>
+
+<p>Just like r<sup>2</sup>, R<sup>2</sup> lies between 0 and 1. R<sup>2</sup> = 1 means 100% of
+the variation in Y is explained by the fitted regression; R<sup>2</sup> = 0 means none of it is.
+In most cases it lies in between, and the closer to 1 the better the fit.</p>
+
+<h3>The problem: R<sup>2</sup> never falls</h3>
+
+<div class="box warn">
+  <span class="box-label">An important property, and a trap</span>
+  R<sup>2</sup> is a <strong>non-decreasing function of the number of regressors</strong>.
+  Unless an added variable is perfectly collinear with those already there, adding it almost
+  invariably increases R<sup>2</sup> and never decreases it. An additional X variable will not
+  reduce R<sup>2</sup>.
+</div>
+
+<p>The reason is visible in the definition. Σy<sub>i</sub><sup>2</sup> is
+Σ(Y<sub>i</sub> − Ȳ)<sup>2</sup>, which depends only on Y and is therefore independent of how
+many regressors are in the model. The <a class="gt" href="../reference/glossary.html#rss">RSS</a>, Σû<sub>i</sub><sup>2</sup>, does depend on them —
+and as variables are added, the <a class="gt" href="../reference/glossary.html#residual">residual</a> sum of squares is likely to fall and cannot rise,
+because the extra regressor can always be given a coefficient of zero if it is of no use.
+A smaller RSS over a fixed <a class="gt" href="../reference/glossary.html#tss">TSS</a> is a larger R<sup>2</sup>.</p>
+
+<p>So when choosing between two models with the same dependent variable but a different number
+of independent variables, one must account for the number of variables before comparing their
+R<sup>2</sup>. Watch what happens when the regressors added are known to be worthless:</p>
+
+<div class="viz" data-viz="r2-vs-adjusted">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It plots R<sup>2</sup> and adjusted
+    R<sup>2</sup> against the number of pure-noise regressors added to a correctly specified
+    model; R<sup>2</sup> rises throughout while the adjusted measure falls.
+  </p>
+</div>
+
+<h3>Adjusted R<sup>2</sup></h3>
+
+<p class="math"><strong>R̄<sup>2</sup> = 1 − (1 − R<sup>2</sup>) · (n − 1) / (n − k)</strong></p>
+
+<p>where k is the number of parameters including the intercept. The term <em>adjusted</em>
+means adjusted for the degrees of freedom associated with the sums of squares entering the
+model. Each extra regressor lowers n − k, which pushes R̄<sup>2</sup> down; the extra
+explanatory power pushes it up. R̄<sup>2</sup> rises only when the second effect beats the
+first — that is, when the variable earns its place.</p>
+
+<div class="box def">
+  <span class="box-label">Three things about R̄<sup>2</sup></span>
+  <strong>i.</strong> R̄<sup>2</sup> ≤ R<sup>2</sup> always, with equality only when k = 1.<br>
+  <strong>ii.</strong> Unlike R<sup>2</sup>, it <strong>can be negative</strong> — which is a
+  blunt signal that the model is worse than simply predicting Ȳ for every observation.<br>
+  <strong>iii.</strong> It is the measure to quote when comparing models with different numbers
+  of regressors. It is <em>not</em> a substitute for asking whether a variable belongs in the
+  model on theoretical grounds, and it is not a hypothesis test. Unit 1F provides the test.
+</div>
+
+<h2>9 · Reporting a multiple regression</h2>
+
+<p>The house format extends in the obvious way — one column per term, standard errors beneath,
+<a class="gt" href="../reference/glossary.html#t-statistic">t-statistics</a> below those. Extending the running consumption example with a second regressor
+(illustrative figures):</p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>Consumption&#770;<sub>i</sub> =</span><span>s.e.</span><span>t =</span></span>
+  <span class="er-col"><span>68.41</span><span>(12.30)</span><span>5.56</span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>0.62 Income<sub>i</sub></span><span>(0.08)</span><span>7.75</span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>0.09 Wealth<sub>i</sub></span><span>(0.03)</span><span>3.00</span></span>
+  <span class="er-note">n = 30 &nbsp;·&nbsp; k = 3 &nbsp;·&nbsp; R<sup>2</sup> = 0.87 &nbsp;·&nbsp; R̄<sup>2</sup> = 0.86 &nbsp;·&nbsp; σ̂ = 9.4</span>
+</div>
+
+<div class="box def">
+  <span class="box-label">How the interpretation changes</span>
+  <strong>0.62</strong> — for every additional dollar of income, consumption rises by 62 cents
+  <em>holding wealth constant</em>. That qualifier is now compulsory: without it the number is
+  being described as something it is not.<br>
+  <strong>0.09</strong> — for every additional dollar of wealth, consumption rises by 9 cents
+  holding income constant.<br>
+  <strong>68.41</strong> — predicted consumption when income <em>and</em> wealth are both zero.
+  Often, as here, an extrapolation far outside the data; do not over-read it.<br>
+  <strong>R<sup>2</sup> = 0.87</strong> — income and wealth <em>jointly</em> explain 87% of the
+  variation in consumption. Note that this cannot be split into "income's share" and "wealth's
+  share" unless the two regressors happen to be uncorrelated.<br>
+  <strong>R̄<sup>2</sup> = 0.86</strong> — the same figure after paying for the third
+  parameter. The gap is small here because n is comfortably larger than k.
+</div>
+
+<div class="box warn">
+  <span class="box-label">Compare the slope with Unit 1C</span>
+  In Unit 1C the same consumption function, estimated on income alone, returned a slope of
+  0.75. Adding wealth pulls it to 0.62. Neither number is a mistake: they are answers to
+  <em>different questions</em>. The first is the total association between income and
+  consumption, wealth moving along with it; the second is the effect of income with wealth
+  held fixed. Which one you want depends on the question — but only the second can be
+  described as a partial effect.
+</div>
+
+<h2>10 · Tutorial</h2>
+
+<p style="font-size:0.85rem; color:var(--ink-soft); font-style:italic;">
+Draft questions, to be replaced by the tutorial sheet issued in class.</p>
+
+<div class="tutorial">
+
+  <div class="tq">
+    <span class="qtext">Show that when Σx<sub>2i</sub>x<sub>3i</sub> = 0, the multiple
+    regression estimator β̂<sub>2</sub> reduces exactly to the simple regression estimator of
+    Unit 1C. Explain in words what this tells you about when a simple regression is
+    trustworthy.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p>Setting Σx<sub>2i</sub>x<sub>3i</sub> = 0 in the numerator kills the second term,
+        leaving (Σx<sub>2i</sub>y<sub>i</sub>)(Σx<sub>3i</sub><sup>2</sup>); the denominator
+        becomes (Σx<sub>2i</sub><sup>2</sup>)(Σx<sub>3i</sub><sup>2</sup>). The
+        Σx<sub>3i</sub><sup>2</sup> cancels and β̂<sub>2</sub> =
+        Σx<sub>2i</sub>y<sub>i</sub>/Σx<sub>2i</sub><sup>2</sup>, which is the Unit 1C
+        formula.</p>
+        <p><strong>In words:</strong> when the regressors are uncorrelated in the sample,
+        including X<sub>3</sub> or omitting it makes no difference at all to the estimated
+        effect of X<sub>2</sub>. A simple regression is therefore trustworthy precisely when
+        the <a class="gt" href="../reference/glossary.html#omitted-variable">omitted variables</a> are uncorrelated with the included one — which is exactly the
+        condition the figure in section 2 dials up and down, and exactly the condition that
+        fails in the school-spending example.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">A colleague fits a model with 4 regressors to 12 observations and
+    reports R<sup>2</sup> = 0.91. Compute the adjusted R<sup>2</sup> and comment. What would
+    happen to each measure if they added three more regressors of random numbers?</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p>With 4 regressors plus an intercept, k = 5, n = 12, so n − k = 7 and n − 1 = 11:</p>
+        <p class="math">R̄<sup>2</sup> = 1 − (1 − 0.91)(11/7) = 1 − 0.09 × 1.571 = 0.859</p>
+        <p>The gap between 0.91 and 0.859 is already substantial, and it is a warning: with
+        only 7 degrees of freedom left, a good deal of that fit is being bought with
+        parameters rather than with explanation.</p>
+        <p><strong>Adding three columns of random numbers:</strong> R<sup>2</sup> would
+        <em>rise</em>, or at worst stay the same — it cannot fall, because the RSS cannot rise
+        when a regressor is added. R̄<sup>2</sup> would almost certainly fall, because n − k
+        drops from 7 to 4 and the multiplier (n − 1)/(n − k) jumps from 1.571 to 2.75, while
+        random columns add essentially nothing to R<sup>2</sup>. This is the whole argument for
+        never comparing models on R<sup>2</sup> alone.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">Using var(β̂<sub>2</sub>) = σ<sup>2</sup>Σx<sub>3i</sub><sup>2</sup>/D
+    with D = Σx<sub>2i</sub><sup>2</sup>Σx<sub>3i</sub><sup>2</sup> −
+    (Σx<sub>2i</sub>x<sub>3i</sub>)<sup>2</sup>, explain what happens to the precision of
+    β̂<sub>2</sub> as X<sub>2</sub> and X<sub>3</sub> become more strongly correlated. What
+    happens in the limit?</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p>As the correlation between the regressors rises, the cross-product
+        Σx<sub>2i</sub>x<sub>3i</sub> grows in absolute value, so
+        (Σx<sub>2i</sub>x<sub>3i</sub>)<sup>2</sup> grows and D — the difference — falls. D is
+        the denominator, so var(β̂<sub>2</sub>) rises: the estimate becomes less precise, its
+        standard error larger, and its t-statistic smaller.</p>
+        <p><strong>In the limit</strong> of perfect correlation, X<sub>3</sub> is an exact
+        linear function of X<sub>2</sub>, the Cauchy–Schwarz inequality holds with equality,
+        D = 0, and neither β̂<sub>2</sub> nor its variance is defined. That is assumption 8
+        failing. The intuition is that the data contains no observation in which X<sub>2</sub>
+        moves while X<sub>3</sub> stays put, so there is simply no evidence about what
+        X<sub>2</sub> does on its own. The intermediate, everyday case — high but not perfect
+        correlation, large standard errors, unstable coefficients — is Unit 2B.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">A researcher regresses hourly wage on education alone and finds a
+    coefficient of 0.90. Adding a measure of innate ability to the model, the coefficient on
+    education falls to 0.55. Explain what has happened, state which assumption the first
+    regression violated, and say which of the two numbers answers the question "what would an
+    extra year of school do for me?"</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>What happened.</strong> Ability affects wages and is positively correlated
+        with education. Omitted from the first regression, it sits in the <a class="gt" href="../reference/glossary.html#disturbance">disturbance</a>, so
+        cov(education, u) ≠ 0 and <em>assumption 3</em> fails — equivalently, assumption 9, no
+        <a class="gt" href="../reference/glossary.html#specification-bias">specification bias</a>. The estimated coefficient on education then picks up both the
+        direct effect of schooling and the effect of the ability that tends to accompany it.
+        Adding ability to the model holds it constant, and the 0.35 difference is the part
+        that was never education's to begin with.</p>
+        <p><strong>Which number answers the question.</strong> The 0.55 — it is the partial
+        effect of education holding ability constant, which is what an individual with fixed
+        ability considering another year of school wants to know. The 0.90 is the average
+        difference in wages between people with more and less education, ability and all,
+        which is a description of the population rather than a statement about a decision.</p>
+        <p>Two cautions worth stating. This assumes ability has been measured well; a poor
+        <a class="gt" href="../reference/glossary.html#proxy">proxy</a> only partly closes the gap. And it assumes no <em>further</em> omitted variable
+        correlated with education — which is why Unit 3B exists.</p>
+      </div>
+    </details>
+  </div>
+
+</div>
+
+<h2>11 · Check yourself</h2>
+
+<div class="quiz" data-answer="2">
+  <div class="q">In Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>2i</sub> + β<sub>3</sub>X<sub>3i</sub> + u<sub>i</sub>, the coefficient β<sub>2</sub> measures</div>
+  <button class="opt">the total change in Y when X<sub>2</sub> rises by one unit</button>
+  <button class="opt">the share of the variation in Y that X<sub>2</sub> explains</button>
+  <button class="opt">the change in mean Y per unit of X<sub>2</sub>, X<sub>3</sub> held fixed</button>
+  <button class="opt">the correlation between X<sub>2</sub> and Y across the sample</button>
+  <div class="feedback right">Correct — a partial coefficient. The "holding X<sub>3</sub> constant" clause is part of what the number means, not an optional gloss.</div>
+  <div class="feedback wrong">β<sub>2</sub> is a <em>partial</em> coefficient: the change in the mean of Y per unit change in X<sub>2</sub> with X<sub>3</sub> held constant. The total change in Y would also include whatever X<sub>3</sub> does when X<sub>2</sub> moves.</div>
+</div>
+
+<div class="quiz" data-answer="1">
+  <div class="q">Adding an extra regressor to a model can never reduce R<sup>2</sup>, because</div>
+  <button class="opt">the total sum of squares grows as more regressors are added in</button>
+  <button class="opt">the residual sum of squares cannot rise when a regressor is added</button>
+  <button class="opt">the explained sum of squares is bounded above by the sample size</button>
+  <button class="opt">the adjusted measure corrects for it before the ratio is taken</button>
+  <div class="feedback right">Correct — TSS depends only on Y, and RSS can always be held where it was by giving the new variable a coefficient of zero.</div>
+  <div class="feedback wrong">TSS = Σ(Y<sub>i</sub> − Ȳ)² depends only on Y, so it does not move. RSS cannot rise, since OLS could always set the new coefficient to zero and reproduce the old fit. A weakly smaller RSS over a fixed TSS is a weakly larger R².</div>
+</div>
+
+<div class="quiz" data-answer="0">
+  <div class="q">In the three-variable model, σ̂<sup>2</sup> = Σû<sub>i</sub><sup>2</sup>/(n − 3) because</div>
+  <button class="opt">three parameters were estimated before the residuals existed</button>
+  <button class="opt">three observations are lost whenever a regressor is included</button>
+  <button class="opt">three is the smallest sample that can fit a plane through it</button>
+  <button class="opt">three normal equations must each be solved for a separate mean</button>
+  <div class="feedback right">Correct — β̂<sub>1</sub>, β̂<sub>2</sub> and β̂<sub>3</sub> consume three degrees of freedom, and in general the divisor is n − k.</div>
+  <div class="feedback wrong">No observations are lost. The three normal equations impose three restrictions on the residuals, so only n − 3 of them are free to vary. In the k-variable model the divisor is n − k, with k counting the intercept.</div>
+</div>
+
+<div class="quiz" data-answer="3">
+  <div class="q">Two regressors are strongly but not perfectly correlated. The most likely symptom is</div>
+  <button class="opt">a biased estimate of each of the two partial slope coefficients</button>
+  <button class="opt">a residual sum of squares larger than the total sum of squares</button>
+  <button class="opt">an adjusted R<sup>2</sup> that comes out above the unadjusted R<sup>2</sup> figure</button>
+  <button class="opt">large standard errors on both, since the denominator D is small</button>
+  <div class="feedback right">Correct — D shrinks as the cross-product grows, so both partial variances inflate. The estimates stay unbiased; they just become imprecise.</div>
+  <div class="feedback wrong">Correlated regressors do not bias OLS — every assumption still holds. What they do is shrink D = Σx₂²Σx₃² − (Σx₂x₃)², which is the denominator of both variances, so the standard errors inflate and t-statistics collapse. That is Unit 2B.</div>
+</div>
+
+<p class="deck-link" data-unit="1D"></p>
+
+<div class="ask-teacher">
+  <strong>The partial-slope formulas are worth writing out by hand once, from the normal
+  equations, before the midterm.</strong>
+  Bring the working to the tutorial, or to office hours — <span data-course="officeHours"></span>.
+</div>
+
+<ol class="sources">
+  <li id="s1">Gujarati, D. &amp; Porter, D. (2008), <em>Basic Econometrics</em>, Chapter 7 — the three-variable model, the partial slopes, their variances, and the multiple coefficient of determination.</li>
+  <li id="s2">Wooldridge, J. (2016), <em>Introductory Econometrics: A Modern Approach</em>, Chapter 3 (sections 3-3a to 3-3c are excluded for now). Wooldridge counts k slopes plus an intercept where this course counts k parameters in total.</li>
+  <li id="s3">The school-spending and wage examples follow the motivating examples in Wooldridge Chapter 3.</li>
+</ol>
+
+<div class="lesson-nav" data-unit="1D"></div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 2A Part 2 — Misspecification: Functional Form · ECON 3049</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/course.js"></script>
+<script src="../assets/nav.js" defer></script>
+<script src="../assets/quiz.js" defer></script>
+<script src="../assets/viz.js" defer></script>
+</head>
+<body>
+<div class="masthead" data-unit="2A Part 2"></div>
+<div class="wrap">
+
+<h1>Misspecification: Functional Form</h1>
+<p class="subtitle">Logs, quadratics and the RESET test — getting the shape of the relationship right.</p>
+<p class="unit-meta" data-unit="2A Part 2"></p>
+
+<div class="box key">
+  <span class="box-label">By the end of this unit you should be able to</span>
+  <ul style="margin:0.3rem 0 0; padding-left:1.1rem;">
+    <li>say why the constant term should never be suppressed, and why it should not be relied on either;</li>
+    <li>distinguish non-linearity in the <em>variables</em> from non-linearity in the <em>parameters</em>;</li>
+    <li>find the marginal effect and the turning point of a quadratic specification;</li>
+    <li>linearise a Cobb–Douglas production function by taking logs;</li>
+    <li>interpret β<sub>2</sub> in the linear, double-log, log–lin and lin–log forms;</li>
+    <li>build and interpret an interaction term;</li>
+    <li>use RESET to test functional form, and the Chow test to test parameter stability;</li>
+    <li>run the test of variances that the Chow test's own assumptions require.</li>
+  </ul>
+</div>
+
+<div class="box refresh">
+  <span class="box-label">The second of the three specification choices</span>
+  Part 1 dealt with choosing the independent variables. After that, the next step is choosing
+  the <strong>functional form</strong> of the relationship between each independent variable and
+  the dependent variable. A multiple regression model suffers from functional form
+  misspecification when it does not properly account for the relationship between the dependent
+  and the observed explanatory variables.<br>
+  <strong>Theoretical considerations usually dictate the form.</strong> The basic technique is
+  to choose the shape that best exemplifies the expected underlying economic principles, and
+  then use the mathematical form that produces that shape.
+</div>
+
+<h2>1 · The constant term</h2>
+
+<p>Sometimes β<sub>1</sub> is of genuine theoretical importance. Take the cost of producing
+output:</p>
+
+<p class="math">C<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>Q<sub>i</sub> + ε<sub>i</sub></p>
+
+<p>Here β<sub>1</sub> represents <strong>total fixed cost</strong> — the cost when
+Q<sub>i</sub> = 0. What about a product with few, if any, fixed costs? Do you remove the
+constant?</p>
+
+<h3>Do not suppress the constant term</h3>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span>
+    Including the constant is what <strong>ensures E(u) = 0</strong>. Consider
+    Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>2i</sub> + β<sub>3</sub>X<sub>3i</sub> +
+    u<sub>i</sub> where E(u) = α ≠ 0. Rewriting u<sub>i</sub> = α + v<sub>i</sub> with
+    E(v) = 0 gives an equation with intercept (β<sub>1</sub> + α) and a well-behaved error. The
+    constant simply absorbs α — but only if it is there to do so.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span>
+    In most cases suppressing the constant <strong>results in misspecification</strong>, since
+    the true intercept is hardly ever exactly zero.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">iii</span><span>
+    If you omit the constant term and it is not zero, <strong>its impact is forced into the
+    other coefficients</strong> — the slope has to do the intercept's job as well as its own.
+  </span></div>
+</div>
+
+<div class="viz" data-viz="suppressed-constant">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It fits a cost function with and without an
+    intercept, showing how forcing the line through the origin distorts the estimated slope and
+    stops the residuals summing to zero.
+  </p>
+</div>
+
+<h3>But do not rely on estimates of it either</h3>
+
+<p>Two reasons the intercept should not be leaned on for analysis:</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span>
+    It captures the average value of Y when <strong>all</strong> the independent variables are
+    zero. It is unlikely that every variable in a model can take the value zero — nobody has
+    zero years of age — so estimates of the intercept are tenuous extrapolations well outside
+    the data.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span>
+    The constant term is a <strong>garbage collector</strong>. Including it allows the constant
+    to absorb the non-zero mean of the error term arising from specification error — which is
+    exactly what you want it to do, and exactly why its own value cannot then be trusted.
+  </span></div>
+</div>
+
+<div class="box key">
+  <span class="box-label">The rule, stated together</span>
+  <strong>Always include the constant. Never interpret it.</strong> The two pieces of advice
+  are not in tension: the intercept earns its place by protecting the slopes, and the same
+  quality that makes it protective — it absorbs whatever is left over — is what makes its own
+  value uninformative.
+</div>
+
+<h2>2 · When the true model is non-linear in the variables</h2>
+
+<p>The <a class="gt" href="../reference/glossary.html#ols">OLS</a> assumption is <strong>linearity in the <a class="gt" href="../reference/glossary.html#parameter">parameters</a>, not in the <a class="gt" href="../reference/glossary.html#independent-variable">independent
+variables</a></strong>. Often the model is non-linear in the explanatory variables, and that is
+entirely permitted.</p>
+
+<p>Return to the cost function. Microeconomic theory tells us that for most goods the
+relationship between total cost and output is non-linear — specifically cubic:</p>
+
+<p class="math">C<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>Q<sub>i</sub> + β<sub>3</sub>Q<sub>i</sub><sup>2</sup> + β<sub>4</sub>Q<sub>i</sub><sup>3</sup> + u<sub>i</sub></p>
+
+<p>with theory predicting β<sub>2</sub> &gt; 0, β<sub>3</sub> &lt; 0 and β<sub>4</sub> &gt; 0 —
+the familiar S-shaped total cost curve.</p>
+
+<div class="box warn">
+  <span class="box-label">Leaving out the non-linear terms is underfitting</span>
+  If the true model is non-linear and we omit the non-linear functions, we have
+  <strong>omitted relevant right-hand-side variables</strong> — the model is underfitted, and
+  everything in Part 1 applies. Q<sup>2</sup> and Q<sup>3</sup> are certainly correlated with Q,
+  so the bias is guaranteed rather than merely possible.
+</div>
+
+<p>The consequence is that the estimated impact of the independent variable is simply wrong.
+Under the linear model the marginal cost is a constant:</p>
+
+<p class="math">dC/dQ = β<sub>2</sub></p>
+
+<p>whereas under the correct specification it varies with the level of output:</p>
+
+<p class="math">dC/dQ = β<sub>2</sub> + 2β<sub>3</sub>Q<sub>i</sub> + 3β<sub>4</sub>Q<sub>i</sub><sup>2</sup></p>
+
+<p>A linear model does not merely mis-estimate marginal cost; it asserts that marginal cost is
+the same at every level of output, which is a substantive economic claim nobody made.</p>
+
+<h3>Quadratic forms</h3>
+
+<p>Cubic functions occur, but <a class="gt" href="../reference/glossary.html#turning-point">quadratic forms</a> are more popular — at least in economic theory:</p>
+
+<p class="math">Y = β<sub>1</sub> + β<sub>2</sub>X<sub>2</sub> + β<sub>3</sub>X<sub>3</sub> + β<sub>4</sub>X<sub>3</sub><sup>2</sup> + β<sub>5</sub>X<sub>4</sub> + … + u</p>
+
+<p>Quadratics take <strong>U or inverted-U shapes</strong>, depending on whether the
+coefficient on the squared term is positive or negative. U-shaped means an impact that falls
+and then rises; inverted U means it rises and then falls.</p>
+
+<div class="box def">
+  <span class="box-label">Finding the turning point from the regression output</span>
+  With Y = β<sub>1</sub> + β<sub>2</sub>X + β<sub>3</sub>X<sup>2</sup> + u, differentiate and
+  set to zero:
+  <p class="math" style="margin:0.4rem 0;">dY/dX = β<sub>2</sub> + 2β<sub>3</sub>X = 0
+    &nbsp;⟹&nbsp; <strong>X* = − β̂<sub>2</sub> / 2β̂<sub>3</sub></strong></p>
+  β̂<sub>3</sub> &lt; 0 makes X* a <strong>maximum</strong>; β̂<sub>3</sub> &gt; 0 makes it a
+  <strong>minimum</strong>. Always check that X* lies inside the range of your data — a turning
+  point far outside it is arithmetic, not economics.
+</div>
+
+<div class="viz" data-viz="quadratic-turning-point">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It draws a quadratic with a control for the
+    coefficient on the squared term, marking the turning point X* = −β̂<sub>2</sub>/2β̂<sub>3</sub>
+    and reporting whether it is a maximum or a minimum.
+  </p>
+</div>
+
+<h2>3 · When the model is non-linear in the parameters</h2>
+
+<p>So far the non-linearity has been in the variables, which OLS tolerates. What happens when
+the model is non-linear in the <em>parameters</em>, which it does not?</p>
+
+<p>Take one of the most famous functions in economics, the <a class="gt" href="../reference/glossary.html#intrinsically-linear">Cobb–Douglas</a> production function:</p>
+
+<p class="math">Q = F(L, K, u) = β<sub>1</sub> L<sup>β2</sup> K<sup>β3</sup> e<sup>u</sup></p>
+
+<p>This violates the linearity-in-parameters assumption outright: β<sub>2</sub> and
+β<sub>3</sub> appear as exponents. What would happen if we simply estimated
+Q = β<sub>1</sub> + β<sub>2</sub>L + β<sub>3</sub>K + u instead? We would be estimating a
+different model — one that assumes constant marginal products and additive rather than
+multiplicative technology, which is not the theory we started from.</p>
+
+<p>The fix is to take natural logarithms:</p>
+
+<p class="math">ln Q = ln β<sub>1</sub> + β<sub>2</sub> ln L + β<sub>3</sub> ln K + u</p>
+
+<p>which is the <strong><a class="gt" href="../reference/glossary.html#double-log">double-log</a> form</strong> — logs of variables on both sides. The
+parameters now enter linearly, and OLS applies. Note that the multiplicative error
+e<sup>u</sup> becomes an additive u, which is exactly what the classical assumptions require;
+this is why Cobb–Douglas is conventionally written with a multiplicative <a class="gt" href="../reference/glossary.html#disturbance">disturbance</a>.</p>
+
+<h2>4 · The four functional forms</h2>
+
+<h3>Double-log</h3>
+
+<p class="math">ln Y = β<sub>1</sub> + β<sub>2</sub> ln X<sub>2</sub> + β<sub>3</sub> ln X<sub>3</sub> + u</p>
+
+<p>It does not only linearise a non-linear function. The individual coefficients can be
+interpreted directly as <strong><a class="gt" href="../reference/glossary.html#elasticity">elasticities</a></strong>:</p>
+
+<p class="math">β<sub>k</sub> = Δ(ln Y) / Δ(ln X<sub>k</sub>) = (ΔY/Y) / (ΔX<sub>k</sub>/X<sub>k</sub>) = elasticity of Y with respect to X<sub>k</sub></p>
+
+<p>So a 1% change in X<sub>2</sub> is associated with a β̂<sub>2</sub>% change in Y.</p>
+
+<div class="box def">
+  <span class="box-label">Why economists log so much</span>
+  Logging is not confined to cases where we suspect non-linearity in the parameters.
+  Frequently economists are interested in <strong>elasticities rather than partial or marginal
+  effects</strong>, and logging both sides is the direct way to estimate one.<br>
+  <strong>But you cannot log everything.</strong> Some variables contain negative or zero
+  values, and ln is undefined there. And sometimes it simply does not make intuitive sense to
+  log a variable — an unemployment rate already in percent, or a variable measured in years.
+</div>
+
+<h3>Semi-log form 1 — log–lin</h3>
+
+<p class="math">ln Y = β<sub>1</sub> + β<sub>2</sub>X + u</p>
+
+<p>The <a class="gt" href="../reference/glossary.html#dependent-variable">dependent variable</a> is logged; one or more of the regressors are not. Generally
+β<sub>2</sub> · 100 ≈ %ΔY / ΔX, which is called a <strong>semi-elasticity</strong>: the
+percentage change in Y when X changes by one unit is approximately 100β<sub>2</sub>.</p>
+
+<div class="box warn">
+  <span class="box-label">The approximation, and the exact figure</span>
+  100β<sub>2</sub> works best for <strong>small</strong> values of β<sub>2</sub>. The exact
+  percentage change is
+  <p class="math" style="margin:0.4rem 0;">%ΔY / ΔX = 100 [ e<sup>β2</sup> − 1 ]</p>
+  For β<sub>2</sub> = 0.05 the approximation gives 5% and the exact value 5.13% — negligible.
+  For β<sub>2</sub> = 0.40 the approximation gives 40% and the exact value 49.2%, which is not.
+  Quote the exact form whenever the coefficient is large.
+</div>
+
+<p>This is the popular form for models of wage determination — the <strong>Mincer
+equation</strong>:</p>
+
+<p class="math">ln wage = β<sub>1</sub> + β<sub>2</sub> Education + β<sub>3</sub> Experience + β<sub>4</sub> Experience<sup>2</sup> + u</p>
+
+<h3>Semi-log form 2 — lin–log</h3>
+
+<p class="math">Y = β<sub>1</sub> + β<sub>2</sub> ln X + u, &nbsp; for X &gt; 0</p>
+
+<p>Generally ΔY = (β<sub>2</sub>/100) · %ΔX. So when X increases by 1%, Y changes by
+approximately β<sub>2</sub>/100 <em>units</em>. An example is a labour supply function:
+hours worked = β<sub>1</sub> + β<sub>2</sub> ln wage + u.</p>
+
+<div class="box def">
+  <span class="box-label">The four forms, and what β<sub>2</sub> means in each</span>
+  <table class="cal" style="margin-top:0.5rem;">
+    <tr><th>Linear</th><td class="cov">Y = β<sub>1</sub> + β<sub>2</sub>X</td>
+      <td class="cov">ΔX of 1 unit ⟹ ΔY of β<sub>2</sub> units</td></tr>
+    <tr><th>Double-log</th><td class="cov">ln Y = β<sub>1</sub> + β<sub>2</sub> ln X</td>
+      <td class="cov">ΔX of 1% ⟹ ΔY of β<sub>2</sub>% &nbsp;(elasticity)</td></tr>
+    <tr><th>Log–lin</th><td class="cov">ln Y = β<sub>1</sub> + β<sub>2</sub>X</td>
+      <td class="cov">ΔX of 1 unit ⟹ ΔY of 100β<sub>2</sub>% &nbsp;(semi-elasticity)</td></tr>
+    <tr><th>Lin–log</th><td class="cov">Y = β<sub>1</sub> + β<sub>2</sub> ln X</td>
+      <td class="cov">ΔX of 1% ⟹ ΔY of β<sub>2</sub>/100 units</td></tr>
+  </table>
+  The pattern is worth reading off rather than memorising: <strong>a logged variable turns its
+  own side of the sentence into a percentage.</strong>
+</div>
+
+<div class="viz" data-viz="functional-forms">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It fits the same data with each of the four
+    functional forms in turn, drawing the fitted curve and reporting how β̂<sub>2</sub> is
+    interpreted under that form.
+  </p>
+</div>
+
+<h2>5 · Interaction terms</h2>
+
+<p>Sometimes the impact of a variable depends on the level of some other variable. Consider the
+Mincer equation again, relating wages to years of schooling and years of experience:</p>
+
+<p class="math">ln wage = β<sub>1</sub> + β<sub>2</sub> educ + β<sub>3</sub> exper + β<sub>4</sub> exper<sup>2</sup> + u</p>
+
+<p>This model implies the marginal return to experience depends only on how much experience
+the person has, holding education constant. But the return to experience might also depend on
+how much schooling the worker has: someone with a university education may be able to move up
+faster than someone with only secondary schooling.</p>
+
+<p>To capture that, include an <strong><a class="gt" href="../reference/glossary.html#interaction-term">interaction term</a></strong> — simply the product of the
+two variables:</p>
+
+<p class="math">ln wage = β<sub>1</sub> + β<sub>2</sub> educ + β<sub>3</sub> exper + β<sub>4</sub> exper<sup>2</sup> + β<sub>5</sub> (exper · educ) + u</p>
+
+<p>The partial derivative with respect to experience becomes</p>
+
+<p class="math">∂ ln wage / ∂ exper = β<sub>3</sub> + 2β<sub>4</sub> exper + β<sub>5</sub> educ</p>
+
+<div class="box key">
+  <span class="box-label">What the interaction has bought</span>
+  The effect of experience now depends on <strong>both</strong> the level of experience and the
+  level of schooling. If β<sub>5</sub> is positive, the effect of experience is greater for
+  people with more schooling.<br>
+  Note what this does to interpretation: once an interaction is in the model,
+  <strong>β<sub>3</sub> alone is no longer "the effect of experience"</strong> — it is the
+  effect of experience for someone with <em>zero</em> years of education, which may be nobody
+  in the sample. Report the derivative evaluated at a meaningful value, not the raw
+  coefficient.
+</div>
+
+<h2>6 · Testing the functional form</h2>
+
+<p>The <strong><a class="gt" href="../reference/glossary.html#reset-test">Ramsey RESET</a> test</strong> from Part 1 does double duty. It can also be used to
+detect general <a class="gt" href="../reference/glossary.html#functional-form">functional form</a> misspecification — should some of our variables be squared or
+cubed? Should we include interaction terms?</p>
+
+<p>The mechanism explains why. Ŷ is a linear combination of the regressors, so Ŷ<sup>2</sup>
+and Ŷ<sup>3</sup> contain their squares and cross-products — precisely the quadratic and
+interaction terms that a functional-form error consists of leaving out. Adding them and testing
+H<sub>0</sub>: γ<sub>1</sub> = γ<sub>2</sub> = 0 asks whether those shapes would have helped.</p>
+
+<div class="box warn">
+  <span class="box-label">Which is why a RESET rejection is ambiguous</span>
+  RESET is sensitive to omitted variables (Part 1) <em>and</em> to incorrect functional form
+  (here), for the same underlying reason. A rejection tells you the model is inadequate but not
+  which of the two diagnoses applies — and the remedies are completely different. Use theory to
+  decide which is more plausible before reaching for a fix.
+</div>
+
+<h2>7 · Parameter stability and structural change</h2>
+
+<p>The examples so far have been <a class="gt" href="../reference/glossary.html#cross-sectional">cross-sectional</a>. More often than not we have data with a
+<strong>time dimension</strong>, and then a further possibility arises: the relationship itself
+may have changed part-way through the sample. That is <strong><a class="gt" href="../reference/glossary.html#chow-test">structural change</a></strong>.</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span>
+    The "free education for all" policy of the 1960s — did it change the dynamic between
+    education and earnings in Barbados?
+  </span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span>
+    Has the relationship between consumption and income changed since 2008, under recessionary
+    conditions?
+  </span></div>
+</div>
+
+<p>Suppose we have quarterly data on household consumption and income from 1992 to 2016 — 25
+years, so 100 observations. We can assume no difference in the relationship and <a class="gt" href="../reference/glossary.html#estimate">estimate</a> one
+regression on the full sample:</p>
+
+<p class="math">C<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>Y<sub>t</sub> + u<sub>t</sub></p>
+
+<p>A less optimistic person may argue the recession changed the dynamic, and that two separate
+regressions are needed:</p>
+
+<p class="math">C<sub>t</sub> = δ<sub>1</sub> + δ<sub>2</sub>Y<sub>t</sub> + u<sub>1t</sub>
+&nbsp; — pre-2008 (1992–2007)</p>
+<p class="math">C<sub>t</sub> = α<sub>1</sub> + α<sub>2</sub>Y<sub>t</sub> + u<sub>2t</sub>
+&nbsp; — post-2008 (2008–2016)</p>
+
+<p>The first regression assumes β<sub>1</sub> = δ<sub>1</sub> = α<sub>1</sub> and
+β<sub>2</sub> = δ<sub>2</sub> = α<sub>2</sub> — no structural change, no difference in
+parameters. The second and third allow the relationships to differ, so both slopes and
+intercepts are free to move. Notice that this is exactly the restricted-versus-unrestricted
+setup of Unit 1F.</p>
+
+<h2>8 · The Chow test</h2>
+
+<div class="box def">
+  <span class="box-label">Hypotheses and assumptions</span>
+  <strong>H<sub>0</sub>:</strong> no structural change — the parameters are stable.<br>
+  <strong>Assumptions:</strong> the error terms in the sub-period regressions are normally
+  distributed with the <em>same</em> (homoscedastic) variance, and the two error terms
+  u<sub>1t</sub> and u<sub>2t</sub> are independently distributed.
+</div>
+
+<ol class="steps">
+  <li>Estimate the model assuming no structural break — the pooled regression. Obtain
+    <strong>RSS<sub>R</sub></strong> with n<sub>1</sub> − k degrees of freedom. It is the
+    restricted model because it imposes δ<sub>1</sub> = α<sub>1</sub> and δ<sub>2</sub> =
+    α<sub>2</sub>.
+  </li>
+  <li>Estimate the first sub-period regression and collect <strong>RSS<sub>2</sub></strong>,
+    with n<sub>2</sub> − k degrees of freedom.
+  </li>
+  <li>Estimate the second sub-period regression and collect <strong>RSS<sub>3</sub></strong>,
+    with n<sub>3</sub> − k degrees of freedom.
+  </li>
+  <li>Add them: <strong>RSS<sub>UR</sub> = RSS<sub>2</sub> + RSS<sub>3</sub></strong>, with
+    n<sub>2</sub> + n<sub>3</sub> − 2k degrees of freedom. Then
+    <p class="math">F = [ ( RSS<sub>R</sub> − RSS<sub>UR</sub> ) / k ]
+      / [ RSS<sub>UR</sub> / ( n<sub>2</sub> + n<sub>3</sub> − 2k ) ]
+      ~ F<sub>n2+n3−2k</sub><sup>k</sup></p>
+  </li>
+</ol>
+
+<div class="box key">
+  <span class="box-label">The idea</span>
+  If there is in fact no structural change, there is no statistical difference between
+  RSS<sub>R</sub> and RSS<sub>UR</sub> — splitting the sample bought nothing. So we
+  <strong>do not reject</strong> the null of parameter stability if the computed F does not
+  exceed the critical F at the chosen significance level. It is the F-test of Unit 1F with k
+  restrictions, where the restrictions say that each parameter is the same in both periods.
+</div>
+
+<div class="viz" data-viz="chow-break">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It shows consumption against income across two
+    periods with a control for the size of the structural break, drawing the pooled and the two
+    sub-period regressions and reporting the Chow F statistic and the decision.
+  </p>
+</div>
+
+<div class="box warn">
+  <span class="box-label">Three limitations, all worth stating in an answer</span>
+  <strong>i.</strong> For the test to be valid the assumptions must be fulfilled — in
+  particular the equal-variance assumption, which needs its own test (section 9).<br>
+  <strong>ii.</strong> This version tells you that the <em>regressions</em> differ, not which
+  parameters do. We do not know whether the difference is in the intercepts, the slopes, or
+  both.<br>
+  <strong>iii.</strong> The test <strong>assumes we know when the structural break
+  occurred</strong>. Choosing the break date by looking for the split that maximises F is not
+  this test, and its critical values do not apply.
+</div>
+
+<h2>9 · The test of variances</h2>
+
+<p>Examine one of the assumptions underlying the Chow test — that the error variances in the
+two periods are the same. Since we cannot observe the true error variances, obtain their
+estimates from the sub-period <a class="gt" href="../reference/glossary.html#residual">residual</a> sums of squares:</p>
+
+<p class="math">σ̂<sub>1</sub><sup>2</sup> = RSS<sub>1</sub> / (n<sub>1</sub> − k)
+&nbsp;·&nbsp; σ̂<sub>2</sub><sup>2</sup> = RSS<sub>2</sub> / (n<sub>2</sub> − k)</p>
+
+<p>Given the assumptions underlying the Chow test, these are unbiased <a class="gt" href="../reference/glossary.html#estimator">estimators</a> of the true
+variances in the two sub-periods. If σ<sub>1</sub><sup>2</sup> = σ<sub>2</sub><sup>2</sup>, as
+the Chow test assumes, then it can be shown that</p>
+
+<p class="math">( σ̂<sub>1</sub><sup>2</sup> / σ<sub>1</sub><sup>2</sup> ) /
+( σ̂<sub>2</sub><sup>2</sup> / σ<sub>2</sub><sup>2</sup> ) ~ F<sub>(n1−k), (n2−k)</sub></p>
+
+<p>follows the F distribution with (n<sub>1</sub> − k) and (n<sub>2</sub> − k) <a class="gt" href="../reference/glossary.html#degrees-of-freedom">degrees of
+freedom</a> in numerator and denominator, where k is the number of unknown parameters. Under the
+null the two population variances cancel, so the test reduces to computing</p>
+
+<p class="math"><strong>F = σ̂<sub>1</sub><sup>2</sup> / σ̂<sub>2</sub><sup>2</sup></strong></p>
+
+<div class="box def">
+  <span class="box-label">One practical rule</span>
+  <strong>Always put the larger variance in the numerator.</strong> This makes F ≥ 1 and lets
+  you use the upper tail of the F-tables, which is the only tail they print. Remember to match
+  the degrees of freedom to whichever sub-period ended up on top.
+</div>
+
+<h2>10 · Tutorial</h2>
+
+<p style="font-size:0.85rem; color:var(--ink-soft); font-style:italic;">
+Draft questions, to be replaced by the tutorial sheet issued in class.</p>
+
+<div class="tutorial">
+
+  <div class="tq">
+    <span class="qtext">A wage equation is estimated as ln wage = 1.42 + 0.084 educ + u.
+    Interpret the coefficient exactly and approximately. Then re-interpret it supposing the
+    equation had instead been wage = 1.42 + 0.084 ln educ + u.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong><a class="gt" href="../reference/glossary.html#semi-log">Log–lin</a>.</strong> The dependent variable is logged and the regressor is not,
+        so β<sub>2</sub> is a semi-elasticity. Approximately, one more year of education raises
+        the wage by 100 × 0.084 = <strong>8.4%</strong>. Exactly,
+        100[e<sup>0.084</sup> − 1] = 100(1.0876 − 1) = <strong>8.76%</strong>. The gap is small
+        here because the coefficient is small; at 0.40 it would be 40% against 49.2%.</p>
+        <p><strong>Lin–log.</strong> Now the regressor is logged and the dependent variable is
+        not, so a 1% rise in education changes the wage by β<sub>2</sub>/100 = 0.00084
+        <em>units</em> — whatever wage is measured in. Note this is a far less natural
+        specification for this relationship: it says the effect of an extra year of schooling
+        shrinks as schooling rises, and it makes no use of the fact that wages are naturally
+        thought of in proportional terms.</p>
+        <p>The general rule: <em>a logged variable turns its own side of the sentence into a
+        percentage.</em></p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">A Mincer equation gives ln wage = β̂<sub>1</sub> + 0.09 educ + 0.061
+    exper − 0.0009 exper<sup>2</sup>. At what level of experience do wages peak? Comment on
+    whether the answer is economically sensible, and say what the coefficient on
+    <em>exper</em> alone would mean if an interaction term exper·educ were added.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>The turning point.</strong> Differentiating with respect to experience:
+        ∂ln wage/∂exper = 0.061 + 2(−0.0009)exper = 0.061 − 0.0018 exper. Setting to zero:</p>
+        <p class="math">exper* = −β̂<sub>3</sub>/2β̂<sub>4</sub> = 0.061 / 0.0018 = <strong>33.9 years</strong></p>
+        <p>Since β̂<sub>4</sub> &lt; 0 this is a <em>maximum</em>: the inverted-U shape. Wages
+        rise with experience but at a diminishing rate, peaking at about 34 years and declining
+        thereafter.</p>
+        <p><strong>Is it sensible?</strong> Yes — 34 years of experience is comfortably inside
+        the working life and inside most samples, and a peak followed by mild decline near
+        retirement is what the literature finds. Had the answer come out at 90 years it would
+        have been arithmetic without economic content, and the quadratic term would be doing
+        nothing but bending the curve within the observed range.</p>
+        <p><strong>With an interaction.</strong> Adding β<sub>5</sub>(exper·educ) makes the
+        derivative β<sub>3</sub> + 2β<sub>4</sub>exper + β<sub>5</sub>educ. The coefficient
+        β<sub>3</sub> alone is then the effect of experience for a worker with <em>zero</em>
+        years of education — likely nobody in the sample. Report the derivative evaluated at a
+        meaningful education level, such as the sample mean.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">A researcher estimating a cost function argues that since the product
+    has no fixed costs, the constant should be dropped. Explain what suppressing it would do,
+    and why the advice "always include it, never interpret it" is not contradictory.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>What suppressing it does.</strong> It forces the regression line through the
+        origin. If the true intercept is not exactly zero — and it hardly ever is — the
+        intercept's job is forced onto the slope coefficients, which tilt to compensate. The
+        estimate of marginal cost is then biased. It also breaks the guarantee that the
+        residuals sum to zero, so the assumption E(u) = 0 is no longer protected by the
+        arithmetic of the fit.</p>
+        <p><strong>Why the advice is <a class="gt" href="../reference/glossary.html#consistency">consistent</a>.</strong> The two halves are about different
+        things. <em>Include it</em> is about protecting the slopes: the constant absorbs any
+        non-zero mean in the disturbance, so it must be present for the other coefficients to
+        be estimated cleanly. <em>Do not interpret it</em> is about the constant itself:
+        precisely because it is a garbage collector, absorbing whatever <a class="gt" href="../reference/glossary.html#specification-bias">specification error</a>
+        leaves behind, its own value carries no reliable meaning. It is also an extrapolation
+        to a point where all regressors are zero, which is usually far outside the data.</p>
+        <p>On this researcher's specific claim: even if fixed costs really are zero, the correct
+        procedure is to include the constant and <em>test</em> H<sub>0</sub>: β<sub>1</sub> = 0,
+        not to impose it. Imposing a restriction you have not tested is exactly what the
+        <a class="gt" href="../reference/glossary.html#general-to-specific">general-to-specific</a> approach in Part 1 warns against.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">Quarterly data on consumption and income, 1992–2016 (n = 100), with a
+    suspected break at 2008 giving n<sub>2</sub> = 64 and n<sub>3</sub> = 36. The pooled
+    regression gives RSS<sub>R</sub> = 1,842; the sub-period regressions give RSS<sub>2</sub> =
+    1,048 and RSS<sub>3</sub> = 601. Carry out the Chow test at 5%, and state what you would
+    check before trusting it.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>Set up.</strong> k = 2 (an intercept and a slope). <a class="gt" href="../reference/glossary.html#rss">RSS</a><sub>UR</sub> =
+        1,048 + 601 = 1,649, with n<sub>2</sub> + n<sub>3</sub> − 2k = 100 − 4 = 96 degrees of
+        freedom.</p>
+        <p class="math">F = [ (1,842 − 1,649) / 2 ] / [ 1,649 / 96 ] = 96.5 / 17.18 = <strong>5.62</strong></p>
+        <p><strong>Decision.</strong> The <a class="gt" href="../reference/glossary.html#critical-value">critical value</a> F<sup>2</sup><sub>96</sub> at 5% is
+        about 3.09. Since 5.62 &gt; 3.09, <strong>reject</strong> the null of parameter
+        stability: there is evidence of a structural break in the consumption–income
+        relationship at 2008.</p>
+        <p><strong>What to check first.</strong> The Chow test assumes the two sub-period error
+        variances are equal, so run the test of variances:
+        σ̂<sub>2</sub><sup>2</sup> = 1,048/62 = 16.9 and σ̂<sub>3</sub><sup>2</sup> = 601/34 =
+        17.7. Larger over smaller gives F = 17.7/16.9 = 1.05 on (34, 62) degrees of freedom —
+        nowhere near any critical value, so the equal-variance assumption survives and the Chow
+        result stands.</p>
+        <p>Two caveats remain. The test says the regressions differ but not <em>how</em> —
+        intercept, slope or both. And 2008 was chosen from prior knowledge of the recession, not
+        from the data; had the break date been picked by searching for the largest F, these
+        critical values would not apply.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">Explain why a Cobb–Douglas production function cannot be estimated by
+    OLS as written, why taking logs fixes it, and what the log transformation implies about the
+    error term. Would the same trick work for Q = β<sub>1</sub> + β<sub>2</sub>L<sup>β3</sup> +
+    u?</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>Why not as written.</strong> Q = β<sub>1</sub>L<sup>β2</sup>K<sup>β3</sup>e<sup>u</sup>
+        has parameters appearing as exponents, violating assumption 1 — linearity in the
+        parameters. OLS minimises a sum of squares whose first-order conditions are linear in
+        the parameters; here they would not be.</p>
+        <p><strong>Why logs fix it.</strong> ln Q = ln β<sub>1</sub> + β<sub>2</sub>ln L +
+        β<sub>3</sub>ln K + u. The parameters β<sub>2</sub> and β<sub>3</sub> now enter
+        linearly, and ln β<sub>1</sub> is just a reparameterised intercept — estimate it and
+        exponentiate to recover β<sub>1</sub>. The model is <em>intrinsically linear</em>: it
+        looked non-linear but a transformation removes it.</p>
+        <p><strong>What it implies about the error.</strong> The multiplicative e<sup>u</sup>
+        becomes an additive u, which is what the classical assumptions require. This is why the
+        function is conventionally written with a multiplicative disturbance rather than an
+        additive one — with Q = β<sub>1</sub>L<sup>β2</sup>K<sup>β3</sup> + u the log
+        transformation would not separate, and no such trick exists.</p>
+        <p><strong>The second model.</strong> No. Q = β<sub>1</sub> + β<sub>2</sub>L<sup>β3</sup> + u
+        has an additive structure, so logging both sides does not distribute over the sum:
+        ln(β<sub>1</sub> + β<sub>2</sub>L<sup>β3</sup> + u) cannot be separated into terms
+        linear in the parameters. This is <em>intrinsically non-linear</em> and requires
+        non-linear least squares, which is beyond this course.</p>
+      </div>
+    </details>
+  </div>
+
+</div>
+
+<h2>11 · Check yourself</h2>
+
+<div class="quiz" data-answer="1">
+  <div class="q">In ln Y = β<sub>1</sub> + β<sub>2</sub> ln X + u, the coefficient β<sub>2</sub> is</div>
+  <button class="opt">the change in Y in units when X rises by a single unit</button>
+  <button class="opt">the percentage change in Y when X rises by one per cent</button>
+  <button class="opt">the change in Y in units when X rises by one per cent</button>
+  <button class="opt">the percentage change in Y when X rises by a single unit</button>
+  <div class="feedback right">Correct — the double-log form gives an elasticity directly, which is why economists reach for it so often.</div>
+  <div class="feedback wrong">Both variables are logged, so both sides of the sentence are in percentages: a 1% rise in X gives a β<sub>2</sub>% change in Y. That is an elasticity. The "units when X rises 1%" reading is the lin–log form, and "percent when X rises 1 unit" is log–lin.</div>
+</div>
+
+<div class="quiz" data-answer="3">
+  <div class="q">Suppressing the constant term in a regression will generally</div>
+  <button class="opt">improve efficiency by saving one degree of freedom for the fit</button>
+  <button class="opt">have little effect provided the true intercept is fairly small</button>
+  <button class="opt">bias the intercept but leave the slope coefficients unaffected</button>
+  <button class="opt">force the intercept's role onto the slopes, distorting them</button>
+  <div class="feedback right">Correct — the line is dragged through the origin, so the slope must tilt to compensate, and Σû no longer equals zero.</div>
+  <div class="feedback wrong">There is no intercept left to bias — that is the point. Its job is forced onto the slope coefficients, which tilt to compensate, so the estimated marginal effect is wrong. The saved degree of freedom is worth nothing against a misspecified model.</div>
+</div>
+
+<div class="quiz" data-answer="0">
+  <div class="q">In Y = β<sub>1</sub> + β<sub>2</sub>X + β<sub>3</sub>X<sup>2</sup> + u with β̂<sub>2</sub> = 0.8 and β̂<sub>3</sub> = −0.02, the turning point is at</div>
+  <button class="opt">X* = 20, and it is a maximum since β̂<sub>3</sub> is negative</button>
+  <button class="opt">X* = 20, and it is a minimum since β̂<sub>3</sub> is negative</button>
+  <button class="opt">X* = 40, and it is a maximum since β̂<sub>2</sub> is positive</button>
+  <button class="opt">X* = 40, and it is a minimum since β̂<sub>2</sub> is positive</button>
+  <div class="feedback right">Correct — X* = −β̂<sub>2</sub>/2β̂<sub>3</sub> = −0.8/(−0.04) = 20, and a negative squared term gives an inverted U.</div>
+  <div class="feedback wrong">X* = −β̂<sub>2</sub>/2β̂<sub>3</sub> = −0.8/(2 × −0.02) = −0.8/−0.04 = 20. The denominator carries the factor 2, which is where 40 comes from if it is dropped. A negative β̂<sub>3</sub> means an inverted U, so the turning point is a maximum.</div>
+</div>
+
+<div class="quiz" data-answer="2">
+  <div class="q">A Chow test rejects the null of parameter stability. You can conclude that</div>
+  <button class="opt">the slope coefficient changed, though the intercept did not move</button>
+  <button class="opt">the break date has been correctly identified by the test itself</button>
+  <button class="opt">the two sub-period regressions differ, but not in which parameter</button>
+  <button class="opt">the error variances must differ between the two sub-periods tested</button>
+  <div class="feedback right">Correct — and the break date was assumed, not discovered. Equal error variances are an <em>assumption</em> of the test, not a conclusion from it.</div>
+  <div class="feedback wrong">The Chow test compares RSS from the pooled model against the sum from two separate models, so a rejection says the regressions differ — it cannot say whether that is the intercept, the slope, or both. The break date is supplied by you, and equal variances are assumed and should be tested separately.</div>
+</div>
+
+<p class="deck-link" data-unit="2A Part 2"></p>
+
+<div class="ask-teacher">
+  <strong>The four functional forms and their interpretations are worth committing to memory
+  before the final — they come up in every applied question.</strong>
+  Bring any that will not stick to the tutorial, or to office hours — <span data-course="officeHours"></span>.
+</div>
+
+<ol class="sources">
+  <li id="s1">Gujarati, D. &amp; Porter, D. (2008), <em>Basic Econometrics</em>, sections 6.4, 6.5 and 6.6 — functional forms, the constant term, and elasticity interpretations. The Chow test and the test of variances follow pages 254 to 259.</li>
+  <li id="s2">Wooldridge, J. (2016), <em>Introductory Econometrics: A Modern Approach</em>, Chapters 6 and 9 — logarithmic forms, quadratics, interaction terms and RESET.</li>
+  <li id="s3">Mincer, J. (1974), <em>Schooling, Experience and Earnings</em> — the wage equation used throughout as an example. Chow, G. C. (1960) is the origin of the structural-break test.</li>
+</ol>
+
+<div class="lesson-nav" data-unit="2A Part 2"></div>
+
+</div>
+</body>
+</html>

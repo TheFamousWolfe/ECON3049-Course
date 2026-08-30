@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 1B — Simple Linear Regression · ECON 3049</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/course.js"></script>
+<script src="../assets/nav.js" defer></script>
+<script src="../assets/quiz.js" defer></script>
+<script src="../assets/viz.js" defer></script>
+</head>
+<body>
+<div class="masthead" data-unit="1B"></div>
+<div class="wrap">
+
+<h1>Simple Linear Regression</h1>
+<p class="subtitle">The two-variable model, and how OLS picks the line that fits best.</p>
+<p class="unit-meta" data-unit="1B"></p>
+
+<div class="box key">
+  <span class="box-label">By the end of this unit you should be able to</span>
+  <ul style="margin:0.3rem 0 0; padding-left:1.1rem;">
+    <li>distinguish the population regression function from the sample regression function, and an estimator from an estimate;</li>
+    <li>state what OLS minimises, and derive β̂<sub>1</sub> and β̂<sub>2</sub> by both routes;</li>
+    <li>state the four core assumptions of the simple linear regression model;</li>
+    <li>say what BLUE means, term by term, and what the Gauss–Markov theorem claims;</li>
+    <li>explain why a significant coefficient is not evidence of causation.</li>
+  </ul>
+</div>
+
+<div class="box refresh">
+  <span class="box-label">Assumed from ECON 2026</span>
+  Much of this unit is a re-introduction. OLS, unbiasedness and goodness of fit were all
+  introduced in Statistical Methods II; expectations were covered in ECON 2025 and 2026.
+  If E(Y | X) does not look familiar, revisit conditional expectation before going further —
+  the whole of this unit rests on it.
+</div>
+
+<h2>1 · What regression is</h2>
+
+<p>Regression is a statistical technique that attempts to "explain" movements in one
+variable — the <strong>dependent</strong> variable — as a function of movements in one or a
+set of other variables, <em><a class="gt" href="../reference/glossary.html#ceteris-paribus">ceteris paribus</a></em>, through the quantification of one or more
+equations.</p>
+
+<p>Both variables travel under several names, and your textbooks use them interchangeably,
+so all of them need to be recognisable:</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">Y</span><span><strong>Dependent</strong> · explained · response · predicted variable</span></div>
+  <div class="ag-item"><span class="ag-n">X</span><span><strong>Independent</strong> · explanatory · control · predictor variable</span></div>
+</div>
+
+<p>A more technical statement of the same thing: regression is concerned with predicting
+the population mean value of the <a class="gt" href="../reference/glossary.html#dependent-variable">dependent variable</a> on the basis of known or fixed values
+of the explanatory variables. That is the <strong><a class="gt" href="../reference/glossary.html#conditional-mean">conditional population mean</a></strong>:</p>
+
+<p class="math">E(Y | X)</p>
+
+<p>Hold on to the word <em>mean</em>. Regression does not predict what any individual will
+do. It predicts the average of everyone at a given value of X.</p>
+
+<h2>2 · From a line to a regression</h2>
+
+<p>A linear equation Y = β<sub>1</sub> + β<sub>2</sub>X describes an
+<strong>exact</strong>, <a class="gt" href="../reference/glossary.html#deterministic">deterministic</a> relationship: give it X and it returns Y with no
+remainder. That is not realistic for economic relationships. Even if much of the variation
+in Y is caused by X, there is almost always variation that comes from other sources.</p>
+
+<p>A <strong><a class="gt" href="../reference/glossary.html#stochastic">stochastic</a> error term</strong>, or <strong><a class="gt" href="../reference/glossary.html#disturbance">disturbance</a></strong>, is added to
+the linear equation to account for variation in Y that cannot be explained by the included
+X. It is usually written by adding <em>u</em>, or an epsilon <em>ε</em>, to the equation:</p>
+
+<p class="math">Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> + u<sub>i</sub></p>
+
+<div class="box def">
+  <span class="box-label">Reading the equation</span>
+  <strong>Y<sub>i</sub></strong> dependent variable ·
+  <strong>β<sub>1</sub></strong> intercept ·
+  <strong>β<sub>2</sub></strong> slope parameter ·
+  <strong>X<sub>i</sub></strong> independent variable ·
+  <strong>u<sub>i</sub></strong> error term
+</div>
+
+<div class="box warn">
+  <span class="box-label">Notation — fix this now</span>
+  In this course <strong>β<sub>1</sub> is the intercept and β<sub>2</sub> the slope</strong>.
+  Several diagrams in the textbooks — and one or two reproduced in the lecture slides — come
+  from sources that number from zero, writing β<sub>0</sub> for the intercept and
+  β<sub>1</sub> for the slope. The mathematics is identical and only the labels differ, but
+  read every figure's axis labels before you trust its subscripts, and use this course's
+  numbering in everything you submit.
+</div>
+
+<h3>The four reasons the error term is there</h3>
+
+<p>There are at least four sources of variation in Y not captured by the included X:</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span>Influences <strong>omitted</strong> from the equation</span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span><strong>Measurement error</strong></span></div>
+  <div class="ag-item"><span class="ag-n">iii</span><span>The true theoretical equation has a <strong>different functional form</strong> than the one chosen for the regression</span></div>
+  <div class="ag-item"><span class="ag-n">iv</span><span>Human behaviour can be unpredictable and <strong>purely random</strong></span></div>
+</div>
+
+<h3>The two parts of a regression</h3>
+
+<p>Every regression equation splits cleanly in two:</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">1</span><span><strong>Deterministic part:</strong> β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> — the value of Y determined by a given value of X.</span></div>
+  <div class="ag-item"><span class="ag-n">2</span><span><strong>Stochastic (random) part:</strong> u<sub>i</sub> — everything else.</span></div>
+</div>
+
+<p>The deterministic part can be thought of as the expected value of Y given X, which is
+the conditional mean from section 1:</p>
+
+<p class="math">E(Y<sub>i</sub> | X<sub>i</sub>) = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub></p>
+
+<h2>3 · Regression and causation</h2>
+
+<div class="box warn">
+  <span class="box-label">The most consequential warning in this course</span>
+  Do not be deceived by the words "dependent" and "independent" variables.
+  <strong>Regression, in its most basic form, cannot prove causality.</strong>
+</div>
+
+<p>The vocabulary is suggestive, and it is meant to be — but "dependent" is a statement
+about which side of the equation a variable sits on, not about what causes what. Fitting a
+line establishes association, and association is compatible with X causing Y, Y causing X,
+some third variable causing both, or coincidence.</p>
+
+<p>So what is regression good for? Testing hypotheses, making predictions, evaluating
+policies. All of those are valuable, and none of them requires the word "cause". The
+conditions under which a coefficient <em>can</em> carry a causal reading are the subject of
+Unit 3B.</p>
+
+<h2>4 · The population line and the sample line</h2>
+
+<p>Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> + u<sub>i</sub> is the
+<strong>theoretical specification</strong>, and
+E(Y<sub>i</sub> | X<sub>i</sub>) = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> is called the
+<strong>population regression line</strong>. There is an immediate practical problem with
+both: we do not usually have information on all the elements in the population. What we
+usually have is a sample of Y and X values — a random sample of n observations:</p>
+
+<p class="math">{ (x<sub>i</sub>, y<sub>i</sub>) : i = 1, …, n }</p>
+
+<p>This is the situation inferential statistics exists for: use sample information to make
+statements about the population. The quantified version of the theoretical regression
+equation is the <strong>estimated regression equation</strong>:</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">PRF</span><span>Population: E(Y<sub>i</sub> | X) = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub></span></div>
+  <div class="ag-item"><span class="ag-n">SRF</span><span>Estimated from a sample: Ŷ<sub>i</sub> = β̂<sub>1</sub> + β̂<sub>2</sub>X<sub>i</sub></span></div>
+</div>
+
+<p>The hat "^" indicates an estimated or fitted value. Ŷ is the <a class="gt" href="../reference/glossary.html#estimate">estimate</a> of Y for a given
+value of X, built from the estimated intercept β̂<sub>1</sub> and estimated slope
+β̂<sub>2</sub>. The gap between what was observed and what the line predicts is the
+<strong><a class="gt" href="../reference/glossary.html#residual">residual</a></strong>:</p>
+
+<p class="math">ê<sub>i</sub> = Y<sub>i</sub> − Ŷ<sub>i</sub></p>
+
+<div class="box def">
+  <span class="box-label">Disturbance or residual — not the same thing</span>
+  <strong>u<sub>i</sub></strong> is the <em>disturbance</em>: the distance from the
+  observation to the <strong>population</strong> line. It is unobservable, because the
+  population line is unobservable.<br>
+  <strong>ê<sub>i</sub></strong> is the <em>residual</em>: the distance from the observation
+  to the <strong>estimated</strong> line. You can compute it, and software will hand you all
+  n of them.<br>
+  Everything in Unit 2 involves testing assumptions about <em>u</em> using the only evidence
+  available, which is <em>ê</em>.
+</div>
+
+<p>A still diagram makes the estimated line look like a fixed object. It is not — it is a
+quantity computed from whichever sample you happened to draw, and a different sample gives
+a different line. Draw a few:</p>
+
+<div class="viz" data-viz="prf-vs-srf">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It shows a fixed population regression line
+    with a sample regression line estimated from a fresh random sample on each draw, and
+    tracks the average of β̂<sub>2</sub> across draws.
+  </p>
+</div>
+
+<p>Two lessons are worth taking from that figure. The estimated line is never exactly the
+true line, so a single estimate is never the answer on its own — which is why Unit 1F is
+about attaching a margin of error to it. And the average of β̂<sub>2</sub> across many
+samples settles on the true 0.600. That property has a name, <strong><a class="gt" href="../reference/glossary.html#unbiasedness">unbiasedness</a></strong>,
+and it is the U in <a class="gt" href="../reference/glossary.html#blue">BLUE</a> at the end of this unit.</p>
+
+<h3>Estimators and estimates</h3>
+
+<div class="box def">
+  <span class="box-label">Definition</span>
+  An <strong>estimator</strong> is a mathematical technique applied to a sample of data to
+  produce an estimate of the true population regression coefficient.<br>
+  An <strong>estimate</strong> is the computed value of a population regression coefficient
+  produced by an estimator.
+</div>
+
+<p><a class="gt" href="../reference/glossary.html#ols">OLS</a> is an <a class="gt" href="../reference/glossary.html#estimator">estimator</a> — a recipe. The β̂s it produces are estimates — numbers. Three
+estimators appear in this course: <strong>ordinary least squares</strong>, covered here and
+by far the most widely used; the <strong><a class="gt" href="../reference/glossary.html#method-of-moments">method of moments</a></strong>; and
+<strong><a class="gt" href="../reference/glossary.html#maximum-likelihood">maximum likelihood</a></strong>, which is taken up in Unit 1E.</p>
+
+<h2>5 · How OLS chooses the line</h2>
+
+<p>For every fitted value Ŷ<sub>i</sub> there is a residual, and we want the residuals to
+be as small as possible. For a single-independent-variable model, OLS selects the values of
+β̂<sub>1</sub> and β̂<sub>2</sub> that <strong>minimise the squared residuals summed over
+all the sample data points</strong>:</p>
+
+<p class="math">min &nbsp; Σ ê<sub>i</sub><sup>2</sup> = Σ (Y<sub>i</sub> − Ŷ<sub>i</sub>)<sup>2</sup> = Σ (Y<sub>i</sub> − β̂<sub>1</sub> − β̂<sub>2</sub>X<sub>i</sub>)<sup>2</sup></p>
+
+<div class="box warn">
+  <span class="box-label">Why squared, and why vertical</span>
+  Residuals are <strong>squared</strong> because they carry both signs: minimising their
+  plain sum would let a large positive residual cancel a large negative one, and infinitely
+  many terrible lines would score zero. Squaring also penalises one big miss more heavily
+  than several small ones. And the distance being minimised is <strong>vertical</strong>,
+  not perpendicular, because the model treats X as given and asks how far off it is in
+  predicting Y.
+</div>
+
+<p>Below is the same idea with the data in your hands. The dashed drops are the residuals,
+and the line shown is always the one that makes the sum of their squares as small as it can
+be for the data currently on screen.</p>
+
+<div class="viz" data-viz="ols-drag">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It shows a scatter of observations whose
+    positions you can change, with the OLS line and the residuals redrawn as you move them.
+  </p>
+</div>
+
+<h2>6 · Deriving the estimators</h2>
+
+<p>Both routes below start from the same place and arrive at the same answer. Method 1 uses
+calculus and finishes with matrices; Method 2 stays in ordinary algebra and finishes in
+deviation form. You should be able to reproduce at least one of them.</p>
+
+<h3>Method 1 — calculus, then matrices</h3>
+
+<ol class="steps">
+  <li>Differentiate the sum of squared residuals with respect to β̂<sub>1</sub> and set it to zero:
+    <p class="math">2 Σ (Y<sub>i</sub> − β̂<sub>1</sub> − β̂<sub>2</sub>X<sub>i</sub>)(−1) = 0</p>
+    Divide by 2 and multiply by −1:
+    <p class="math">Σ (Y<sub>i</sub> − β̂<sub>1</sub> − β̂<sub>2</sub>X<sub>i</sub>) = 0</p>
+  </li>
+  <li>Apply the summation operator by expanding the brackets, and rearrange:
+    <p class="math">Σ Y<sub>i</sub> − nβ̂<sub>1</sub> − β̂<sub>2</sub> Σ X<sub>i</sub> = 0
+      &nbsp;⟹&nbsp; Σ Y<sub>i</sub> = nβ̂<sub>1</sub> + β̂<sub>2</sub> Σ X<sub>i</sub>
+      <span class="small">(Equation 1)</span></p>
+  </li>
+  <li>Now differentiate with respect to β̂<sub>2</sub> and set it to zero:
+    <p class="math">2 Σ (Y<sub>i</sub> − β̂<sub>1</sub> − β̂<sub>2</sub>X<sub>i</sub>)(−X<sub>i</sub>) = 0
+      &nbsp;⟹&nbsp; Σ (Y<sub>i</sub> − β̂<sub>1</sub> − β̂<sub>2</sub>X<sub>i</sub>)(X<sub>i</sub>) = 0</p>
+  </li>
+  <li>Expand and rearrange:
+    <p class="math">Σ Y<sub>i</sub>X<sub>i</sub> − β̂<sub>1</sub> Σ X<sub>i</sub> − β̂<sub>2</sub> Σ X<sub>i</sub><sup>2</sup> = 0
+      &nbsp;⟹&nbsp; Σ Y<sub>i</sub>X<sub>i</sub> = β̂<sub>1</sub> Σ X<sub>i</sub> + β̂<sub>2</sub> Σ X<sub>i</sub><sup>2</sup>
+      <span class="small">(Equation 2)</span></p>
+  </li>
+  <li>Equations 1 and 2 are two linear equations in two unknowns — the
+    <strong>normal equations</strong>. In matrix form:
+    <p class="math">[ Σ Y<sub>i</sub> , Σ Y<sub>i</sub>X<sub>i</sub> ]′ =
+      [ n , Σ X<sub>i</sub> ; Σ X<sub>i</sub> , Σ X<sub>i</sub><sup>2</sup> ] · [ β̂<sub>1</sub> , β̂<sub>2</sub> ]′</p>
+  </li>
+  <li>Rearrange by finding the inverse of the 2 × 2 matrix, and solve:
+    <p class="math">β̂<sub>2</sub> = ( nΣXY − ΣXΣY ) / ( nΣX<sup>2</sup> − (ΣX)<sup>2</sup> )</p>
+    <p class="math">β̂<sub>1</sub> = ( ΣX<sup>2</sup>ΣY − ΣXΣXY ) / ( nΣX<sup>2</sup> − (ΣX)<sup>2</sup> )</p>
+  </li>
+</ol>
+
+<h3>Method 2 — algebra, in deviation form</h3>
+
+<ol class="steps">
+  <li>Start from Equation 1 and divide through by n:
+    <p class="math">Ȳ = β̂<sub>1</sub> + β̂<sub>2</sub>X̄
+      &nbsp;⟹&nbsp; <strong>β̂<sub>1</sub> = Ȳ − β̂<sub>2</sub>X̄</strong></p>
+    Note what this says: the fitted line always passes through the point of means (X̄, Ȳ).
+  </li>
+  <li>Substitute that expression for β̂<sub>1</sub> into Equation 2's form
+    Σ(Y<sub>i</sub> − β̂<sub>1</sub> − β̂<sub>2</sub>X<sub>i</sub>)(X<sub>i</sub>) = 0:
+    <p class="math">Σ [ Y<sub>i</sub> − (Ȳ − β̂<sub>2</sub>X̄) − β̂<sub>2</sub>X<sub>i</sub> ] (X<sub>i</sub>) = 0</p>
+  </li>
+  <li>Expand and factorise:
+    <p class="math">Σ [ (Y<sub>i</sub> − Ȳ) − β̂<sub>2</sub>(X<sub>i</sub> − X̄) ] (X<sub>i</sub>) = 0</p>
+  </li>
+  <li>Following Wooldridge and most texts, write deviations from the mean in lower case —
+    y<sub>i</sub> = (Y<sub>i</sub> − Ȳ) and x<sub>i</sub> = (X<sub>i</sub> − X̄):
+    <p class="math">Σ [ y<sub>i</sub> − β̂<sub>2</sub>x<sub>i</sub> ] (X<sub>i</sub>) = 0
+      &nbsp;⟹&nbsp; Σ y<sub>i</sub>X<sub>i</sub> − β̂<sub>2</sub> Σ x<sub>i</sub>X<sub>i</sub> = 0</p>
+  </li>
+  <li>Two algebraic identities do the remaining work. Both hold because deviations from the
+    mean sum to zero:
+    <p class="math">Σ x<sub>i</sub>X<sub>i</sub> = Σ (X<sub>i</sub> − X̄)(X<sub>i</sub>) = Σ (X<sub>i</sub> − X̄)(X<sub>i</sub> − X̄) = Σ x<sub>i</sub><sup>2</sup></p>
+    <p class="math">Σ y<sub>i</sub>X<sub>i</sub> = Σ (Y<sub>i</sub> − Ȳ)(X<sub>i</sub>) = Σ (Y<sub>i</sub> − Ȳ)(X<sub>i</sub> − X̄) = Σ x<sub>i</sub>y<sub>i</sub></p>
+    <details>
+      <summary>Why subtracting X̄ from the second factor changes nothing</summary>
+      <div class="solution">
+        Σ(X<sub>i</sub> − X̄)X̄ = X̄ Σ(X<sub>i</sub> − X̄), and Σ(X<sub>i</sub> − X̄) = 0 by
+        the definition of the mean. So subtracting X̄ inside the second bracket subtracts
+        zero overall, and the two expressions are equal. The same argument works for the
+        second identity.
+      </div>
+    </details>
+  </li>
+  <li>Apply them and solve:
+    <p class="math">Σ x<sub>i</sub>y<sub>i</sub> − β̂<sub>2</sub> Σ x<sub>i</sub><sup>2</sup> = 0
+      &nbsp;⟹&nbsp; <strong>β̂<sub>2</sub> = Σ x<sub>i</sub>y<sub>i</sub> / Σ x<sub>i</sub><sup>2</sup>
+      = Σ (X<sub>i</sub> − X̄)(Y<sub>i</sub> − Ȳ) / Σ (X<sub>i</sub> − X̄)<sup>2</sup></strong></p>
+  </li>
+</ol>
+
+<div class="box key">
+  <span class="box-label">The two forms you should be able to write from memory</span>
+  <p class="math" style="margin:0.4rem 0;">β̂<sub>2</sub> = Σ (X<sub>i</sub> − X̄)(Y<sub>i</sub> − Ȳ) / Σ (X<sub>i</sub> − X̄)<sup>2</sup>
+    &nbsp;&nbsp;·&nbsp;&nbsp; β̂<sub>1</sub> = Ȳ − β̂<sub>2</sub>X̄</p>
+  The slope is a ratio of the co-movement of X and Y to the variation in X alone. If X does
+  not vary, the denominator is zero and β̂<sub>2</sub> does not exist — which is the seed of
+  the multicollinearity problem in Unit 2B.
+</div>
+
+<h2>7 · Assumptions of the simple linear regression model</h2>
+
+<p>Before saying anything about the properties of the OLS estimator, some assumptions have
+to be made. Four are core.</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">1</span><span>
+    <strong>Linear in parameters.</strong> The regression is linear in the
+    <strong>parameters or coefficients</strong>, with an additive error term. Note what this
+    does and does not restrict: Y = β<sub>1</sub> + β<sub>2</sub>X<sup>2</sup> + u
+    <em>satisfies</em> it, because the parameters enter linearly even though X does not.
+    Y = e<sup>β1</sup>X<sup>β2</sup>e<sup>u</sup> does not.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">2</span><span>
+    <strong>{u<sub>1</sub>, …, u<sub>n</sub>} and {X<sub>1</sub>, …, X<sub>n</sub>} are
+    independent</strong>, which implies E(u | X) = E(u) = 0. The average value of <em>u</em>
+    is zero and is not affected by X.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">3</span><span>
+    <strong>var(u<sub>i</sub> | X<sub>i</sub>) = var(u) = σ<sup>2</sup>.</strong> The error
+    terms have the same variance — <strong>homoscedasticity</strong> — independent of X. If
+    this fails the variance is non-constant, which is
+    <strong>heteroscedasticity</strong> (Unit 2C).
+  </span></div>
+  <div class="ag-item"><span class="ag-n">4</span><span>
+    <strong>cov(u<sub>i</sub>, u<sub>j</sub>) = 0.</strong> No correlation between different
+    error terms. If u<sub>i</sub> being positive tends to make u<sub>j</sub> positive, the
+    two disturbances are positively correlated — <strong>autocorrelation</strong>, very
+    important in time series models (Unit 2D).
+  </span></div>
+</div>
+
+<div class="box warn">
+  <span class="box-label">Assumption 2 is stronger than it looks</span>
+  Is E(u | X) = 0 the same as saying <em>u</em> and X are uncorrelated? <strong>No.</strong>
+  Uncorrelated rules out a <em>linear</em> relationship only. E(u | X) = 0 rules out any
+  relationship, linear or non-linear, and is therefore the stronger condition. In practice
+  most people work with the weaker assumption — but know which one you are relying on, and
+  notice that Unit 3B is entirely about what happens when even the weak version fails.
+</div>
+
+<p>Two further assumptions are sometimes added to the core four:</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">5</span><span><strong>Errors are normally distributed:</strong> u<sub>i</sub> ~ N(0, σ<sup>2</sup>). This is what makes inference about the population parameters — hypothesis testing — possible. Taken up in Unit 1E.</span></div>
+  <div class="ag-item"><span class="ag-n">6</span><span><strong>Fixed regressors:</strong> the X values are treated as fixed in repeated sampling rather than random.</span></div>
+</div>
+
+<h2>8 · Properties of the OLS estimators</h2>
+
+<div class="box def">
+  <span class="box-label">The Gauss–Markov theorem</span>
+  If the four core assumptions of the simple linear regression model hold, then the OLS
+  estimators are <strong>BLUE</strong>.
+</div>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">B</span><span><strong>Best</strong> — the OLS estimator has minimum variance among the class of linear unbiased estimators.</span></div>
+  <div class="ag-item"><span class="ag-n">L</span><span><strong>Linear</strong> — β̂ is a linear estimator.</span></div>
+  <div class="ag-item"><span class="ag-n">U</span><span><strong>Unbiased</strong> — the expected value of β̂ equals the true value.</span></div>
+  <div class="ag-item"><span class="ag-n">E</span><span><strong>Estimator</strong> — β̂ is an estimator of the true value of β.</span></div>
+</div>
+
+<p>Unbiasedness and minimum variance are separate virtues, and the difference between them
+is what the theorem is really about. Imagine three possible <a class="gt" href="../reference/glossary.html#sampling-distribution">sampling distributions</a> of an
+estimator, all centred somewhere relative to the true β:</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">A</span><span><strong>Unbiased, large variance.</strong> Centred on the truth, but any single estimate may be far from it.</span></div>
+  <div class="ag-item"><span class="ag-n">B</span><span><strong>Unbiased, small variance.</strong> Centred on the truth and tightly concentrated. This is what BLUE promises.</span></div>
+  <div class="ag-item"><span class="ag-n">C</span><span><strong>Biased, medium variance.</strong> Tightly concentrated around the wrong answer — the most dangerous of the three, because it looks precise.</span></div>
+</div>
+
+<div class="box warn">
+  <span class="box-label">Read the theorem carefully</span>
+  Gauss–Markov is conditional: <em>if</em> the assumptions hold, <em>then</em> OLS is BLUE.
+  It says nothing about what OLS is when they fail — and the whole of Unit 2 consists of
+  cases where one of them does. Note also that "best" means best <em>among linear unbiased
+  estimators</em>; a biased or non-linear estimator can beat OLS on other criteria, which is
+  why weighted least squares appears in Unit 2C.
+</div>
+
+<h2>9 · Tutorial</h2>
+
+<p style="font-size:0.85rem; color:var(--ink-soft); font-style:italic;">
+Draft questions, to be replaced by the tutorial sheet issued in class.</p>
+
+<div class="tutorial">
+
+  <div class="tq">
+    <span class="qtext">Explain the difference between the disturbance u<sub>i</sub> and the
+    residual ê<sub>i</sub>. Which one can you compute, and why does the distinction matter
+    for the second half of this course?</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p>u<sub>i</sub> is the vertical distance from an observation to the
+        <em>population</em> regression line, E(Y | X) = β<sub>1</sub> + β<sub>2</sub>X. It
+        is unobservable, because β<sub>1</sub> and β<sub>2</sub> are unknown.
+        ê<sub>i</sub> = Y<sub>i</sub> − Ŷ<sub>i</sub> is the distance to the
+        <em>estimated</em> line, and it is fully computable once β̂<sub>1</sub> and
+        β̂<sub>2</sub> are in hand.</p>
+        <p>The distinction matters because every assumption in section 7 is a statement
+        about <em>u</em> — that its mean is zero, its variance constant, its values
+        uncorrelated — while the only evidence available is <em>ê</em>. Every diagnostic
+        test in Unit 2 therefore examines residuals in order to draw a conclusion about
+        disturbances, which is why those tests are indirect and can mislead.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">Starting from Σ(Y<sub>i</sub> − β̂<sub>1</sub> − β̂<sub>2</sub>X<sub>i</sub>) = 0,
+    show that the OLS line necessarily passes through the point of means (X̄, Ȳ).</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p>Expanding the summation gives ΣY<sub>i</sub> − nβ̂<sub>1</sub> −
+        β̂<sub>2</sub>ΣX<sub>i</sub> = 0. Divide every term by n. Since ΣY<sub>i</sub>/n = Ȳ
+        and ΣX<sub>i</sub>/n = X̄, this becomes Ȳ − β̂<sub>1</sub> − β̂<sub>2</sub>X̄ = 0,
+        or Ȳ = β̂<sub>1</sub> + β̂<sub>2</sub>X̄.</p>
+        <p>That is precisely the statement that the point (X̄, Ȳ) satisfies the equation of
+        the fitted line, so the line passes through it. It also rearranges directly to
+        β̂<sub>1</sub> = Ȳ − β̂<sub>2</sub>X̄, which is the formula for the estimated
+        intercept — the two results are the same fact written two ways.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">Which of these satisfy Assumption 1?
+    (a) Y = β<sub>1</sub> + β<sub>2</sub>X<sup>3</sup> + u;
+    (b) Y = β<sub>1</sub> + β<sub>2</sub><sup>2</sup>X + u;
+    (c) Y = β<sub>1</sub> + β<sub>2</sub>ln(X) + u;
+    (d) Y = e<sup>β1</sup>X<sup>β2</sup>e<sup>u</sup>. Justify each answer.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p>(a) <strong>Yes.</strong> The assumption is linearity in the <em><a class="gt" href="../reference/glossary.html#parameter">parameters</a></em>,
+        not in the variables. X<sup>3</sup> is just a regressor; define Z = X<sup>3</sup>
+        and it is an ordinary simple regression.</p>
+        <p>(b) <strong>No.</strong> β<sub>2</sub> enters squared, so the equation is
+        non-linear in a parameter.</p>
+        <p>(c) <strong>Yes.</strong> Again a transformation of the variable, not of the
+        parameter — and one you will use often, since it turns the slope into an
+        elasticity-style interpretation (Unit 2A Part 2).</p>
+        <p>(d) <strong>Not as written</strong> — the parameters enter multiplicatively and
+        through an exponent, and the error is multiplicative rather than additive. Taking
+        logs of both sides gives ln Y = β<sub>1</sub> + β<sub>2</sub>ln X + u, which
+        <em>does</em> satisfy the assumption. This is exactly why logging is such a common
+        first move in applied work.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">A colleague reports a regression with a large, highly significant
+    β̂<sub>2</sub>, and concludes that X causes Y. Separately, they claim their estimator
+    must be reliable "because Gauss–Markov proves OLS is best". Identify what is wrong with
+    each claim.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>On causation:</strong> regression in its most basic form cannot prove
+        causality. A large coefficient establishes association, which is equally <a class="gt" href="../reference/glossary.html#consistency">consistent</a>
+        with reverse causation, a common cause sitting in <em>u</em>, or coincidence. The
+        labels "dependent" and "independent" describe positions in an equation, not a causal
+        direction.</p>
+        <p><strong>On <a class="gt" href="../reference/glossary.html#gauss-markov">Gauss–Markov</a>:</strong> the theorem is conditional. It says that
+        <em>if</em> the four core assumptions hold, OLS is BLUE — it makes no claim when they
+        fail, and a colleague who has not tested them has not earned the conclusion. "Best"
+        is also restricted to the class of <em>linear unbiased</em> estimators, so it does
+        not mean no estimator can ever do better. And BLUE concerns the sampling properties
+        of the estimator, not whether the model is <a class="gt" href="../reference/glossary.html#specification-bias">correctly specified</a> in the first place.</p>
+      </div>
+    </details>
+  </div>
+
+</div>
+
+<h2>10 · Check yourself</h2>
+
+<div class="quiz" data-answer="2">
+  <div class="q">The sample regression function Ŷ<sub>i</sub> = β̂<sub>1</sub> + β̂<sub>2</sub>X<sub>i</sub> differs from the population regression function because</div>
+  <button class="opt">the PRF has an error term while the SRF has been built without one</button>
+  <button class="opt">the PRF describes a line while the SRF describes a curved fit</button>
+  <button class="opt">the SRF is estimated from one sample and changes with the sample</button>
+  <button class="opt">the SRF applies to individuals while the PRF applies to averages</button>
+  <div class="feedback right">Correct — the PRF is fixed and unobservable; the SRF is computed from whichever sample you drew, and a different sample gives different β̂s.</div>
+  <div class="feedback wrong">The PRF is a fixed, unobservable population quantity. The SRF is estimated from one sample, so it varies from sample to sample — which is exactly why we need standard errors in Unit 1F.</div>
+</div>
+
+<div class="quiz" data-answer="0">
+  <div class="q">OLS minimises the sum of <em>squared</em> residuals rather than their plain sum because</div>
+  <button class="opt">positive and negative residuals would otherwise cancel each other out</button>
+  <button class="opt">squaring makes the resulting estimator linear in the parameters used</button>
+  <button class="opt">the squared version is the only one that can be differentiated at all</button>
+  <button class="opt">squaring guarantees that every fitted residual will come out positive</button>
+  <div class="feedback right">Correct — minimising the plain sum would let big positive and negative misses offset, so infinitely many bad lines would score zero.</div>
+  <div class="feedback wrong">Residuals carry both signs, so their plain sum can be driven to zero by lines that fit terribly — the positives simply cancel the negatives. Squaring removes the cancellation and penalises large misses more heavily.</div>
+</div>
+
+<div class="quiz" data-answer="3">
+  <div class="q">Which model violates the assumption that the regression is linear in parameters?</div>
+  <button class="opt">Y = β<sub>1</sub> + β<sub>2</sub>X<sup>2</sup> + u, a squared regressor</button>
+  <button class="opt">Y = β<sub>1</sub> + β<sub>2</sub>ln(X) + u, a logged regressor</button>
+  <button class="opt">Y = β<sub>1</sub> + β<sub>2</sub>(1/X) + u, a reciprocal term</button>
+  <button class="opt">Y = β<sub>1</sub> + β<sub>2</sub><sup>2</sup>X + u, a squared parameter</button>
+  <div class="feedback right">Correct — the assumption restricts how the <em>parameters</em> enter, and here β<sub>2</sub> appears squared. Transforming X is always permitted.</div>
+  <div class="feedback wrong">The assumption is linearity in the <em>parameters</em>, not the variables. Squaring, logging or inverting X is fine; a parameter raised to a power is not.</div>
+</div>
+
+<div class="quiz" data-answer="1">
+  <div class="q">Gauss–Markov tells you that, when the four core assumptions hold, OLS is</div>
+  <button class="opt">unbiased, and more precise than any other estimator that exists</button>
+  <button class="opt">unbiased, with the smallest variance among linear unbiased ones</button>
+  <button class="opt">consistent, though it may be biased in samples of moderate size</button>
+  <button class="opt">correct, provided the model has been specified with the right form</button>
+  <div class="feedback right">Correct — "best" is minimum variance <em>within the class of linear unbiased estimators</em>, not across all estimators.</div>
+  <div class="feedback wrong">"Best" is bounded: minimum variance among <em>linear unbiased</em> estimators. A biased estimator may well beat OLS on mean squared error, which is why WLS appears in Unit 2C.</div>
+</div>
+
+<p class="deck-link" data-unit="1B"></p>
+
+<div class="ask-teacher">
+  <strong>The derivations are the part students most often want to walk through out loud.</strong>
+  Bring them to the tutorial, or to office hours — <span data-course="officeHours"></span>.
+</div>
+
+<ol class="sources">
+  <li id="s1">Wooldridge, J. (2016), <em>Introductory Econometrics: A Modern Approach</em>, Chapters 1 and 2. Wooldridge numbers parameters from β<sub>0</sub>; this course numbers from β<sub>1</sub>.</li>
+  <li id="s2">Gujarati, D. &amp; Porter, D. (2008), <em>Basic Econometrics</em>, Chapters 2 and 3 — the PRF/SRF distinction, the derivation of the OLS estimators, and the Gauss–Markov theorem.</li>
+  <li id="s3">OLS, unbiasedness and goodness of fit were introduced in ECON 2026, Statistical Methods II.</li>
+</ol>
+
+<div class="lesson-nav" data-unit="1B"></div>
+
+</div>
+</body>
+</html>

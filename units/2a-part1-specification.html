@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 2A Part 1 — Specification: Choice of Explanatory Variables · ECON 3049</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/course.js"></script>
+<script src="../assets/nav.js" defer></script>
+<script src="../assets/quiz.js" defer></script>
+<script src="../assets/viz.js" defer></script>
+</head>
+<body>
+<div class="masthead" data-unit="2A Part 1"></div>
+<div class="wrap">
+
+<h1>Specification: Choice of Explanatory Variables</h1>
+<p class="subtitle">Omitting a variable that matters, including one that does not, and the cost of each.</p>
+<p class="unit-meta" data-unit="2A Part 1"></p>
+
+<div class="box key">
+  <span class="box-label">By the end of this unit you should be able to</span>
+  <ul style="margin:0.3rem 0 0; padding-left:1.1rem;">
+    <li>say what specifying an equation consists of, and what a specification error is;</li>
+    <li>derive the omitted variable bias and express it as β<sub>3</sub>δ̃<sub>1</sub>;</li>
+    <li>state the two conditions under which the bias vanishes, and sign it in the four cases;</li>
+    <li>explain why the bias does not disappear as n → ∞, and what that makes OLS;</li>
+    <li>say what omitting a variable does to the estimated variance and to hypothesis tests;</li>
+    <li>set out the Ramsey RESET test and explain the intuition behind it;</li>
+    <li>show that including an irrelevant variable is unbiased but inefficient, by the factor 1/(1 − R<sup>2</sup><sub>23</sub>);</li>
+    <li>use R̄<sup>2</sup>, AIC and SC to compare models, and say why theory should outrank all three.</li>
+  </ul>
+</div>
+
+<div class="box refresh">
+  <span class="box-label">A change of question</span>
+  In everything covered so far we have taken the model as <em>given</em>. The questions were:
+  given a particular model, what is the best way to estimate its parameters? How do we test
+  hypotheses about them? What are the properties of the estimators? All of those require
+  knowledge of the model. This unit asks whether the model is <strong>adequate</strong> — what
+  matters when specifying it, what the consequences are of getting it wrong, and whether there
+  is any way of assessing it. Unit 2 as a whole is about relaxing the assumptions; this is the
+  first of them to go.
+</div>
+
+<h2>1 · What specification means</h2>
+
+<p>Specifying an econometric equation consists of choosing three things:</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span>The correct <strong>independent variables</strong> — this unit.</span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span>The correct <strong>functional form</strong> — Unit 2A Part 2.</span></div>
+  <div class="ag-item"><span class="ag-n">iii</span><span>The correct <strong>form of the error term</strong> — Units 2C and 2D.</span></div>
+</div>
+
+<p><strong><a class="gt" href="../reference/glossary.html#specification-bias">Specification error</a></strong> results when any of these choices is made incorrectly.
+In <a class="gt" href="../reference/glossary.html#econometrics">econometrics</a> we are able to choose which variables to include, and that is a source of both
+strength and weakness. The strength is obvious. The weakness is that a defensible-looking
+equation can be wrong in ways the output will not announce.</p>
+
+<p>Two failures are possible, and they are not symmetric. We take
+<strong><a class="gt" href="../reference/glossary.html#underfitting">underfitting</a></strong> — omitting relevant variables — first, then
+<strong><a class="gt" href="../reference/glossary.html#overfitting">overfitting</a></strong>.</p>
+
+<h2>2 · Underfitting: omitting a relevant variable</h2>
+
+<p>To underfit is to leave out variables that belong in the model. The interpretation of the
+estimated equation becomes suspect immediately, and the first major consequence is
+<strong>possible bias in the coefficients that remain</strong>. This is
+<strong><a class="gt" href="../reference/glossary.html#omitted-variable-bias">omitted variable bias</a></strong>.</p>
+
+<p>Suppose the true model is</p>
+
+<p class="math">Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>2i</sub> + β<sub>3</sub>X<sub>3i</sub> + u<sub>i</sub></p>
+
+<p>but you incorrectly assume it is</p>
+
+<p class="math">Y<sub>i</sub> = β<sub>1</sub>* + β<sub>2</sub>*X<sub>2i</sub> + ε<sub>i</sub>
+&nbsp;where&nbsp; ε<sub>i</sub> = u<sub>i</sub> + β<sub>3</sub>X<sub>3i</sub></p>
+
+<div class="box warn">
+  <span class="box-label">Why the stars, and why they matter</span>
+  The second equation uses β* rather than β because <strong>they are not the same
+  parameters</strong>. β<sub>2</sub> is the partial effect of X<sub>2</sub> holding
+  X<sub>3</sub> fixed; β<sub>2</sub>* is whatever the underfit equation is estimating, which
+  includes part of X<sub>3</sub>'s effect. Writing both as β<sub>2</sub> hides the entire
+  problem.<br>
+  Look at what has happened to the error term: <strong>the stochastic term now includes the
+  effects of the omitted variable.</strong> Everything that follows is a consequence of that
+  one line.
+</div>
+
+<h3>The intuition, before the algebra</h3>
+
+<p>From Unit 1C, the simple regression <a class="gt" href="../reference/glossary.html#estimator">estimator</a> is</p>
+
+<p class="math">β̂<sub>2</sub>* = Σ x<sub>2</sub>y / Σ x<sub>2</sub><sup>2</sup></p>
+
+<p>and from Unit 1D, the <a class="gt" href="../reference/glossary.html#estimate">estimate</a> of β<sub>2</sub> from the multiple regression is</p>
+
+<p class="math">β̂<sub>2</sub> = [ (Σx<sub>2</sub>y)(Σx<sub>3</sub><sup>2</sup>) − (Σx<sub>3</sub>y)(Σx<sub>2</sub>x<sub>3</sub>) ]
+/ [ (Σx<sub>2</sub><sup>2</sup>)(Σx<sub>3</sub><sup>2</sup>) − (Σx<sub>2</sub>x<sub>3</sub>)<sup>2</sup> ]</p>
+
+<p>Clearly the two are not equal, and they would be equal <strong>only if
+Σx<sub>2</sub>x<sub>3</sub> = 0</strong> — that is, only if there is no correlation between
+X<sub>2</sub> and X<sub>3</sub>. So:</p>
+
+<div class="box key">
+  <span class="box-label">The result in one sentence</span>
+  Omitting a relevant variable leads to biased estimates <strong>if there is correlation
+  between the omitted variable and the variables included</strong> in the regression. The error
+  term is then no longer independent of the explanatory variable — which violates the classical
+  assumptions directly.
+</div>
+
+<h3>The algebra</h3>
+
+<ol class="steps">
+  <li>Substitute the <em>true</em> model for Y in the formula for β̂<sub>2</sub>*:
+    <p class="math"><strong>β̂<sub>2</sub>* = β<sub>2</sub>
+      + β<sub>3</sub> ( Σ x<sub>2i</sub>x<sub>3i</sub> / Σ x<sub>2i</sub><sup>2</sup> )
+      + ( Σ x<sub>2i</sub>u<sub>i</sub> / Σ x<sub>2i</sub><sup>2</sup> )</strong></p>
+  </li>
+  <li>Take expectations. The last term goes to zero, exactly as in Unit 1C — it is the ordinary
+    sampling error. The <em>second</em> term does not:
+    <p class="math">E(β̂<sub>2</sub>*) = β<sub>2</sub> + β<sub>3</sub> ( Σ x<sub>2i</sub>x<sub>3i</sub> / Σ x<sub>2i</sub><sup>2</sup> )</p>
+    That surviving term is a bias in the OLS estimator, caused by estimating the wrong model.
+  </li>
+  <li>The middle term has a name. Σx<sub>2</sub>x<sub>3</sub>/Σx<sub>2</sub><sup>2</sup> is
+    precisely the slope you would get from regressing the <strong>omitted</strong> variable on
+    the <strong>included</strong> one — call it δ̃<sub>1</sub>. So
+    <p class="math"><strong>Bias(β̂<sub>2</sub>*) = E(β̂<sub>2</sub>*) − β<sub>2</sub> = β<sub>3</sub> δ̃<sub>1</sub></strong></p>
+  </li>
+</ol>
+
+<div class="box def">
+  <span class="box-label">The bias exists unless one of two things is true</span>
+  <strong>β<sub>3</sub> = 0</strong> — X<sub>3</sub> has no impact on Y in the true model, so
+  it was never a relevant variable and omitting it costs nothing.<br>
+  <strong>δ̃<sub>1</sub> = 0</strong> — no correlation between X<sub>2</sub> and X<sub>3</sub>
+  in the sample, so X<sub>3</sub> sitting in the error term does not move with the regressor.<br>
+  It is a <em>product</em>. Either factor being zero kills the bias, and neither alone is
+  reassuring.
+</div>
+
+<div class="box warn">
+  <span class="box-label">This bias does not wash out with more data</span>
+  The term β<sub>3</sub>δ̃<sub>1</sub> does not disappear as n → ∞ — δ̃<sub>1</sub> converges to
+  a population regression coefficient, not to zero. Omitted variable bias is therefore an
+  <strong>asymptotic bias</strong>, and the OLS estimators are not merely biased but
+  <strong>inconsistent</strong>. Compare this with ordinary sampling error, which does vanish
+  with n. Collecting a larger sample is no help whatever here; it just makes you more confident
+  about the wrong number.
+</div>
+
+<h3>Which direction is the bias?</h3>
+
+<p>Is it upward — overestimating β<sub>2</sub> — or downward? Since the bias is the
+<em>product</em> β<sub>3</sub>δ̃<sub>1</sub>, its sign is just the rule of signs applied to two
+quantities you can usually reason about from theory even when you cannot measure them.</p>
+
+<div class="viz" data-viz="bias-direction">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It shows the underfit estimate against the true
+    value on a number line, with controls for the effect of the omitted variable and for its
+    correlation with the included one, and highlights the corresponding cell of the
+    direction-of-bias table.
+  </p>
+</div>
+
+<div class="box def">
+  <span class="box-label">Table 1 — the sign of the bias in β̂<sub>2</sub>*</span>
+  <table class="cal" style="margin-top:0.5rem;">
+    <tr><th></th>
+      <td class="cov"><strong>corr(X<sub>2</sub>, X<sub>3</sub>) &gt; 0 ⇒ δ̃<sub>1</sub> &gt; 0</strong></td>
+      <td class="cov"><strong>corr(X<sub>2</sub>, X<sub>3</sub>) &lt; 0 ⇒ δ̃<sub>1</sub> &lt; 0</strong></td></tr>
+    <tr><th>β<sub>3</sub> &gt; 0</th>
+      <td class="cov">Upward / positive bias</td>
+      <td class="cov">Downward / negative bias</td></tr>
+    <tr><th>β<sub>3</sub> &lt; 0</th>
+      <td class="cov">Downward / negative bias</td>
+      <td class="cov">Upward / positive bias</td></tr>
+  </table>
+</div>
+
+<h3>Generalising: it is not just the correlated coefficient</h3>
+
+<p>Consider</p>
+
+<p class="math">Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>2i</sub> + β<sub>3</sub>X<sub>3i</sub> + β<sub>4</sub>X<sub>4i</sub> + u<sub>i</sub></p>
+
+<p>but we omit X<sub>4i</sub> and estimate</p>
+
+<p class="math">Y<sub>i</sub> = β<sub>1</sub>* + β<sub>2</sub>*X<sub>2i</sub> + β<sub>3</sub>*X<sub>3i</sub> + ε<sub>i</sub></p>
+
+<p>Suppose X<sub>2</sub> is correlated with the omitted X<sub>4</sub>, but X<sub>3</sub> is
+not. Does that mean β̂<sub>2</sub>* is biased but β̂<sub>3</sub>* is unbiased?
+<strong>Both are biased.</strong></p>
+
+<div class="box key">
+  <span class="box-label">The general rule</span>
+  Excluding a relevant variable violates the assumption E(u | X) = 0 <strong>unless the omitted
+  variable is uncorrelated with ALL of the included independent variables</strong>. The bias
+  travels: because X<sub>2</sub> and X<sub>3</sub> are themselves generally correlated with each
+  other, contamination of one coefficient spreads to the rest. There is no such thing as a
+  locally biased regression.
+</div>
+
+<h2>3 · What omitting a variable does to the variance</h2>
+
+<p>Bias is not the only consequence. The variance of the estimator is affected too, and in a
+way that makes the damage harder to see.</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span>
+    The variance of the error, σ<sup>2</sup>, will be <strong>incorrectly estimated</strong> —
+    the residuals now contain X<sub>3</sub>'s variation as well as u's.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span>
+    It can <strong>produce heteroscedasticity</strong>. Since E(u | X) ≠ 0 once a variable is
+    omitted, it becomes possible for the variance of the error to change with the explanatory
+    variables — the assumption var(u | X) = σ<sup>2</sup> is no longer protected.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">iii</span><span>
+    The conventionally measured variances of the OLS estimators are therefore
+    <strong>biased</strong>, and so are the standard errors — which are just their square roots.
+  </span></div>
+</div>
+
+<p>Comparing the two formulas already derived:</p>
+
+<p class="math">underfit: var(β̂<sub>2</sub>*) = σ<sup>2</sup> / Σx<sub>2</sub><sup>2</sup>
+&nbsp;·&nbsp; correct: var(β̂<sub>2</sub>) = σ<sup>2</sup> / [ Σx<sub>2</sub><sup>2</sup> ( 1 − R<sup>2</sup><sub>23</sub> ) ]</p>
+
+<p>where R<sup>2</sup><sub>23</sub> is the R<sup>2</sup> from regressing X<sub>2</sub> on
+X<sub>3</sub>. <strong>When are they equal?</strong> Only when R<sup>2</sup><sub>23</sub> = 0 —
+the same uncorrelated-regressors condition as before. Otherwise the underfit model reports the
+<em>smaller</em> variance, since it is missing the (1 − R<sup>2</sup><sub>23</sub>) factor in
+the denominator.</p>
+
+<div class="box warn">
+  <span class="box-label">The two errors point the same way, which is the dangerous part</span>
+  Omitting a relevant correlated variable biases the coefficient <em>and</em> understates its
+  standard error. The result is a coefficient that is wrong and looks more precise than it is —
+  so hypothesis-testing procedures are likely to give <strong>misleading conclusions about
+  statistical significance</strong>. A misspecified model does not announce itself with wide
+  confidence intervals; it announces itself with narrow ones around the wrong answer.
+</div>
+
+<h2>4 · Worked example: family income and education</h2>
+
+<p>Consider a sample of married couples where both husband and wife work. The <a class="gt" href="../reference/glossary.html#dependent-variable">dependent
+variable</a> is annual family income (FAMINC), the combined income of the two. We are interested
+in the impact of education — both the husband's years (HEDUC) and the wife's (WEDUC):</p>
+
+<p class="math">FAMINC = β<sub>1</sub> + β<sub>2</sub>HEDUC + β<sub>3</sub>WEDUC + u</p>
+
+<p>Suppose we estimate the equation <strong>omitting WEDUC</strong>. Would this lead to biased
+coefficients and biased <a class="gt" href="../reference/glossary.html#standard-error">standard errors</a>, and in which direction?</p>
+
+<div class="box def">
+  <span class="box-label">Reasoning it out before looking</span>
+  Bias = β<sub>3</sub>δ̃<sub>1</sub>. We do not know β<sub>3</sub>, since it is an unknown
+  population parameter — but we can state an a-priori expectation:
+  <strong>β<sub>3</sub> &gt; 0</strong>, because a wife's education should raise family income.
+  For δ̃<sub>1</sub>, the slope of WEDUC on HEDUC, assortative mating gives
+  <strong>δ̃<sub>1</sub> &gt; 0</strong> — more educated people tend to marry each other. Two
+  positives, so by Table 1 the bias is <strong>upward</strong>: omitting WEDUC should
+  <em>overstate</em> the return to the husband's education.<br>
+  If we had data on the omitted variable we could estimate δ̃<sub>1</sub> directly. If not — the
+  usual case — the a-priori argument is what we have, and it is often enough to sign the bias.
+</div>
+
+<p><strong>The <a class="gt" href="../reference/glossary.html#auxiliary-regression">auxiliary regression</a></strong>, WEDUC on HEDUC:</p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>WEDUC&#770; =</span><span>s.e.</span><span>t =</span></span>
+  <span class="er-col"><span>6.5167</span><span>(0.2800)</span><span>23.27</span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>0.4619 HEDUC</span><span>(0.0218)</span><span>21.19</span></span>
+  <span class="er-note">R<sup>2</sup> = 0.3748 &nbsp;·&nbsp; so δ̃<sub>1</sub> = 0.4619, positive as expected</span>
+</div>
+
+<p><strong>Omitting WEDUC:</strong></p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>FAMINC&#770; =</span><span>s.e.</span><span>t =</span></span>
+  <span class="er-col"><span>−26191</span><span>(8541)</span><span>−3.07</span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>5155 HEDUC</span><span>(658)</span><span>7.83</span></span>
+</div>
+
+<p><strong>Including WEDUC:</strong></p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>FAMINC&#770; =</span><span>s.e.</span><span>t =</span></span>
+  <span class="er-col"><span>−5534</span><span>(11230)</span><span>−0.49</span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>3132 HEDUC</span><span>(803)</span><span>3.90</span></span>
+  <span class="er-col er-op"><span>+</span><span></span><span></span></span>
+  <span class="er-col"><span>4523 WEDUC</span><span>(1066)</span><span>4.24</span></span>
+</div>
+
+<div class="box key">
+  <span class="box-label">Both predictions come true</span>
+  <strong>The coefficient.</strong> 5155 against 3132 — the underfit model overstates the
+  return to the husband's education by about 2000, an upward bias exactly as Table 1 predicted.
+  The prediction can even be checked numerically: β<sub>3</sub>δ̃<sub>1</sub> ≈ 4523 × 0.4619 ≈
+  2089, and 3132 + 2089 = 5221, close to the 5155 actually estimated.<br>
+  <strong>The standard error.</strong> 658 against 803 — the underfit model reports the
+  <em>smaller</em> standard error, making its inflated coefficient look more precisely estimated
+  than the correct one. That is the (1 − R<sup>2</sup><sub>23</sub>) factor, with
+  R<sup>2</sup><sub>23</sub> = 0.3748, doing exactly what section 3 said it would.
+</div>
+
+<h2>5 · Detecting and correcting it</h2>
+
+<p>In theory the solution seems easy: add the <a class="gt" href="../reference/glossary.html#omitted-variable">omitted variable</a> to the equation. Unfortunately
+this is difficult for a few reasons — <strong>omitted variable bias is hard to detect</strong>,
+and once you suspect it, <strong>which variable do you add?</strong></p>
+
+<h3>Informal indicators</h3>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span>
+    <strong>The model does not match its theoretical underpinnings.</strong> Do you have all the
+    variables theory suggests?
+  </span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span>
+    <strong>A significant coefficient with the wrong sign</strong> — significant in the
+    direction opposite to what was expected.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">iii</span><span>
+    <strong>Patterns in the residuals.</strong> If a variable is missing we are likely to see
+    structure in the residuals, so residual plots are worth making routinely.
+  </span></div>
+</div>
+
+<div class="viz" data-viz="omitted-residual-pattern">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It plots the residuals of an underfit model
+    against the omitted variable, showing a clear trend, and a control that puts the variable
+    back into the model and removes the pattern.
+  </p>
+</div>
+
+<p>These indicators are informal, and usually not the best available. The formal method is the
+<a class="gt" href="../reference/glossary.html#reset-test">Ramsey RESET</a>.</p>
+
+<h3>The Ramsey RESET test</h3>
+
+<p>Ramsey proposed a general test of specification error called <strong>RESET</strong> —
+REgression Specification Error Test. Testing for misspecification is a way of asking whether
+our model is adequate, or whether we can improve on it. RESET is designed to detect
+<strong>omitted variables and incorrect <a class="gt" href="../reference/glossary.html#functional-form">functional form</a></strong>, and it returns in Unit 2A
+Part 2 for the second of those.</p>
+
+<div class="box def">
+  <span class="box-label">The hypotheses</span>
+  H<sub>0</sub>: the model is correctly specified — no specification error.<br>
+  H<sub>1</sub>: the model is not correctly specified — there is specification error.
+</div>
+
+<ol class="steps">
+  <li>Specify and estimate the model — call it Equation 1:
+    <p class="math">Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>2i</sub> + β<sub>3</sub>X<sub>3i</sub> + β<sub>4</sub>X<sub>4i</sub> + u<sub>i</sub></p>
+    <p class="math">Ŷ<sub>i</sub> = β̂<sub>1</sub> + β̂<sub>2</sub>X<sub>2i</sub> + β̂<sub>3</sub>X<sub>3i</sub> + β̂<sub>4</sub>X<sub>4i</sub></p>
+    and <strong>save the fitted values Ŷ</strong>.
+  </li>
+  <li>Re-specify Equation 1, introducing Ŷ in some non-linear form. It is popular to add
+    Ŷ<sup>2</sup>, or both Ŷ<sup>2</sup> and Ŷ<sup>3</sup>; we will be general and include both:
+    <p class="math">Y<sub>i</sub> = α<sub>1</sub> + α<sub>2</sub>X<sub>2i</sub> + α<sub>3</sub>X<sub>3i</sub> + α<sub>4</sub>X<sub>4i</sub>
+      + γ<sub>1</sub>Ŷ<sub>i</sub><sup>2</sup> + γ<sub>2</sub>Ŷ<sub>i</sub><sup>3</sup> + u<sub>i</sub></p>
+  </li>
+  <li>Test whether the additional regressors are jointly zero:
+    <p class="math">H<sub>0</sub>: γ<sub>1</sub> = γ<sub>2</sub> = 0
+      &nbsp;·&nbsp; H<sub>1</sub>: γ<sub>1</sub> ≠ 0 or γ<sub>2</sub> ≠ 0</p>
+    Which should look familiar — it is an <strong>F-test of exclusion restrictions</strong>,
+    exactly as in Unit 1F, with q = 2.
+  </li>
+</ol>
+
+<div class="box key">
+  <span class="box-label">Why powers of Ŷ can stand in for variables you do not have</span>
+  Ŷ is a linear combination of the Xs, so adding Ŷ<sup>2</sup> and Ŷ<sup>3</sup> is akin to
+  adding non-linear functions of them — X<sub>2</sub><sup>2</sup>, X<sub>2</sub>X<sub>3</sub>,
+  X<sub>3</sub><sup>2</sup> and so on — all at once, at a cost of only two degrees of freedom.
+  If there are omitted variables correlated with the included Xs, they will also be correlated
+  with those non-linear terms, and their impact gets picked up.<br>
+  So: <strong>if we can significantly improve the model by artificially including powers of its
+  own predictions, the original model must have been inadequate.</strong> Note what this does
+  and does not give you — a rejection says something is wrong, not what to add.
+</div>
+
+<h2>6 · Overfitting: including an irrelevant variable</h2>
+
+<p>The consequences of omitting relevant variables may suggest that a good strategy is to
+include as many variables as possible. It is not — though the reason is different from what
+you might expect, and much milder.</p>
+
+<p>Suppose the true model is Y = β<sub>1</sub> + β<sub>2</sub>X<sub>2</sub> + u, but we
+estimate</p>
+
+<p class="math">Y = α<sub>1</sub> + α<sub>2</sub>X<sub>2</sub> + α<sub>3</sub>X<sub>3</sub> + ε</p>
+
+<div class="box def">
+  <span class="box-label">The good news</span>
+  It does not matter whether X<sub>2</sub> and X<sub>3</sub> are correlated. The OLS estimates
+  from the "incorrect" model are <strong>unbiased and consistent</strong>:
+  E(α̂<sub>1</sub>) = β<sub>1</sub>, E(α̂<sub>2</sub>) = β<sub>2</sub>, and
+  E(α̂<sub>3</sub>) = β<sub>3</sub> = 0. Overfitting and underfitting are not mirror images:
+  one destroys unbiasedness, the other does not.
+</div>
+
+<p>So what is the problem? <strong>The inclusion of an irrelevant variable increases the
+variance of the estimated coefficients.</strong> The α̂s are generally
+<strong>inefficient</strong> — their variances are larger than those of the β̂s from the true
+model:</p>
+
+<p class="math">var(β̂<sub>2</sub>) = σ<sup>2</sup> / Σx<sub>2</sub><sup>2</sup>
+&nbsp;·&nbsp; var(α̂<sub>2</sub>) = σ<sup>2</sup> / [ Σx<sub>2</sub><sup>2</sup> ( 1 − R<sup>2</sup><sub>23</sub> ) ]</p>
+
+<p class="math"><strong>⟹ var(α̂<sub>2</sub>) / var(β̂<sub>2</sub>) = 1 / ( 1 − R<sup>2</sup><sub>23</sub> )</strong></p>
+
+<p>Since 0 ≤ R<sup>2</sup><sub>23</sub> ≤ 1, it follows that var(α̂<sub>2</sub>) ≥
+var(β̂<sub>2</sub>), with equality only when the irrelevant variable is uncorrelated with the
+relevant one.</p>
+
+<div class="viz" data-viz="irrelevant-variable-cost">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It compares the sampling distributions of the
+    slope on X₂ from the correct model and from a model overfitted with an irrelevant
+    regressor; both are centred on the true value, and the overfitted one widens as the
+    correlation between the two regressors is increased.
+  </p>
+</div>
+
+<div class="box key">
+  <span class="box-label">The asymmetry worth remembering</span>
+  <strong>Omitting</strong> a relevant variable: biased, inconsistent, and the standard errors
+  are wrong too. Fatal.<br>
+  <strong>Including</strong> an irrelevant one: unbiased and consistent, but inefficient —
+  wider sampling distributions, larger standard errors, smaller t-statistics, real effects you
+  can no longer detect.<br>
+  When genuinely unsure and the variable is plausible on theory, the asymmetry argues for
+  including it. That is not a licence to include everything.
+</div>
+
+<h2>7 · Choosing the set of regressors</h2>
+
+<h3>Testing</h3>
+
+<p>Suppose we have a k-variable model to explain some phenomenon, and we are not sure whether
+X<sub>k</sub> belongs — theory gives little guidance. One simple solution is to test its
+<a class="gt" href="../reference/glossary.html#practical-significance">statistical significance</a>: a two-sided test of H<sub>0</sub>: β<sub>k</sub> = 0. If we are
+unsure whether X<sub>3</sub>, X<sub>4</sub> and X<sub>5</sub> legitimately belong, an
+<strong><a class="gt" href="../reference/glossary.html#f-test">F-test</a> of <a class="gt" href="../reference/glossary.html#restricted-model">exclusion restrictions</a></strong> does the same job for the three together.</p>
+
+<h3>Model selection criteria</h3>
+
+<p>Researchers also compare models using R̄<sup>2</sup>, the <a class="gt" href="../reference/glossary.html#aic">Akaike Information Criterion</a> and
+the <a class="gt" href="../reference/glossary.html#schwarz-criterion">Schwarz Criterion</a>. All three trade <a class="gt" href="../reference/glossary.html#goodness-of-fit">goodness of fit</a> against the number of regressors; they
+differ in how heavily they charge for the second.</p>
+
+<div class="box def">
+  <span class="box-label">The three criteria</span>
+  <p class="math" style="margin:0.4rem 0;">R̄<sup>2</sup> = 1 − [ RSS/(n − k) ] / [ TSS/(n − 1) ]</p>
+  <p class="math" style="margin:0.4rem 0;">AIC = n · ln( RSS/n ) + 2v</p>
+  <p class="math" style="margin:0.4rem 0;">SC = ln( RSS/n ) + ( v/n ) ln n</p>
+  where v is the number of variables and n the sample size. In each case the first term
+  <em>falls</em> as extra variables are added, reflecting the decline in RSS, while the second
+  <em>rises</em> because v does. <strong>SC penalises extra variables more heavily than
+  AIC</strong>, so it selects more parsimonious models. In both cases, the model with the
+  <strong>smallest</strong> value is preferred.
+</div>
+
+<div class="box warn">
+  <span class="box-label">R̄<sup>2</sup> is not perfect</span>
+  It <strong>loses the R<sup>2</sup> interpretation</strong> — it is no longer the proportion of
+  variation explained, and it can be negative.<br>
+  More seriously, adding a variable X<sub>k</sub> <strong>raises R̄<sup>2</sup> whenever the
+  t-statistic for H<sub>0</sub>: β<sub>k</sub> = 0 exceeds 1 in absolute value</strong>. A
+  t of 1.40 is nowhere near significant at 5% or even 10%, yet R̄<sup>2</sup> will still rise.
+  Selecting on R̄<sup>2</sup> is therefore a much weaker filter than testing — closer to a 30%
+  significance level than a 5% one.
+</div>
+
+<h3>The advice that actually matters</h3>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span>
+    <strong>It is not a "sin" to have insignificant variables in your regression.</strong>
+    Finding a variable insignificant is <em>informative</em>, and there is no reason to hide it
+    by re-estimating without it.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span>
+    But do not include so many variables that you end up with
+    <strong>multicollinearity</strong> — a sample too small for the number of parameters being
+    estimated. That is Unit 2B.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">iii</span><span>
+    <strong>These methods should not be applied blindly.</strong> They earn their place mainly
+    in forecasting, or where the sample is small and degrees of freedom must be conserved.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">iv</span><span>
+    <strong>Select on theoretical grounds, not statistical ones.</strong> Include explanatory
+    variables that directly influence the dependent variable on theory, and whose effects are
+    not already accounted for by other included variables.
+  </span></div>
+</div>
+
+<h3>General-to-specific modelling</h3>
+
+<p>If statistical criteria are used to specify a model, the direction of travel matters. It is
+better <em>not</em> to use a <strong>bottom-up</strong> approach — starting with a small model
+and expanding — because every test along the way is conducted on a model already known to be
+misspecified.</p>
+
+<p>The alternative is the <strong><a class="gt" href="../reference/glossary.html#general-to-specific">general-to-specific</a></strong> approach, also known as the
+<strong>LSE methodology</strong>, advocated by David Hendry and others. It starts by estimating
+a <strong>general unrestricted model (GUM)</strong>, which is subsequently reduced in size and
+complexity by testing restrictions that can be imposed.</p>
+
+<div class="box def">
+  <span class="box-label">The argument for it</span>
+  Assuming a sufficiently general and complicated model can describe reality, any more
+  parsimonious model is an improvement <em>if it conveys all of the same information in a
+  simpler, more compact form</em>. Starting general and testing down means each restriction is
+  tested within a model that is, so far as you know, adequately specified — which is exactly
+  the condition every test in Unit 1F assumed.
+</div>
+
+<h2>8 · Tutorial</h2>
+
+<p style="font-size:0.85rem; color:var(--ink-soft); font-style:italic;">
+Draft questions, to be replaced by the tutorial sheet issued in class.</p>
+
+<div class="tutorial">
+
+  <div class="tq">
+    <span class="qtext">Starting from the true model Y = β<sub>1</sub> +
+    β<sub>2</sub>X<sub>2</sub> + β<sub>3</sub>X<sub>3</sub> + u, derive
+    E(β̂<sub>2</sub>*) for the underfit regression of Y on X<sub>2</sub> alone, and state the two
+    conditions under which the estimator remains unbiased.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p>The underfit estimator is β̂<sub>2</sub>* = Σx<sub>2</sub>y/Σx<sub>2</sub><sup>2</sup>.
+        Substituting the true model for Y and using Σx<sub>2</sub> = 0:</p>
+        <p class="math">β̂<sub>2</sub>* = β<sub>2</sub> + β<sub>3</sub>(Σx<sub>2</sub>x<sub>3</sub>/Σx<sub>2</sub><sup>2</sup>)
+          + (Σx<sub>2</sub>u/Σx<sub>2</sub><sup>2</sup>)</p>
+        <p>Taking expectations, the last term vanishes because E(u<sub>i</sub>) = 0 and the
+        x<sub>2</sub> are fixed. The middle term survives:</p>
+        <p class="math">E(β̂<sub>2</sub>*) = β<sub>2</sub> + β<sub>3</sub>δ̃<sub>1</sub>,
+          &nbsp; δ̃<sub>1</sub> = Σx<sub>2</sub>x<sub>3</sub>/Σx<sub>2</sub><sup>2</sup></p>
+        <p><strong>Unbiased if either factor is zero:</strong> β<sub>3</sub> = 0, meaning
+        X<sub>3</sub> does not belong in the true model at all, so nothing relevant was omitted;
+        or δ̃<sub>1</sub> = 0, meaning X<sub>2</sub> and X<sub>3</sub> are uncorrelated in the
+        sample, so the omitted variable sitting in the error term does not move with the
+        regressor.</p>
+        <p>Note that δ̃<sub>1</sub> is the slope of the auxiliary regression of the
+        <em>omitted</em> variable on the <em>included</em> one — a quantity you can sometimes
+        estimate, and can almost always sign from theory.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">A researcher regresses house prices on floor area, omitting distance to
+    the city centre. Larger houses tend to be further out, and being further out lowers prices.
+    Sign the bias in the coefficient on floor area, and say what happens to it as the sample
+    grows.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>Sign the two factors.</strong> The omitted variable is distance, and its
+        effect on price is negative, so β<sub>3</sub> &lt; 0. The auxiliary regression of
+        distance on floor area has a positive slope, since larger houses tend to be further out,
+        so δ̃<sub>1</sub> &gt; 0.</p>
+        <p><strong>The bias</strong> is β<sub>3</sub>δ̃<sub>1</sub> &lt; 0 — a
+        <strong>downward</strong> bias. This is the bottom-left cell of Table 1. The estimated
+        return to floor area <em>understates</em> the true <a class="gt" href="../reference/glossary.html#partial-coefficient">partial effect</a>, because part of what
+        the regression attributes to size is really the price penalty of the outlying location
+        that tends to come with it.</p>
+        <p><strong>As n grows: nothing improves.</strong> δ̃<sub>1</sub> converges to a
+        population regression coefficient, not to zero, so the bias term does not shrink.
+        Omitted variable bias is an asymptotic bias, and the estimator is inconsistent — a
+        larger sample simply narrows the <a class="gt" href="../reference/glossary.html#confidence-interval">confidence interval</a> around the wrong number.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">Using the FAMINC results in section 4, verify the predicted bias
+    numerically, and explain why the standard error on HEDUC is <em>smaller</em> in the
+    misspecified equation. Why is that combination particularly dangerous?</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>The bias.</strong> β̂<sub>3</sub> = 4523 and δ̃<sub>1</sub> = 0.4619, so the
+        predicted bias is 4523 × 0.4619 ≈ 2089. Adding that to the correct estimate:
+        3132 + 2089 = 5221, against the 5155 actually obtained from the underfit regression.
+        The small gap is <a class="gt" href="../reference/glossary.html#sampling-error">sampling error</a> — the relationship Bias = β<sub>3</sub>δ̃<sub>1</sub> is
+        exact in expectation, not in any one sample.</p>
+        <p><strong>The standard error.</strong> The correct model's variance carries a factor
+        1/(1 − R<sup>2</sup><sub>23</sub>) that the underfit model does not. With
+        R<sup>2</sup><sub>23</sub> = 0.3748, that factor is 1/0.6252 = 1.60, so the correct
+        standard error is larger by roughly √1.60 = 1.26 — and indeed 658 × 1.26 ≈ 829, close
+        to the 803 reported.</p>
+        <p><strong>Why the combination is dangerous.</strong> The two errors point the same way.
+        The coefficient is inflated <em>and</em> its standard error is understated, so its
+        <a class="gt" href="../reference/glossary.html#t-statistic">t-statistic</a> is doubly overstated: 7.83 in the misspecified equation against 3.90 in the
+        correct one. A misspecified model here does not look uncertain — it looks
+        <em>better</em> than the truth. Nothing in its own output would lead you to suspect it.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">A colleague argues: "Since omitting a relevant variable is fatal and
+    including an irrelevant one is merely inefficient, always include everything you can
+    measure." Evaluate this, and say when you would and would not follow it.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>The argument has real force.</strong> The asymmetry is genuine: omitting a
+        relevant correlated variable gives bias that does not vanish with n and standard errors
+        that mislead, while including an irrelevant one leaves the estimates unbiased and
+        <a class="gt" href="../reference/glossary.html#consistency">consistent</a> and costs only precision, by the factor 1/(1 − R<sup>2</sup><sub>23</sub>).
+        Faced with a plausible variable and genuine uncertainty, including it is the safer
+        error.</p>
+        <p><strong>Where it breaks down.</strong> <a class="gt" href="../reference/glossary.html#efficiency">Efficiency</a> is not free. As irrelevant
+        variables accumulate, standard errors inflate, t-statistics fall, and real effects
+        become undetectable — you have traded a wrong answer for no answer. <a class="gt" href="../reference/glossary.html#degrees-of-freedom">Degrees of freedom</a>
+        are consumed, which matters acutely in the small samples typical of macroeconomic work.
+        Enough correlated regressors produces <a class="gt" href="../reference/glossary.html#multicollinearity">multicollinearity</a> outright (Unit 2B). And "can
+        measure" is not "should include": a variable that is itself caused by Y, or that lies
+        on the causal path between X<sub>2</sub> and Y, does damage of a different kind that no
+        amount of <a class="gt" href="../reference/glossary.html#unbiasedness">unbiasedness</a> protects against.</p>
+        <p><strong>The working rule</strong> is the deck's: select on theoretical grounds, not
+        statistical ones. Include variables that directly influence Y and whose effects are not
+        already captured by something else in the model. Where theory is silent and the sample
+        is generous, lean towards inclusion; where the sample is small, be sparing, and prefer
+        the general-to-specific route.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">Explain how the RESET test can detect an omitted variable that the
+    researcher does not have data on. What are the limits of what a rejection tells you?</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>How it works.</strong> Ŷ is a linear combination of the included Xs, so
+        Ŷ<sup>2</sup> and Ŷ<sup>3</sup> contain squares and cross-products of them —
+        X<sub>2</sub><sup>2</sup>, X<sub>2</sub>X<sub>3</sub> and so on — bundled into two
+        regressors. If a relevant variable has been omitted and is correlated with the included
+        Xs, it will also be correlated with those non-linear combinations, so some of its
+        effect can be picked up by γ<sub>1</sub> and γ<sub>2</sub>. An F-test of
+        H<sub>0</sub>: γ<sub>1</sub> = γ<sub>2</sub> = 0 then rejects. The appeal is that this
+        needs no data on the omitted variable at all — only the model's own fitted values.</p>
+        <p><strong>The limits.</strong> A rejection says the model is inadequate; it does not
+        say <em>why</em>, and certainly not which variable to add. RESET is equally sensitive to
+        incorrect functional form (Unit 2A Part 2), so a rejection leaves at least two very
+        different diagnoses open. It has no power against an omitted variable uncorrelated with
+        the included regressors — but such a variable causes no bias anyway, so little is lost.
+        And failing to reject is weak evidence: it means this particular test found nothing, not
+        that the model is correct.</p>
+      </div>
+    </details>
+  </div>
+
+</div>
+
+<h2>9 · Check yourself</h2>
+
+<div class="quiz" data-answer="2">
+  <div class="q">Omitting a relevant variable X<sub>3</sub> leaves β̂<sub>2</sub>* unbiased when</div>
+  <button class="opt">the sample is large enough for the bias to vanish</button>
+  <button class="opt">the omitted X<sub>3</sub> has a larger effect on Y than X<sub>2</sub></button>
+  <button class="opt">the omitted X<sub>3</sub> is uncorrelated with X<sub>2</sub> in the sample</button>
+  <button class="opt">the residuals from the fitted model show no pattern</button>
+  <div class="feedback right">Correct — the bias is β<sub>3</sub>δ̃<sub>1</sub>, and δ̃<sub>1</sub> = 0 kills it. So does β<sub>3</sub> = 0, but then X<sub>3</sub> was never relevant.</div>
+  <div class="feedback wrong">The bias is a product, β<sub>3</sub>δ̃<sub>1</sub>. Either factor being zero removes it; sample size does not, since δ̃<sub>1</sub> converges to a population coefficient rather than to zero — which is why the bias is asymptotic and OLS is inconsistent.</div>
+</div>
+
+<div class="quiz" data-answer="1">
+  <div class="q">Including a genuinely irrelevant variable in a regression will</div>
+  <button class="opt">bias the remaining coefficients if the regressors are correlated</button>
+  <button class="opt">leave the estimates unbiased but widen their sampling distribution</button>
+  <button class="opt">reduce the residual sum of squares and so improve the estimates</button>
+  <button class="opt">have no effect at all on the coefficients or their standard errors</button>
+  <div class="feedback right">Correct — unbiased and consistent, but var inflates by 1/(1 − R²<sub>23</sub>). Overfitting costs precision, not accuracy.</div>
+  <div class="feedback wrong">Overfitting and underfitting are not mirror images. Including an irrelevant variable leaves E(α̂<sub>2</sub>) = β<sub>2</sub> whether or not the regressors are correlated; what it does is inflate the variance by 1/(1 − R²<sub>23</sub>), so standard errors rise and t-statistics fall.</div>
+</div>
+
+<div class="quiz" data-answer="0">
+  <div class="q">The true model has β<sub>3</sub> &lt; 0, and X<sub>2</sub> and X<sub>3</sub> are positively correlated. Omitting X<sub>3</sub> biases β̂<sub>2</sub>*</div>
+  <button class="opt">downward, because the bias β<sub>3</sub>δ̃<sub>1</sub> is a negative number</button>
+  <button class="opt">upward, since omitting a variable always inflates the rest</button>
+  <button class="opt">downward, but only when the sample size is reasonably small</button>
+  <button class="opt">in a direction that cannot be signed without more information</button>
+  <div class="feedback right">Correct — a negative β<sub>3</sub> times a positive δ̃<sub>1</sub> gives a negative bias. It is just the rule of signs.</div>
+  <div class="feedback wrong">Bias = β<sub>3</sub>δ̃<sub>1</sub>. Here β<sub>3</sub> &lt; 0 and δ̃<sub>1</sub> &gt; 0, so the product is negative and the estimate is biased downward. The direction is fully determined once both signs are known, which is why theory alone often settles it.</div>
+</div>
+
+<div class="quiz" data-answer="3">
+  <div class="q">Adding a variable whose t-statistic is 1.40 will</div>
+  <button class="opt">lower R<sup>2</sup>, because the variable is not significant at 10%</button>
+  <button class="opt">leave both R<sup>2</sup> and the adjusted R<sup>2</sup> exactly where they were</button>
+  <button class="opt">raise R<sup>2</sup> but lower adjusted R<sup>2</sup>, which needs t &gt; 2</button>
+  <button class="opt">raise both, since adjusted R<sup>2</sup> rises whenever |t| exceeds 1</button>
+  <div class="feedback right">Correct — and that is the warning: R̄² is a far weaker filter than a significance test, so a variable can improve it while being nowhere near significant.</div>
+  <div class="feedback wrong">R² can never fall when a variable is added. Adjusted R² rises whenever the t-statistic exceeds 1 in absolute value — not 2 — so a t of 1.40 raises it despite being insignificant at 10%. Selecting on R̄² is much closer to a 30% significance level than a 5% one.</div>
+</div>
+
+<p class="deck-link" data-unit="2A Part 1"></p>
+
+<div class="ask-teacher">
+  <strong>Signing the bias from theory is the skill this unit is really teaching, and it is
+  worth practising on examples of your own.</strong>
+  Bring them to the tutorial, or to office hours — <span data-course="officeHours"></span>.
+</div>
+
+<ol class="sources">
+  <li id="s1">Wooldridge, J. (2016), <em>Introductory Econometrics: A Modern Approach</em> — sections 3-2g (comparison of simple and multiple regression estimates), 3-3a (including irrelevant variables), 3-3b and 3-3c (omitted variable bias, the simple case and more general cases), and 3-4b (variances in misspecified models).</li>
+  <li id="s2">Gujarati, D. &amp; Porter, D. (2008), <em>Basic Econometrics</em>, Chapter 13 — specification error, its consequences, and the RESET test.</li>
+  <li id="s3">Ramsey, J. B. (1969), "Tests for specification errors in classical linear least-squares regression analysis" — the origin of RESET. The general-to-specific methodology is associated with David Hendry and the LSE tradition.</li>
+</ol>
+
+<div class="lesson-nav" data-unit="2A Part 1"></div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# Never publish the recommended textbooks — they are copyrighted.
+# Students obtain them from eLearning, per the course outline.
+*.pdf
+
+# Local component gallery, not part of the student-facing site.
+preview.html
+
+# Dev-only test dependencies. The site itself has none; dev/check-site.mjs
+# is committed but its jsdom install is not.
+dev/node_modules/
+dev/package*.json
+
+.DS_Store
