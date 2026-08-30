@@ -41,6 +41,18 @@ table.cal .wt { color: var(--accent); font-weight: 600; white-space: nowrap; }
 table.cal .cov { color: var(--ink-soft); }
 table.cal .when { text-align: right; white-space: nowrap; color: var(--ink-soft); }
 
+/* A content table inside a unit carries equations, which must never wrap
+   mid-formula. On a narrow screen the table scrolls inside its own box
+   rather than squashing — the same treatment .eqn-report gets. The
+   assessment table on the index is unwrapped and still fluid. */
+.table-scroll {
+  overflow-x: auto;
+  margin: 0 0 1rem;
+  -webkit-overflow-scrolling: touch;
+}
+.table-scroll table.cal { margin-bottom: 0; }
+.table-scroll table.cal td { min-width: 8.5rem; }
+
 /* ---------- Roadmap ---------- */
 .part { margin-top: 2.5rem; }
 .part h2 { margin-bottom: 0.2rem; }
