@@ -57,6 +57,9 @@ assets/course.css     course-site components (.eqn-report, .tutorial, .viz …)
 units/                one page per unit, 1A through 3C
 reference/            glossary (written); EViews guide, formula sheet (planned)
 dev/covered.mjs       mark units as covered in class
+dev/check-site.mjs    the regression suite
+dev/link-glossary.mjs unit -> glossary back-links
+dev/stamp-assets.mjs  cache-busting stamps
 ```
 
 ## Writing a new unit — the actual sequence
@@ -350,6 +353,15 @@ students, so they are worth keeping.
 - **Every figure degrades.** A unit page must still read correctly with
   JavaScript off; figures are illustration, never the only place an idea
   appears.
+- **Prose is justified, display lines are not.** `.wrap` sets
+  `text-align: justify` with hyphenation, and everything inherits it, so a new
+  element needs no rule to fit in. Anything that declares its own alignment
+  keeps it — the centred display equations, the quiz options, table cells. What
+  is deliberately left ragged is listed beside the rule in `lesson.css`:
+  subtitles and meta lines, callout labels, roadmap blurbs, the notation list,
+  and everything below 600px, where the measure is too short to justify. The
+  hyphenation limits are 8 characters minimum, 4 before the break and 5 after;
+  the 5 is what stops `homoscedastic-ity`.
 
 ## What must not go in this repository
 
@@ -374,6 +386,10 @@ last session: **Units 1 and 2 are complete** — 1A–1F, 2A (both parts), 2B, 2
 2D — and **Unit 3A is written**, leaving 3B (Endogeneity) and 3C (IV, 2SLS and
 simultaneous equations) `"planned"`. Those two are one topic in two decks and are
 best written together: 3B ends on the problem that 3C's instruments solve.
+
+**`covered` is empty**, so the roadmap ticks nothing. That is not an oversight
+either: which units have been taught is the lecturer's to say. See "Marking a
+unit as covered in class" above.
 
 Three things are deliberately unfinished, and all three need input rather than
 writing:
