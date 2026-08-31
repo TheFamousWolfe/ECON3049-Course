@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>/* Apply saved reader preferences before first paint, so a reader who
+chose dark does not get a white flash on every navigation. */
+try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
+z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
+if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
+<title>Unit 3A — Qualitative Variables · ECON 3049</title>
+<link rel="stylesheet" href="../assets/lesson.css?v=165f4254">
+<link rel="stylesheet" href="../assets/course.css?v=165f4254">
+<script src="../assets/course.js?v=165f4254"></script>
+<script src="../assets/nav.js?v=165f4254" defer></script>
+<script src="../assets/export.js?v=165f4254" defer></script>
+<script src="../assets/reader.js?v=165f4254" defer></script>
+<script src="../assets/quiz.js?v=165f4254" defer></script>
+<script src="../assets/viz.js?v=165f4254" defer></script>
+</head>
+<body>
+<div class="masthead" data-unit="3A"></div>
+<div class="wrap">
+
+<div class="reader-bar"></div>
+
+<h1>Qualitative Variables</h1>
+<p class="subtitle">Dummies for categories, interactions for slopes, and the trap of the dummy variable.</p>
+<p class="unit-meta" data-unit="3A"></p>
+
+<div class="box key">
+  <span class="box-label">By the end of this unit you should be able to</span>
+  <ul style="margin:0.3rem 0 0; padding-left:1.1rem;">
+    <li>construct a dummy variable for a qualitative regressor, and say what its coefficient measures;</li>
+    <li>identify the base category, and rewrite a set of dummy coefficients under a different base;</li>
+    <li>state the m − 1 rule, and explain the dummy variable trap as perfect multicollinearity;</li>
+    <li>interpret a dummy coefficient alongside quantitative regressors, as a shift in the intercept;</li>
+    <li>interpret a dummy coefficient when the dependent variable is logged, approximately and exactly;</li>
+    <li>build an interaction between a dummy and a quantitative variable, and test whether the slopes differ;</li>
+    <li>test whether two groups share the same regression, and relate that test to the Chow test.</li>
+  </ul>
+</div>
+
+<div class="box refresh">
+  <span class="box-label">Where this sits</span>
+  Unit 2 took the classical assumptions apart one at a time. Unit 3 turns to problems of a
+  different kind, and this one is the friendliest of them: nothing here is a violation to be
+  detected and repaired. Dummy variables are a modelling device, and every result about OLS
+  carries over untouched. Two earlier units do most of the work. Unit 2B's perfect
+  multicollinearity is the trap in section 3, and it is the one place in the course where you can
+  create assumption 8's failure by accident in a single keystroke. Unit 2A Part 2's interaction
+  terms and semi-log forms return in sections 6 and 7, this time with a dummy on one side of the
+  product.
+</div>
+
+<h2>1 · Qualitative information</h2>
+
+<p>Everything so far has related quantitative variables to one another — income to consumption,
+price to quantity, education to wages. But many variables of interest are not quantitative at
+all. Sex, marital status, region, race, occupation, whether a household owns its home, whether a
+country is an oil exporter: these are <strong>qualitative</strong>, or <strong>categorical</strong>,
+variables. They record which category an observation belongs to, and nothing about them is
+naturally a number.</p>
+
+<p>Our focus is the case that arises most often: a <strong>qualitative <a class="gt" href="../reference/glossary.html#independent-variable">independent variable</a></strong>
+with a quantitative <a class="gt" href="../reference/glossary.html#dependent-variable">dependent variable</a>. The question is simply how to get such a variable into a
+regression, given that <a class="gt" href="../reference/glossary.html#ols">OLS</a> can only multiply a coefficient by a number.</p>
+
+<h3>The marital wage premium</h3>
+
+<p>An observation in the wage determination literature is that married men earn more than single
+men. In the sample the lecture works with, the average wage is <strong>$5.17</strong> an hour for
+single men and <strong>$7.98</strong> for married men — a gap of $2.81, which is more than half
+of what the single men earn. A researcher who wants to say anything careful about that gap needs
+to put marital status into an equation.</p>
+
+<div class="box def">
+  <span class="box-label">The device</span>
+  Create a <strong>dummy variable</strong> — also called a binary, indicator or dichotomous
+  variable — that takes the value 1 when the observation is in a category and 0 when it is not:
+  <p class="math" style="margin:0.5rem 0 0.2rem;">married<sub>i</sub> = 1 if man i is married, 0 if he is single</p>
+  There is nothing arbitrary about 1 and 0 that matters for the algebra, but the choice does fix
+  the interpretation of everything that follows, which is the subject of section 2.
+</div>
+
+<p>With that variable in hand the regression is an ordinary one:</p>
+
+<p class="math">wage<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub> married<sub>i</sub> + u<sub>i</sub></p>
+
+<p>and it is estimated by ordinary least squares in exactly the way Unit 1B set out. Nothing about
+the <a class="gt" href="../reference/glossary.html#estimator">estimator</a> changes. A <a class="gt" href="../reference/glossary.html#dummy-variable">dummy variable</a> is a regressor like any other; it simply happens to take
+only two values.</p>
+
+<h2>2 · What the coefficients mean</h2>
+
+<p>Estimating that equation on the wage sample gives:</p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>wage&#770;<sub>i</sub> =</span><span>p =</span></span>
+  <span class="er-col"><span>5.168</span><span>0.000</span></span>
+  <span class="er-col er-op"><span>+</span><span></span></span>
+  <span class="er-col"><span>2.815 married<sub>i</sub></span><span>0.000</span></span>
+  <span class="er-note">the slides report p-values in place of standard errors</span>
+</div>
+
+<p>Read the fitted equation at each of the two values the dummy can take, which is the whole of
+the interpretation:</p>
+
+<p class="math">single men: married<sub>i</sub> = 0 &nbsp;⟹&nbsp; wage&#770; = 5.168</p>
+<p class="math">married men: married<sub>i</sub> = 1 &nbsp;⟹&nbsp; wage&#770; = 5.168 + 2.815 = 7.983</p>
+
+<p>Those are the two averages the section opened with, recovered to the cent. That is not a
+coincidence, and it is worth seeing why.</p>
+
+<div class="box key">
+  <span class="box-label">A regression on a single dummy returns the group means</span>
+  With one dummy and a constant, the fitted value has only two values available to it, so least
+  squares must choose the pair that minimises the sum of squared deviations within each group.
+  For any group of numbers that minimiser is the group's own mean. Hence, exactly,
+  <p class="math" style="margin:0.5rem 0 0.2rem;">β&#770;<sub>1</sub> = Ȳ<sub>0</sub> &nbsp;·&nbsp; β&#770;<sub>2</sub> = Ȳ<sub>1</sub> − Ȳ<sub>0</sub></p>
+  where Ȳ<sub>0</sub> is the mean of the category coded 0 and Ȳ<sub>1</sub> the mean of the
+  category coded 1. <strong>The intercept is the base group's mean; the dummy coefficient is the
+  difference between the two means.</strong> Everything else in this unit is a variation on that
+  sentence.
+</div>
+
+<p>Because the coefficient <em>is</em> a difference in means, its <a class="gt" href="../reference/glossary.html#t-statistic">t-test</a> is a test of whether the
+two group means differ — the difference-of-means test met in a statistics course, obtained here
+as an ordinary regression output. With a <a class="gt" href="../reference/glossary.html#p-value">p-value</a> of 0.000 the difference is comfortably
+significant.</p>
+
+<h3>The base category</h3>
+
+<p>The category coded 0 is the <strong><a class="gt" href="../reference/glossary.html#base-category">base category</a></strong> — also called the reference,
+benchmark or omitted category. It does not appear in the equation, and everything the equation
+reports is measured relative to it. Nothing forces the choice, and it is instructive to make the
+other one. Define single<sub>i</sub> = 1 for single men and 0 for married men, and <a class="gt" href="../reference/glossary.html#estimate">estimate</a>
+again:</p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>wage&#770;<sub>i</sub> =</span><span>p =</span></span>
+  <span class="er-col"><span>7.983</span><span>0.000</span></span>
+  <span class="er-col er-op"><span>−</span><span></span></span>
+  <span class="er-col"><span>2.815 single<sub>i</sub></span><span>0.000</span></span>
+  <span class="er-note">the same regression, with married men as the base category</span>
+</div>
+
+<p>The intercept is now the married men's mean and the dummy coefficient has changed sign. Not one
+number in the two tables is the same, and yet nothing at all has changed: the two fitted values
+are 7.983 and 5.168 either way, the <a class="gt" href="../reference/glossary.html#residual">residuals</a> are identical, the R<sup>2</sup> is identical, and
+the p-value on the difference is identical. <strong>The choice of base category changes how the
+answer is written down, not what the answer is.</strong> Choose the base that makes the
+comparisons you care about easiest to read, and always say in the text which category it is —
+a table of dummy coefficients without its base category is uninterpretable.</p>
+
+<h2>3 · The dummy variable trap</h2>
+
+<p>Notice what neither regression did: include <em>both</em> dummies. There is an obvious
+temptation to write</p>
+
+<p class="math">wage<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub> married<sub>i</sub> + β<sub>3</sub> single<sub>i</sub> + u<sub>i</sub></p>
+
+<p>so that each category gets its own coefficient. This cannot be estimated, and the reason is
+Unit 2B's. Write the intercept as a coefficient on a variable X<sub>1</sub> that is a column of
+ones — which is what an intercept is — and set out the three columns for a sample of six men, two
+single and four married:</p>
+
+<p class="math">X<sub>1</sub> = (1, 1, 1, 1, 1, 1)′ &nbsp;·&nbsp; married = (1, 1, 1, 1, 0, 0)′ &nbsp;·&nbsp; single = (0, 0, 0, 0, 1, 1)′</p>
+
+<p>Every man is either married or single, so married<sub>i</sub> + single<sub>i</sub> = 1 =
+X<sub>1i</sub> for every observation without exception. That is an exact linear relationship
+between the regressors: <strong><a class="gt" href="../reference/glossary.html#perfect-multicollinearity">perfect multicollinearity</a></strong>, assumption 8 failing, and the
+<a class="gt" href="../reference/glossary.html#normal-equations">normal equations</a> have no unique solution. Software will refuse to estimate the model, or silently
+drop one of the columns. This is the <strong><a class="gt" href="../reference/glossary.html#dummy-variable-trap">dummy variable trap</a></strong>.</p>
+
+<div class="box key">
+  <span class="box-label">The rule</span>
+  If a qualitative variable has <strong>m categories</strong>, include <strong>at most m − 1
+  dummy variables</strong> for it alongside a constant.<br>
+  Alternatively, include all m dummies and <strong>suppress the constant</strong>. Each
+  coefficient is then a group mean outright rather than a difference from a base. It is a valid
+  regression, but it is not the intuitive one: with no intercept, the reported R<sup>2</sup>
+  cannot be compared with anything else, and Unit 2A Part 2's warning about a suppressed constant
+  applies in full. <strong>The m − 1 form is the one to use</strong> unless you have a specific
+  reason not to.
+</div>
+
+<p>The trap is worth recognising in the forms it takes outside a textbook. A set of expenditure
+shares that sum to one, entered alongside a constant, is the same failure. So are quarterly
+dummies for all four quarters plus an intercept, and a full set of regional dummies plus an
+intercept. In every case the offence is identical: a set of columns that adds up to the column of
+ones.</p>
+
+<h2>4 · More than two categories</h2>
+
+<p>Suppose the <a class="gt" href="../reference/glossary.html#qualitative-variable">qualitative variable</a> has three categories rather than two — occupation, recorded as
+professional, clerical or service. The rule says two dummies alongside a constant, and there are
+three ways to choose them. Take clerical and service:</p>
+
+<p class="math">clerical<sub>i</sub> = 1 if the occupation is clerical, 0 otherwise &nbsp;·&nbsp; service<sub>i</sub> = 1 if service, 0 otherwise</p>
+
+<p>The category left out — professional — is the base, and the fitted equation is:</p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>wage&#770;<sub>i</sub> =</span><span>p =</span></span>
+  <span class="er-col"><span>6.646</span><span>0.000</span></span>
+  <span class="er-col er-op"><span>−</span><span></span></span>
+  <span class="er-col"><span>1.909 clerical<sub>i</sub></span><span>0.000</span></span>
+  <span class="er-col er-op"><span>−</span><span></span></span>
+  <span class="er-col"><span>3.057 service<sub>i</sub></span><span>0.000</span></span>
+  <span class="er-note">base category: professional</span>
+</div>
+
+<p>Reading it category by category, as in section 2: professionals average 6.646, clerical workers
+6.646 − 1.909 = 4.737, and service workers 6.646 − 3.057 = 3.589. Each coefficient is a
+comparison <em>with the base</em>, and no coefficient in this table compares clerical with service
+directly — although their difference, 1.148, does.</p>
+
+<p>Choose clerical as the base instead and the same three means are written differently. The
+intercept becomes the clerical mean, 4.737; the professional dummy carries 6.646 − 4.737 = 1.909;
+and the service dummy carries 3.589 − 4.737 = −1.148:</p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>wage&#770;<sub>i</sub> =</span><span>p =</span></span>
+  <span class="er-col"><span>4.737</span><span>0.000</span></span>
+  <span class="er-col er-op"><span>+</span><span></span></span>
+  <span class="er-col"><span>1.909 professional<sub>i</sub></span><span>0.000</span></span>
+  <span class="er-col er-op"><span>−</span><span></span></span>
+  <span class="er-col"><span>1.148 service<sub>i</sub></span><span>—</span></span>
+  <span class="er-note">base category: clerical — the same regression, re-based</span>
+</div>
+
+<p>The p-values do not carry over, and that is the one thing re-basing genuinely changes. Each
+t-test is a test against the base, so switching base switches the comparisons being tested. The
+service coefficient in the first table asks whether service workers differ from professionals; in
+the second it asks whether they differ from clerical workers. Those are different questions and
+can perfectly well have different answers.</p>
+
+<div class="box def">
+  <span class="box-label">Reconciling two tables</span>
+  Two dummy tables from the same data must agree about the <strong>fitted group means</strong>,
+  because they are the same regression written with a different base. Recovering the means from
+  one table and rebuilding the other from them is a two-line piece of arithmetic, and it is the
+  quickest check that you have read a table correctly. If a pair of tables you are given cannot be
+  reconciled that way, they are not the same regression — different samples, or different
+  controls, or a slip in transcription.
+</div>
+
+<div class="viz" data-viz="base-category-switch">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It shows three occupational groups with fixed mean
+    wages, and lets the base category be switched between them, adding the no-intercept
+    parameterisation and the dummy variable trap. The coefficients change at every setting; the
+    three fitted means never move.
+  </p>
+</div>
+
+<div class="box def">
+  <span class="box-label">A name for these models</span>
+  Gujarati calls a regression whose regressors are <em>all</em> dummies an <strong>ANOVA
+  model</strong>, because it reproduces the analysis of variance, and one that mixes dummies with
+  quantitative regressors an <strong>ANCOVA model</strong> — analysis of covariance. Sections 1 to
+  4 are ANOVA; everything from section 5 on is ANCOVA. The names are worth knowing when reading
+  the chapter, but nothing in the estimation depends on them.
+</div>
+
+<h2>5 · Dummies alongside quantitative regressors</h2>
+
+<p>The marital premium of $2.81 compares married and single men without controlling for anything
+else. Married men may differ from single men in ways that affect wages on their own account, and
+the obvious candidate is education. Is the gap still there once education is held constant?</p>
+
+<p class="math">wage<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub> married<sub>i</sub> + β<sub>3</sub> Educ<sub>i</sub> + u<sub>i</sub></p>
+
+<p>Take the conditional expectation for each group in turn. For single men married<sub>i</sub> = 0,
+and for married men it is 1, so:</p>
+
+<p class="math">E(wage | Educ, single) = β<sub>1</sub> + β<sub>3</sub> Educ</p>
+<p class="math">E(wage | Educ, married) = (β<sub>1</sub> + β<sub>2</sub>) + β<sub>3</sub> Educ</p>
+
+<div class="box key">
+  <span class="box-label">Two parallel lines</span>
+  These are two straight lines in education with <strong>different intercepts and the same
+  slope</strong>. β<sub>1</sub> is the intercept for the base category, β<sub>1</sub> +
+  β<sub>2</sub> the intercept for the other, and the vertical distance between them is
+  β<sub>2</sub> at every level of education. For this reason β<sub>2</sub> is called the
+  <strong>differential intercept coefficient</strong>.<br>
+  A dummy entered on its own can do nothing else. It shifts the line up or down; it cannot tilt
+  it. Tilting is section 7's job.
+</div>
+
+<p>Estimated on the wage data, the equation is:</p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>wage&#770;<sub>i</sub> =</span><span>p =</span></span>
+  <span class="er-col"><span>2.014</span><span>0.040</span></span>
+  <span class="er-col er-op"><span>+</span><span></span></span>
+  <span class="er-col"><span>1.260 married<sub>i</sub></span><span>0.000</span></span>
+  <span class="er-col er-op"><span>+</span><span></span></span>
+  <span class="er-col"><span>3.301 Educ<sub>i</sub></span><span>0.000</span></span>
+  <span class="er-note">the premium, holding education constant</span>
+</div>
+
+<p>The premium survives, but it is much smaller: $1.26 rather than $2.81. Slightly more than half
+of the raw gap was education rather than marriage — married men in this sample are better
+educated, and the simple comparison in section 2 credited marriage with what education was doing.
+That is Unit 2A Part 1's <a class="gt" href="../reference/glossary.html#omitted-variable-bias">omitted variable bias</a>, appearing here as the reason for running the
+regression at all. Whether the $1.26 that remains is discrimination, or productivity, or
+something else the equation still omits, is not a question the regression can answer.</p>
+
+<div class="box warn">
+  <span class="box-label">Mind the units</span>
+  A coefficient is always <em>per unit of whatever the regressor measures</em>, and a dummy is the
+  only regressor whose units are never in doubt. Before quoting a slope, check it against the mean
+  of the dependent variable: $3.30 an hour per unit of education, against an average wage under
+  $8, says that the education variable here cannot be measured in single years — the semi-log
+  equation in section 6 puts a year of education at about 9%, which on a $7 wage is about 65
+  cents. Nothing is wrong with either estimate; they are answers to differently scaled questions.
+  In an examination, state the units you are assuming before you interpret a magnitude.
+</div>
+
+<div class="viz" data-viz="dummy-shift">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It plots wages against education for married and
+    single men and fits three models to the same data: the dummy alone, the dummy with education,
+    and the dummy interacted with education. A slider varies how differently educated the two
+    groups are rewarded, and the fitted coefficients are reported at every setting.
+  </p>
+</div>
+
+<h2>6 · A logged dependent variable</h2>
+
+<p>Wage equations are usually estimated in logs, for the reasons Unit 2A Part 2 gave: the
+distribution of wages is skewed, the <a class="gt" href="../reference/glossary.html#semi-log">semi-log</a> form makes the coefficients percentages, and it
+handles Unit 2C's <a class="gt" href="../reference/glossary.html#heteroscedasticity">heteroscedasticity</a> into the bargain. Adding experience as well:</p>
+
+<p class="math">ln(wage<sub>i</sub>) = β<sub>1</sub> + β<sub>2</sub> married<sub>i</sub> + β<sub>3</sub> Educ<sub>i</sub> + β<sub>4</sub> Exper<sub>i</sub> + u<sub>i</sub></p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>ln(wage)&#770;<sub>i</sub> =</span><span>p =</span></span>
+  <span class="er-col"><span>0.244</span><span>0.080</span></span>
+  <span class="er-col er-op"><span>+</span><span></span></span>
+  <span class="er-col"><span>0.287 married<sub>i</sub></span><span>0.000</span></span>
+  <span class="er-col er-op"><span>+</span><span></span></span>
+  <span class="er-col"><span>0.093 Educ<sub>i</sub></span><span>0.000</span></span>
+  <span class="er-col er-op"><span>+</span><span></span></span>
+  <span class="er-col"><span>0.011 Exper<sub>i</sub></span><span>0.000</span></span>
+  <span class="er-note">a log-lin model: the coefficients are semi-elasticities</span>
+</div>
+
+<p>Note first what is <em>not</em> logged. <strong>A dummy variable is never logged</strong>, for
+the plain reason that ln(0) is undefined — half the sample would vanish. The transformation is
+applied to the dependent variable and to strictly positive quantitative regressors, and to nothing
+else.</p>
+
+<p>For the quantitative regressors the interpretation is Unit 2A Part 2's: multiply by 100 and
+read a percentage, so a year of education is worth about 9.3% and a year of experience about 1.1%.
+For the dummy the same rule gives 28.7% — married men earn about 28.7% more, holding education and
+experience constant — but here the approximation deserves a second look.</p>
+
+<div class="box key">
+  <span class="box-label">The exact percentage</span>
+  100β&#770;<sub>2</sub> approximates the percentage difference, and the approximation is good only
+  for small β&#770;. A dummy switches from 0 to 1, which is a whole unit rather than a marginal
+  change, so its coefficient is often large enough for the gap to matter. The exact percentage
+  difference between the two categories is
+  <p class="math" style="margin:0.5rem 0 0.2rem;">100 · [ exp(β&#770;<sub>2</sub>) − 1 ] %</p>
+  which here is 100(e<sup>0.287</sup> − 1) = <strong>33.2%</strong>, against the approximate 28.7%.
+  A four-and-a-half point difference on a headline number is worth the extra keystroke, and the
+  approximation always <em>understates</em> a positive effect.
+</div>
+
+<div class="viz" data-viz="dummy-semi-elasticity">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It plots the approximate percentage 100β̂ against the
+    exact 100(e<sup>β̂</sup> − 1) as the dummy coefficient varies, and reports both numbers and the
+    error between them at any chosen value.
+  </p>
+</div>
+
+<h2>7 · Interactions: letting the slopes differ</h2>
+
+<p>Every model so far has assumed that the <a class="gt" href="../reference/glossary.html#partial-coefficient">partial effect</a> of education is the same for married and
+single men. That is what a common slope means, and it is an assumption, not a finding. It is
+perfectly possible that education pays differently for the two groups. To find out, interact the
+dummy with the variable whose effect is in question:</p>
+
+<p class="math">ln(wage<sub>i</sub>) = β<sub>1</sub> + β<sub>2</sub> married<sub>i</sub> + β<sub>3</sub> Educ<sub>i</sub> + β<sub>4</sub> Exper<sub>i</sub> + β<sub>5</sub> ( married<sub>i</sub> · Educ<sub>i</sub> ) + u<sub>i</sub></p>
+
+<p>The <a class="gt" href="../reference/glossary.html#interaction-term">interaction term</a> is the product of the two variables, computed and entered as an ordinary
+regressor — exactly the construction of Unit 2A Part 2, with a dummy in place of a second
+quantitative variable. Differentiate to see what it buys:</p>
+
+<p class="math">∂ln(wage) / ∂Educ = β<sub>3</sub> + β<sub>5</sub> married</p>
+<p class="math">single men: ∂ln(wage) / ∂Educ = β<sub>3</sub> &nbsp;·&nbsp; married men: ∂ln(wage) / ∂Educ = β<sub>3</sub> + β<sub>5</sub></p>
+
+<div class="box key">
+  <span class="box-label">Differential intercept, differential slope</span>
+  β<sub>2</sub> shifts the intercept and β<sub>5</sub> tilts the line, so β<sub>5</sub> is the
+  <strong>differential slope coefficient</strong>. With both in the equation the two groups have
+  their own intercept <em>and</em> their own slope, which is to say two entirely separate
+  lines.<br>
+  <strong>And β<sub>2</sub> is no longer "the marital premium".</strong> It is the premium at
+  Educ = 0, which in a wage sample is an extrapolation beyond anyone in the data. The premium at
+  an education level of interest is β<sub>2</sub> + β<sub>5</sub>·Educ, and that is the quantity
+  to quote.
+</div>
+
+<p>Estimating the interacted equation:</p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>ln(wage)&#770;<sub>i</sub> =</span><span>p =</span></span>
+  <span class="er-col"><span>0.403</span><span>0.060</span></span>
+  <span class="er-col er-op"><span>+</span><span></span></span>
+  <span class="er-col"><span>0.047 married<sub>i</sub></span><span>0.000</span></span>
+  <span class="er-col er-op"><span>+</span><span></span></span>
+  <span class="er-col"><span>0.080 Educ<sub>i</sub></span><span>0.000</span></span>
+  <span class="er-col er-op"><span>+</span><span></span></span>
+  <span class="er-col"><span>0.011 Exper<sub>i</sub></span><span>0.000</span></span>
+  <span class="er-col er-op"><span>+</span><span></span></span>
+  <span class="er-col"><span>0.019 (married·Educ)<sub>i</sub></span><span>0.328</span></span>
+  <span class="er-note">education pays 8.0% a year to single men and 9.9% to married men</span>
+</div>
+
+<p>The test is a t-test on a single coefficient, exactly as in Unit 1F:</p>
+
+<p class="math">H<sub>0</sub>: β<sub>5</sub> = 0 (no difference in the partial effect of education)</p>
+<p class="math">H<sub>1</sub>: β<sub>5</sub> ≠ 0 (the partial effect of education differs)</p>
+
+<p>The p-value is 0.328, far above any conventional <a class="gt" href="../reference/glossary.html#significance-level">significance level</a>, so we
+<strong>cannot reject</strong> the null. There is no evidence in this sample that education pays
+differently for married and single men, and the parallel-lines model of section 6 is the one to
+report.</p>
+
+<p>Before leaving the table, reconcile it with section 6, because at first reading the two look
+inconsistent. The marital coefficient has collapsed from 0.287 to 0.047 — but 0.047 is the premium
+at zero education, while 0.287 was the premium at every education level. Evaluate the interacted
+model at a typical schooling of 12 or 13 years:</p>
+
+<p class="math">0.047 + 0.019 × 12 = 0.275 &nbsp;·&nbsp; 0.047 + 0.019 × 13 = 0.294</p>
+
+<p>which brackets the 0.287 of the simpler equation. The two models agree about the men in the
+sample and disagree only about a hypothetical man with no education at all. This is the standard
+reason a coefficient appears to change dramatically when an interaction is added, and reading it
+as "the premium fell" is the standard mistake.</p>
+
+<h2>8 · Testing whether two groups share a regression</h2>
+
+<p>The last question is the general one. Rather than asking whether a single slope differs, ask
+whether married and single men have the <strong>same wage equation at all</strong>. There are two
+ways to go about it.</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span>
+    <strong>Run two separate regressions</strong>, one on each group, and compare them. This is the
+    Chow test of Unit 2A Part 2, where the split was by time period rather than by category, and
+    the arithmetic is identical.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span>
+    <strong>Run one equation</strong> containing a constant, the dummy, every quantitative
+    regressor, and the dummy interacted with every one of them. The restrictions can then be tested
+    inside a single model.
+  </span></div>
+</div>
+
+<p>Take the second route. The pooled equation, which imposes one wage function on everybody, is</p>
+
+<p class="math">ln(wage<sub>i</sub>) = α<sub>1</sub> + α<sub>2</sub> Educ<sub>i</sub> + α<sub>3</sub> Exper<sub>i</sub> + u<sub>i</sub></p>
+
+<p>and the fully interacted equation, which allows married and single men everything, is</p>
+
+<p class="math">ln(wage<sub>i</sub>) = β<sub>1</sub> + β<sub>2</sub> married<sub>i</sub> + β<sub>3</sub> Educ<sub>i</sub> + β<sub>4</sub> Exper<sub>i</sub> + β<sub>5</sub> ( married · Educ )<sub>i</sub> + β<sub>6</sub> ( married · Exper )<sub>i</sub> + e<sub>i</sub></p>
+
+<p>If the two groups share a wage function then the dummy and both of its interactions are
+superfluous:</p>
+
+<p class="math">H<sub>0</sub>: β<sub>2</sub> = β<sub>5</sub> = β<sub>6</sub> = 0</p>
+
+<p>which is three restrictions and therefore a standard <a class="gt" href="../reference/glossary.html#f-test">F-test</a>, in the restricted-versus-unrestricted
+form of Unit 1F:</p>
+
+<p class="math">F = [ (RSS<sub>R</sub> − RSS<sub>UR</sub>) / m ] / [ RSS<sub>UR</sub> / (n − k) ] &nbsp; ~ &nbsp; F(3, n − 6)</p>
+
+<p>with m = 3 restrictions and k = 6 <a class="gt" href="../reference/glossary.html#parameter">parameters</a> in the <a class="gt" href="../reference/glossary.html#restricted-model">unrestricted model</a>. Reject and the groups
+differ somewhere; fail to reject and one wage function will do for both.</p>
+
+<div class="box key">
+  <span class="box-label">Why this is the flexible version</span>
+  The single-equation form lets you test <em>which part</em> of the equation differs, simply by
+  choosing the restriction:<br>
+  <strong>β<sub>2</sub> = 0</strong> alone — do the intercepts differ? (a t-test)<br>
+  <strong>β<sub>5</sub> = β<sub>6</sub> = 0</strong> — do any slopes differ, the intercepts being
+  free? (an F-test on two restrictions)<br>
+  <strong>β<sub>5</sub> = 0</strong> alone — does the return to education differ? (section 7)<br>
+  <strong>β<sub>2</sub> = β<sub>5</sub> = β<sub>6</sub> = 0</strong> — is it the same equation
+  throughout?<br>
+  A pair of separate regressions answers only the last question, and answers it with more
+  arithmetic.
+</div>
+
+<p>One identity ties the two routes together and is worth carrying into an examination. The fully
+interacted regression <strong>is</strong> the two separate regressions, run at once: its fitted
+line for each group is precisely the line that group's own subsample produces, and therefore</p>
+
+<p class="math">RSS<sub>UR</sub> = RSS<sub>1</sub> + RSS<sub>2</sub></p>
+
+<p>the <a class="gt" href="../reference/glossary.html#rss">residual sum of squares</a> of the interacted model equals the sum of the two subsample residual
+sums of squares. Substituting that into the F formula gives the Chow statistic exactly. The figure
+in section 5 shows the identity holding at every setting of its slider.</p>
+
+<p>The two routes are not quite interchangeable, though. The interacted equation estimates a
+<em>single</em> error variance from the pooled residuals, so it assumes the <a class="gt" href="../reference/glossary.html#disturbance">disturbance</a> variance is
+the same in both groups — the assumption the <a class="gt" href="../reference/glossary.html#chow-test">Chow test</a> makes, and a form of Unit 2C's
+<a class="gt" href="../reference/glossary.html#homoscedasticity">homoscedasticity</a>. Two separate regressions estimate a separate variance for each group and are
+therefore the safer choice when the groups plainly differ in dispersion, at the price of losing the
+convenient single-equation tests.</p>
+
+<h2>9 · Tutorial</h2>
+
+<p style="font-size:0.85rem; color:var(--ink-soft); font-style:italic;">
+Draft questions, to be replaced by the tutorial sheet issued in class.</p>
+
+<div class="tutorial">
+
+  <div class="tq">
+    <span class="qtext">A regression of hourly wages on a married dummy gives
+    wage&#770; = 5.168 + 2.815 married. (a) State the two fitted group means. (b) Write down the
+    regression that would result from using a single dummy instead. (c) Write down the version
+    with both dummies and no intercept. (d) A colleague proposes including both dummies
+    <em>and</em> an intercept. Explain precisely what goes wrong.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>(a) The group means.</strong> Set the dummy to each of its values:
+        single men 5.168, married men 5.168 + 2.815 = 7.983. The intercept is the base group's
+        mean and the dummy coefficient is the difference between the means.</p>
+        <p><strong>(b) With a single dummy.</strong> The base becomes married men, so the intercept
+        is their mean and the coefficient is the difference the other way round:</p>
+        <p class="math">wage&#770; = 7.983 − 2.815 single</p>
+        <p>The fitted values, residuals and R<sup>2</sup> are unchanged; only the parameterisation
+        differs.</p>
+        <p><strong>(c) With no intercept.</strong> Each coefficient becomes a group mean
+        outright:</p>
+        <p class="math">wage&#770; = 7.983 married + 5.168 single</p>
+        <p>Valid, and occasionally convenient, but the reported R<sup>2</sup> is not comparable
+        with that of any model containing a constant, and no coefficient is the difference we
+        actually want to test.</p>
+        <p><strong>(d) Both dummies and an intercept.</strong> married<sub>i</sub> +
+        single<sub>i</sub> = 1 for every observation, which is exactly the column of ones the
+        intercept multiplies. The regressors are perfectly collinear, X′X is singular, and no
+        unique least squares solution exists — the dummy variable trap. With m categories, use at
+        most m − 1 dummies alongside a constant.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">Wages are regressed on occupation dummies with professional as the base
+    category, giving wage&#770; = 6.646 − 1.909 clerical − 3.057 service. (a) Report the three
+    fitted group means. (b) Rewrite the equation with service as the base. (c) Rewrite it with no
+    intercept. (d) The clerical coefficient in the first equation has a p-value of 0.000. Does it
+    follow that clerical and service wages differ significantly?</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>(a) The means.</strong> Professional 6.646; clerical 6.646 − 1.909 = 4.737;
+        service 6.646 − 3.057 = 3.589.</p>
+        <p><strong>(b) Service as the base.</strong> The intercept becomes 3.589, and each
+        remaining coefficient is that group's mean minus 3.589:</p>
+        <p class="math">wage&#770; = 3.589 + 3.057 professional + 1.148 clerical</p>
+        <p><strong>(c) No intercept.</strong> Every coefficient is a group mean:</p>
+        <p class="math">wage&#770; = 6.646 professional + 4.737 clerical + 3.589 service</p>
+        <p>All three equations produce identical fitted values for every observation. They are one
+        regression in three sets of clothes.</p>
+        <p><strong>(d) No, it does not follow.</strong> The p-value on the clerical dummy tests
+        clerical <em>against the base</em>, which here is professional. The clerical–service
+        comparison is the difference between two estimated coefficients, and its <a class="gt" href="../reference/glossary.html#standard-error">standard error</a>
+        involves their covariance, so it cannot be read off either coefficient's own test. The
+        practical route is to re-run the regression with service (or clerical) as the base, which
+        puts the comparison you want on a single coefficient and gives you its test directly. This
+        is the one substantive reason to prefer one base category over another.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">A log wage equation returns a coefficient of 0.287 on a married dummy.
+    (a) Give the approximate and the exact percentage premium. (b) Explain why the two differ, and
+    in which direction the approximation errs. (c) Why is the married dummy not logged along with
+    the wage? (d) At what size of coefficient would you insist on the exact figure?</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>(a) The two figures.</strong> Approximately 100 × 0.287 = <strong>28.7%</strong>.
+        Exactly:</p>
+        <p class="math">100 [ exp(0.287) − 1 ] = 100 (1.3324 − 1) = <strong>33.2%</strong></p>
+        <p><strong>(b) Why they differ.</strong> The coefficient in a log-lin model is
+        ∂ln(Y)/∂X, a proportional change per <em>marginal</em> unit of X, and 100β̂ is the
+        first-order approximation to it. A dummy does not move marginally: it moves a whole unit,
+        from 0 to 1, so the linearisation is evaluated far from the point it is accurate at. Since
+        exp(β) − 1 &gt; β for every β &gt; 0, the approximation <strong>understates</strong> a
+        positive effect, and the shortfall grows with the coefficient.</p>
+        <p><strong>(c) Why the dummy is not logged.</strong> ln(0) is undefined, so logging the
+        dummy would destroy every observation in the base category. Logs are applied to the
+        dependent variable and to strictly positive quantitative regressors only.</p>
+        <p><strong>(d) When to insist.</strong> At 0.05 the two agree to a tenth of a point and
+        nothing turns on the choice; at 0.287 the gap is 4.5 points; at 0.5 it is 50% against 64.9%,
+        which no reader would call the same number. A reasonable working rule is to quote the exact
+        figure whenever |β̂| exceeds about 0.1, and always when the number is going into a
+        headline.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">An interacted log wage equation gives ln(wage)&#770; = 0.403 + 0.047
+    married + 0.080 Educ + 0.011 Exper + 0.019 (married·Educ), with a p-value of 0.328 on the
+    interaction. (a) Give the return to education for each group. (b) Give the marital premium at
+    12 and at 16 years of education. (c) Test whether the returns to education differ. (d) A
+    student concludes that "controlling for the interaction, the marital premium falls from 28.7%
+    to 4.7%". Correct them.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>(a) The returns to education.</strong> ∂ln(wage)/∂Educ = β<sub>3</sub> +
+        β<sub>5</sub>married, so single men 0.080 and married men 0.080 + 0.019 = 0.099 — about 8.0%
+        and 9.9% a year, or 8.3% and 10.4% if the exact conversion is used.</p>
+        <p><strong>(b) The premium at two education levels.</strong> The premium is
+        β<sub>2</sub> + β<sub>5</sub>Educ:</p>
+        <p class="math">at 12 years: 0.047 + 0.019(12) = 0.275 &nbsp;→&nbsp; 100(e<sup>0.275</sup> − 1) = 31.7%</p>
+        <p class="math">at 16 years: 0.047 + 0.019(16) = 0.351 &nbsp;→&nbsp; 100(e<sup>0.351</sup> − 1) = 42.1%</p>
+        <p><strong>(c) The test.</strong> H<sub>0</sub>: β<sub>5</sub> = 0 against
+        H<sub>1</sub>: β<sub>5</sub> ≠ 0, a t-test on one coefficient. The p-value of 0.328 exceeds
+        0.05 — indeed it exceeds 0.10 — so we do not reject the null. There is no evidence that the
+        return to education differs between the groups, and the parallel-lines model is the one to
+        report. Note that the point estimate of 0.019 is not small in economic terms; it is simply
+        too imprecisely estimated to distinguish from zero, which is a statement about the sample
+        rather than about the world.</p>
+        <p><strong>(d) The correction.</strong> The 0.047 is not the marital premium. Once the
+        interaction is in the model, the coefficient on the dummy is the premium
+        <em>at Educ = 0</em>, and nobody in the sample has no education at all, so it is an
+        extrapolation and not a summary of anything. The premium the data speak to is 0.047 +
+        0.019·Educ, which at 12 to 13 years is 0.275 to 0.294 — either side of the 0.287 the
+        equation without the interaction reported. The two models agree; only the parameterisation
+        changed.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">You wish to test whether married and single men have the same wage
+    equation in Educ and Exper. (a) Write down the restricted and unrestricted models and the null
+    hypothesis. (b) Give the test statistic and its distribution for n = 526. (c) Show how the same
+    equation would test a difference in intercepts only. (d) What does this procedure assume that
+    two separate regressions do not?</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>(a) The two models.</strong> Restricted — one equation for everybody:</p>
+        <p class="math">ln(wage) = α<sub>1</sub> + α<sub>2</sub>Educ + α<sub>3</sub>Exper + u</p>
+        <p>Unrestricted — the dummy and both interactions:</p>
+        <p class="math">ln(wage) = β<sub>1</sub> + β<sub>2</sub>married + β<sub>3</sub>Educ + β<sub>4</sub>Exper + β<sub>5</sub>(married·Educ) + β<sub>6</sub>(married·Exper) + e</p>
+        <p class="math">H<sub>0</sub>: β<sub>2</sub> = β<sub>5</sub> = β<sub>6</sub> = 0</p>
+        <p><strong>(b) The statistic.</strong> Three restrictions, six parameters in the
+        unrestricted model:</p>
+        <p class="math">F = [ (RSS<sub>R</sub> − RSS<sub>UR</sub>) / 3 ] / [ RSS<sub>UR</sub> / (526 − 6) ] ~ F(3, 520)</p>
+        <p>Reject for large F. Because the unrestricted model fits each group with its own line,
+        RSS<sub>UR</sub> = RSS<sub>married</sub> + RSS<sub>single</sub>, and substituting that
+        gives the Chow statistic of Unit 2A Part 2 — the same test, arrived at from the other
+        direction.</p>
+        <p><strong>(c) Intercepts only.</strong> Impose β<sub>5</sub> = β<sub>6</sub> = 0 from the
+        start — that is, drop the interactions — and test β<sub>2</sub> = 0 with an ordinary
+        t-test. That is precisely the model of section 5: two parallel lines, tested for a vertical
+        gap. The single-equation approach lets you choose the restriction, which is why it is more
+        flexible than running the two regressions separately.</p>
+        <p><strong>(d) The assumption.</strong> A single equation estimates <strong>one</strong>
+        error variance from the pooled residuals, so it assumes the disturbances have the same
+        variance in both groups. Two separate regressions estimate σ<sup>2</sup> separately for
+        each. If the groups differ in dispersion — a real possibility in wage data — the pooled
+        standard errors are wrong in the way Unit 2C described, and the F-test with them. Check
+        the groups' residual variances before relying on the single-equation test.</p>
+      </div>
+    </details>
+  </div>
+
+</div>
+
+<h2>10 · Check yourself</h2>
+
+<div class="quiz" data-answer="2">
+  <div class="q">In wage&#770; = 5.168 + 2.815 married, estimated with no other regressors, the intercept 5.168 is</div>
+  <button class="opt">the wage of a man with no marital status recorded at all</button>
+  <button class="opt">the average wage across married and single men together</button>
+  <button class="opt">the average wage of single men, the base category here</button>
+  <button class="opt">the average gap in wages between married and single men</button>
+  <div class="feedback right">Correct — with one dummy and a constant, the intercept is the base group's mean and the coefficient is the difference between the means.</div>
+  <div class="feedback wrong">Set married = 0 and the fitted value is 5.168, so it is the mean of the category coded zero — single men. The overall mean lies between the two group means, and the gap is the 2.815.</div>
+</div>
+
+<div class="quiz" data-answer="1">
+  <div class="q">A qualitative variable has four categories. Alongside an intercept you should include</div>
+  <button class="opt">four dummies, one for each of the categories in the data</button>
+  <button class="opt">three dummies, leaving one category out as the base</button>
+  <button class="opt">two dummies, since two binary digits code four cases</button>
+  <button class="opt">one dummy, coded 1, 2, 3 and 4 for the four categories</button>
+  <div class="feedback right">Correct — m − 1 dummies alongside a constant. All four plus an intercept is the dummy variable trap.</div>
+  <div class="feedback wrong">The rule is m − 1 dummies with a constant, so three. All four sum to the column of ones and produce perfect multicollinearity. Binary coding and a 1-to-4 scale both impose numerical relationships between categories that do not exist.</div>
+</div>
+
+<div class="quiz" data-answer="3">
+  <div class="q">In ln(wage) = β₁ + β₂married + β₃Educ + u, a coefficient β̂₂ = 0.40 means married men earn</div>
+  <button class="opt">40% more, and the exact figure is also 40% by construction</button>
+  <button class="opt">$0.40 more per hour than single men of equal education</button>
+  <button class="opt">40 log points more, which no percentage can express</button>
+  <button class="opt">about 40% more, though the exact figure is 49.2% here</button>
+  <div class="feedback right">Correct — 100β̂ approximates, and 100(e^0.40 − 1) = 49.2% is exact. A dummy moves a whole unit, so the approximation is stretched.</div>
+  <div class="feedback wrong">The dependent variable is logged, so the coefficient is a proportion, not dollars. And 100β̂ only approximates it: exp(0.40) − 1 = 0.492, so the true figure is 49.2%. The approximation always understates a positive effect.</div>
+</div>
+
+<div class="quiz" data-answer="0">
+  <div class="q">Adding married·Educ to a wage equation changes the married coefficient because it now measures</div>
+  <button class="opt">the marital gap at Educ = 0, not the gap at every education level</button>
+  <button class="opt">the marital gap after the effect of education has been removed</button>
+  <button class="opt">the average marital gap taken across all the education levels</button>
+  <button class="opt">the marital gap per additional year of education completed</button>
+  <div class="feedback right">Correct — with the interaction in, the gap is β̂₂ + β̂₅·Educ, and β̂₂ alone is that expression evaluated at zero education.</div>
+  <div class="feedback wrong">The gap is β̂₂ + β̂₅·Educ, so β̂₂ is the gap where Educ = 0 — usually an extrapolation beyond the sample. It is not an average across education levels, and the per-year change in the gap is β̂₅.</div>
+</div>
+
+<p class="deck-link" data-unit="3A"></p>
+
+<div class="ask-teacher">
+  <strong>The examinable core: constructing dummies and reading their coefficients as group means, the m − 1 rule and why breaking it is perfect multicollinearity, re-basing a table of dummy coefficients, the exact percentage 100(e<sup>β̂</sup> − 1), and the interacted model with its F-test.</strong>
+  The interaction section is where most marks are lost, because β<sub>2</sub> changes meaning the moment the product term enters. If that still feels slippery, bring it to the tutorial or to office hours — <span data-course="officeHours"></span>.
+</div>
+
+<ol class="sources">
+  <li id="s1">Gujarati, D. &amp; Porter, D. (2008), <em>Basic Econometrics</em>, Chapter 9 — dummy variable regression models: the ANOVA and ANCOVA forms, the dummy variable trap, interaction effects, and dummies in semilogarithmic equations.</li>
+  <li id="s2">Wooldridge, J. (2016), <em>Introductory Econometrics: A Modern Approach</em>, Chapter 7 — multiple regression with qualitative information: single and multiple dummies, interactions, and testing for differences across groups.</li>
+  <li id="s3">Halvorsen, R. &amp; Palmquist, R. (1980), "The Interpretation of Dummy Variables in Semilogarithmic Equations", <em>American Economic Review</em> 70(3) — the source of the exact percentage 100(e<sup>β̂</sup> − 1), and of the observation that the approximation is biased downwards for positive coefficients.</li>
+</ol>
+
+<div class="lesson-nav" data-unit="3A"></div>
+
+</div>
+</body>
+</html>

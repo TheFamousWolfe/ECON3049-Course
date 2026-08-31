@@ -145,7 +145,7 @@ window.COURSE = {
       title: "Qualitative Variables",
       blurb: "Dummies for categories, interactions for slopes, and the trap of the dummy variable.",
       wooldridge: "Ch. 7", gujarati: "Ch. 9", slides: 19,
-      deck: "Unit 3A - Qualitative Variables.pdf", status: "planned" },
+      deck: "Unit 3A - Qualitative Variables.pdf", status: "ready" },
 
     { unit: "3B", part: "3", week: null, slug: "3b-endogeneity",
       title: "Endogeneity",

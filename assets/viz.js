@@ -4071,6 +4071,471 @@
     draw();
   });
 
+  /* ============================================================
+     Unit 3A — shared helper
+
+     The dummy figures need standard errors, which none of the
+     earlier helpers return: the interaction figure is pointless
+     without a t-ratio on β̂5, and the trap has to be shown failing
+     rather than described. fit3a runs Gauss-Jordan on
+     [X'X | X'y | I], so (X'X)⁻¹ falls out beside the coefficients,
+     and a singular X'X returns null instead of nonsense — which is
+     exactly what the dummy variable trap is.
+     ============================================================ */
+  function fit3a(X, y) {
+    var n = X.length, k = X[0].length, i, j, p, q;
+    var A = [];
+    for (i = 0; i < k; i++) {
+      A.push(new Array(2 * k + 1).fill(0));
+      for (j = 0; j < k; j++) for (p = 0; p < n; p++) A[i][j] += X[p][i] * X[p][j];
+      for (p = 0; p < n; p++) A[i][k] += X[p][i] * y[p];
+      A[i][k + 1 + i] = 1;
+    }
+    for (i = 0; i < k; i++) {
+      var piv = i;
+      for (q = i + 1; q < k; q++) if (Math.abs(A[q][i]) > Math.abs(A[piv][i])) piv = q;
+      if (Math.abs(A[piv][i]) < 1e-8) return null;          /* the dummy variable trap */
+      var t = A[i]; A[i] = A[piv]; A[piv] = t;
+      var d = A[i][i];
+      for (j = i; j < 2 * k + 1; j++) A[i][j] /= d;
+      for (q = 0; q < k; q++) {
+        if (q === i) continue;
+        var f = A[q][i];
+        for (j = i; j < 2 * k + 1; j++) A[q][j] -= f * A[i][j];
+      }
+    }
+    var b = [], my = 0;
+    for (i = 0; i < k; i++) b.push(A[i][k]);
+    for (p = 0; p < n; p++) my += y[p];
+    my /= n;
+    var rss = 0, tss = 0;
+    for (p = 0; p < n; p++) {
+      var fit = 0;
+      for (j = 0; j < k; j++) fit += b[j] * X[p][j];
+      rss += (y[p] - fit) * (y[p] - fit);
+      tss += (y[p] - my) * (y[p] - my);
+    }
+    var s2 = rss / (n - k), se = [], tv = [];
+    for (i = 0; i < k; i++) {
+      se.push(Math.sqrt(s2 * A[i][k + 1 + i]));
+      tv.push(se[i] ? b[i] / se[i] : 0);
+    }
+    return { beta: b, se: se, t: tv, rss: rss, tss: tss, r2: tss ? 1 - rss / tss : 0 };
+  }
+
+  /* ============================================================
+     Unit 3A — Figure 1: the same data, three models
+
+     Slides 12 and 17 are two line drawings: parallel lines, then
+     fanned ones. Drawing them from data instead makes the point the
+     slides cannot — that these are three fits to ONE sample, and
+     that the coefficients move for reasons the reader can watch.
+
+     The two group means are pinned at $5.17 and $7.98 by recentring
+     each group's disturbances, so the dummy-only fit reproduces the
+     figures the unit quotes to the cent and the identity
+     β̂1 = Ȳ0, β̂2 = Ȳ1 − Ȳ0 is visible rather than asserted.
+
+     The slider moves the TRUE extra return to education for married
+     men, and it enters centred on their mean education, so the group
+     means do not move as it turns. Everything the reader sees change
+     is therefore the model's doing, not the data's.
+     ============================================================ */
+  VIZ.register("dummy-shift", function (host) {
+    var NS = 24, NM = 36, N = NS + NM;
+    var A0 = -1.43, B = 0.55, PREM = 1.71, SIG = 1.15;
+    var MEAN = [5.17, 7.98];
+    var delta = 0, mode = 1;
+
+    function build() {
+      var R = rngSeeded(7), ed = [], mar = [], i;
+      for (i = 0; i < N; i++) {
+        var m = i >= NS ? 1 : 0;
+        var e = Math.round((m ? 14 : 11.7) + 2 * R.gauss());
+        ed.push(Math.max(8, Math.min(18, e)));
+        mar.push(m);
+      }
+      var em = 0, cm = 0;
+      for (i = 0; i < N; i++) if (mar[i]) { em += ed[i]; cm++; }
+      em /= cm;
+      var R2 = rngSeeded(8973), w = [];
+      for (i = 0; i < N; i++) {
+        w.push(A0 + B * ed[i] + PREM * mar[i]
+               + delta * mar[i] * (ed[i] - em) + SIG * R2.gauss());
+      }
+      var s = [0, 0], c = [0, 0];
+      for (i = 0; i < N; i++) { s[mar[i]] += w[i]; c[mar[i]]++; }
+      for (i = 0; i < N; i++) w[i] += MEAN[mar[i]] - s[mar[i]] / c[mar[i]];
+      return { ed: ed, mar: mar, w: w, em: em };
+    }
+
+    var c = chart({ w: 640, h: 380, pad: { t: 20, r: 20, b: 46, l: 56 },
+                    xd: [7, 19], yd: [0, 14] });
+    c.axes("years of education", "wage  $ per hour");
+    var lines = s("g"), dots = s("g"), tags = s("g");
+    c.plot.appendChild(lines);
+    c.plot.appendChild(dots);
+    c.plot.appendChild(tags);
+
+    function draw() {
+      var D = build(), X = [], i;
+      for (i = 0; i < N; i++) {
+        if (mode === 0) X.push([1, D.mar[i]]);
+        else if (mode === 1) X.push([1, D.mar[i], D.ed[i]]);
+        else X.push([1, D.mar[i], D.ed[i], D.mar[i] * D.ed[i]]);
+      }
+      var f = fit3a(X, D.w), b = f.beta;
+
+      while (lines.firstChild) lines.removeChild(lines.firstChild);
+      while (dots.firstChild) dots.removeChild(dots.firstChild);
+      while (tags.firstChild) tags.removeChild(tags.firstChild);
+
+      for (i = 0; i < N; i++) {
+        dots.appendChild(s("circle", {
+          cx: c.x(D.ed[i] + (D.mar[i] ? 0.13 : -0.13)), cy: c.y(D.w[i]), r: 3.4,
+          fill: D.mar[i] ? P.accent : P.accent2, opacity: 0.72 }));
+      }
+
+      [0, 1].forEach(function (g) {
+        var a = b[0] + b[1] * g;
+        var sl = mode === 0 ? 0 : mode === 1 ? b[2] : b[2] + b[3] * g;
+        lines.appendChild(s("line", {
+          x1: c.x(8), y1: c.y(a + sl * 8), x2: c.x(18), y2: c.y(a + sl * 18),
+          stroke: g ? P.accent : P.accent2, "stroke-width": 2.4 }));
+        var lab = s("text", { x: c.x(18.1), y: c.y(a + sl * 18) - 4,
+                              "text-anchor": "end", "font-size": 12,
+                              fill: g ? P.accent : P.accent2 });
+        lab.textContent = g ? "married" : "single";
+        tags.appendChild(lab);
+      });
+
+      var eq = "wagê = " + b[0].toFixed(3)
+             + (b[1] < 0 ? " − " : " + ") + Math.abs(b[1]).toFixed(3) + " married";
+      if (mode > 0) eq += (b[2] < 0 ? " − " : " + ") + Math.abs(b[2]).toFixed(3) + " Educ";
+      if (mode === 2) eq += (b[3] < 0 ? " − " : " + ") + Math.abs(b[3]).toFixed(3) + " (married·Educ)";
+      left.textContent = eq;
+
+      if (mode === 0) {
+        right.textContent = "β̂₁ = " + b[0].toFixed(3) + " = mean(single)    β̂₂ = "
+          + b[1].toFixed(3) + " = mean(married) − mean(single)";
+      } else if (mode === 1) {
+        right.textContent = "one slope for both groups    premium "
+          + b[1].toFixed(2) + " at every level of education  (t = " + f.t[1].toFixed(2) + ")";
+      } else {
+        right.textContent = "slopes " + b[2].toFixed(3) + " single · "
+          + (b[2] + b[3]).toFixed(3) + " married    β̂₅ t = " + f.t[3].toFixed(2)
+          + "    premium at 12 years = " + (b[1] + b[3] * 12).toFixed(2);
+      }
+
+      c.svg.setAttribute("aria-label",
+        mode === 0 ? "Wages against education for married and single men, with a flat fitted line at each group's mean wage."
+        : mode === 1 ? "The same data with two parallel fitted lines, the married line sitting above the single line."
+        : "The same data with two fitted lines of different slope as well as different intercept.");
+    }
+
+    var controls = h("div", "viz-controls");
+    var pick = h("label", null, "model:");
+    ["dummy alone", "+ education", "+ interaction"].forEach(function (txt, k) {
+      var btn = h("button", null, txt);
+      btn.addEventListener("click", function () {
+        mode = k;
+        Array.prototype.forEach.call(pick.querySelectorAll("button"), function (n) {
+          n.style.borderColor = "";
+        });
+        btn.style.borderColor = P.accent;
+        draw();
+      });
+      if (k === mode) btn.style.borderColor = P.accent;
+      pick.appendChild(btn);
+    });
+    controls.appendChild(pick);
+
+    var lab = h("label", null, "extra return to education for married men:");
+    var sld = document.createElement("input");
+    sld.type = "range"; sld.min = "0"; sld.max = "0.5"; sld.step = "0.05"; sld.value = "0";
+    sld.addEventListener("input", function () { delta = +sld.value; draw(); });
+    lab.appendChild(sld);
+    controls.appendChild(lab);
+
+    var left = h("span", "viz-readout");
+    var right = h("span", "viz-readout");
+    controls.appendChild(left);
+    controls.appendChild(right);
+
+    host.appendChild(c.svg);
+    host.appendChild(controls);
+    host.appendChild(h("p", "viz-caption",
+      "Sixty men, thirty-six of them married, and one sample fitted three ways. With the dummy "
+      + "alone the two lines are flat and sit exactly on the group means, $5.17 and $7.98: the "
+      + "readout shows the intercept reproducing the base group's mean and the coefficient "
+      + "reproducing the difference. Add education and the lines tilt but stay parallel — the "
+      + "premium shrinks from 2.81 to about 1.53, because married men in this sample are the "
+      + "better educated and the first model credited marriage with what education was doing. "
+      + "Add the interaction and the lines are free to fan. Now turn the slider up. The data "
+      + "genuinely change, but the group means do not, so watch what happens to the coefficient "
+      + "on married: it slides downward and eventually goes negative, while the premium at "
+      + "twelve years of education stays sensible. That is the trap of reading β̂₂ as \"the "
+      + "premium\" once an interaction is in the equation — it is the gap at zero education, "
+      + "which no one in this sample has. Two identities hold at every setting, and both are "
+      + "worth trusting: the two fitted lines in the third model are exactly the lines the two "
+      + "subsamples produce on their own, and the residual sum of squares of that model is "
+      + "exactly the sum of theirs."));
+
+    draw();
+  });
+
+  /* ============================================================
+     Unit 3A — Figure 2: which category is the base?
+
+     Three occupations, three ways to choose a base, plus the
+     no-intercept form and the trap. The bars are drawn from the
+     FITTED values rather than from the data, so the fact that they
+     never move is a result rather than a redrawing — and the fifth
+     setting draws nothing at all, because fit3a returns null on a
+     singular X'X.
+
+     Group means are pinned exactly, so the coefficients printed
+     here are the ones the unit prints.
+     ============================================================ */
+  VIZ.register("base-category-switch", function (host) {
+    var NAMES = ["professional", "clerical", "service"];
+    var MEANS = [6.646, 4.737, 3.589];
+    var PER = 12, N = 3 * PER;
+    var grp = [], w = [], R = rngSeeded(521), i, k;
+    for (k = 0; k < 3; k++) {
+      for (i = 0; i < PER; i++) { grp.push(k); w.push(MEANS[k] + 1.15 * R.gauss()); }
+    }
+    var sm = [0, 0, 0];
+    for (i = 0; i < N; i++) sm[grp[i]] += w[i];
+    for (i = 0; i < N; i++) w[i] += MEANS[grp[i]] - sm[grp[i]] / PER;
+
+    var SPECS = [
+      { txt: "base: professional", cols: [1, 2], konst: true },
+      { txt: "base: clerical",     cols: [0, 2], konst: true },
+      { txt: "base: service",      cols: [0, 1], konst: true },
+      { txt: "no constant",        cols: [0, 1, 2], konst: false },
+      { txt: "all three + constant", cols: [0, 1, 2], konst: true }
+    ];
+    var spec = SPECS[0];
+
+    var c = chart({ w: 640, h: 340, pad: { t: 20, r: 20, b: 52, l: 56 },
+                    xd: [0, 3], yd: [0, 9] });
+    c.axes("", "wage  $ per hour");
+    var bars = s("g"), dots = s("g"), tags = s("g");
+    c.plot.appendChild(bars);
+    c.plot.appendChild(dots);
+    c.plot.appendChild(tags);
+
+    function design() {
+      var X = [], i;
+      for (i = 0; i < N; i++) {
+        var row = spec.konst ? [1] : [];
+        spec.cols.forEach(function (g) { row.push(grp[i] === g ? 1 : 0); });
+        X.push(row);
+      }
+      return X;
+    }
+
+    function fittedMean(b, g) {
+      var v = spec.konst ? b[0] : 0, j;
+      for (j = 0; j < spec.cols.length; j++) {
+        if (spec.cols[j] === g) v += b[(spec.konst ? 1 : 0) + j];
+      }
+      return v;
+    }
+
+    function draw() {
+      var f = fit3a(design(), w), i;
+      while (bars.firstChild) bars.removeChild(bars.firstChild);
+      while (dots.firstChild) dots.removeChild(dots.firstChild);
+      while (tags.firstChild) tags.removeChild(tags.firstChild);
+
+      for (i = 0; i < N; i++) {
+        var off = ((i % PER) - (PER - 1) / 2) / PER * 0.42;
+        dots.appendChild(s("circle", {
+          cx: c.x(grp[i] + 0.5 + off), cy: c.y(w[i]), r: 3.2,
+          fill: P.accent2, opacity: 0.6 }));
+      }
+
+      for (k = 0; k < 3; k++) {
+        var nm = s("text", { x: c.x(k + 0.5), y: c.h - 26, "text-anchor": "middle",
+                             "font-size": 12, fill: P.inkSoft });
+        nm.textContent = NAMES[k];
+        tags.appendChild(nm);
+      }
+
+      if (!f) {
+        var msg = s("text", { x: c.x(1.5), y: c.y(7.6), "text-anchor": "middle",
+                              "font-size": 14, fill: P.accent });
+        msg.textContent = "X′X is singular — no unique solution";
+        tags.appendChild(msg);
+        left.textContent = "the three dummies sum to the constant, so the model cannot be estimated";
+        right.textContent = "professional + clerical + service = 1 for every observation — the dummy variable trap";
+        c.svg.setAttribute("aria-label",
+          "The same three groups with no fitted bars, because the model cannot be estimated.");
+        return;
+      }
+
+      for (k = 0; k < 3; k++) {
+        var m = fittedMean(f.beta, k);
+        bars.appendChild(s("rect", {
+          x: c.x(k + 0.26), y: c.y(m), width: c.x(0.48) - c.x(0),
+          height: c.y(0) - c.y(m), fill: P.accent, opacity: 0.18,
+          stroke: P.accent, "stroke-width": 1.6 }));
+        var vt = s("text", { x: c.x(k + 0.5), y: c.y(m) - 7, "text-anchor": "middle",
+                             "font-size": 12, fill: P.accent });
+        vt.textContent = m.toFixed(3);
+        tags.appendChild(vt);
+      }
+
+      var eq = "wagê = ", b = f.beta;
+      if (spec.konst) eq += b[0].toFixed(3);
+      spec.cols.forEach(function (g, j) {
+        var v = b[(spec.konst ? 1 : 0) + j];
+        eq += (j === 0 && !spec.konst) ? v.toFixed(3) + " " + NAMES[g]
+            : (v < 0 ? " − " : " + ") + Math.abs(v).toFixed(3) + " " + NAMES[g];
+      });
+      left.textContent = eq;
+      /* With no constant, software reports the UNCENTRED R² — the fitted
+         values are identical to the based forms, so the centred one would
+         be identical too and would hide the incomparability the caption
+         claims. Report what a package would print. */
+      var my = 0, tot = 0, q;
+      for (q = 0; q < N; q++) my += w[q];
+      my /= N;
+      for (q = 0; q < N; q++) tot += spec.konst ? (w[q] - my) * (w[q] - my) : w[q] * w[q];
+      right.textContent = "fitted means: " + fittedMean(b, 0).toFixed(3) + " · "
+        + fittedMean(b, 1).toFixed(3) + " · " + fittedMean(b, 2).toFixed(3)
+        + (spec.konst ? "    R² = " : "    uncentred R² = ") + (1 - f.rss / tot).toFixed(4);
+      c.svg.setAttribute("aria-label",
+        "Three occupational groups with the fitted mean wage drawn as a bar over each, "
+        + spec.txt + ".");
+    }
+
+    var controls = h("div", "viz-controls");
+    var pick = h("label", null, "parameterisation:");
+    SPECS.forEach(function (o) {
+      var btn = h("button", null, o.txt);
+      btn.addEventListener("click", function () {
+        spec = o;
+        Array.prototype.forEach.call(pick.querySelectorAll("button"), function (n) {
+          n.style.borderColor = "";
+        });
+        btn.style.borderColor = P.accent;
+        draw();
+      });
+      if (o === spec) btn.style.borderColor = P.accent;
+      pick.appendChild(btn);
+    });
+    controls.appendChild(pick);
+    var left = h("span", "viz-readout");
+    var right = h("span", "viz-readout");
+    controls.appendChild(left);
+    controls.appendChild(right);
+
+    host.appendChild(c.svg);
+    host.appendChild(controls);
+    host.appendChild(h("p", "viz-caption",
+      "Thirty-six workers, twelve in each occupation, and the same regression written five ways. "
+      + "The first three settings differ only in which category is left out: every coefficient "
+      + "changes, the equation reads differently, and the three bars — which are fitted values, "
+      + "not the raw averages — do not move by a thousandth. Dropping the constant instead makes "
+      + "each coefficient a group mean outright. It fits the data identically — the same bars, "
+      + "the same residuals — but the R² beside it jumps, because with no constant a package "
+      + "measures fit against zero rather than against the mean. That is the number you cannot "
+      + "compare with anything else, and the reason to prefer the m − 1 form. The last setting "
+      + "asks for all three dummies and a constant. Nothing is drawn, because there is nothing to "
+      + "draw: the three columns add to the column of ones, X′X has no inverse, and the "
+      + "estimator has no unique answer to give. Software will either refuse or quietly drop a "
+      + "column, and it is worth knowing which yours does before it does it to you."));
+
+    draw();
+  });
+
+  /* ============================================================
+     Unit 3A — Figure 3: 100β̂ against 100(e^β̂ − 1)
+
+     One line and one curve, and the whole point is the widening gap
+     between them. Students meet "multiply by 100" in 2A Part 2 with
+     small coefficients, where it is harmless, and then apply it to a
+     dummy coefficient of 0.3 or 0.5, where it is not.
+     ============================================================ */
+  VIZ.register("dummy-semi-elasticity", function (host) {
+    var beta = 0.287;
+
+    var c = chart({ w: 640, h: 340, pad: { t: 20, r: 22, b: 46, l: 58 },
+                    xd: [0, 1], yd: [0, 180] });
+    c.axes("dummy coefficient  β̂", "percentage difference");
+    var curves = s("g"), marks = s("g");
+    c.plot.appendChild(curves);
+    c.plot.appendChild(marks);
+
+    var approx = "", exact = "", t;
+    for (t = 0; t <= 100; t++) {
+      var bv = t / 100;
+      approx += (t ? " L " : "M ") + c.x(bv) + " " + c.y(100 * bv);
+      exact  += (t ? " L " : "M ") + c.x(bv) + " " + c.y(100 * (Math.exp(bv) - 1));
+    }
+    curves.appendChild(s("path", { d: approx, fill: "none", stroke: P.accent2,
+                                   "stroke-width": 2, "stroke-dasharray": "5 4" }));
+    curves.appendChild(s("path", { d: exact, fill: "none", stroke: P.accent,
+                                   "stroke-width": 2.4 }));
+    var la = s("text", { x: c.x(0.86), y: c.y(94), "font-size": 12, fill: P.accent2 });
+    la.textContent = "100β̂  (approximate)";
+    var le = s("text", { x: c.x(0.58), y: c.y(105), "font-size": 12, fill: P.accent });
+    le.textContent = "100(e^β̂ − 1)  (exact)";
+    curves.appendChild(la);
+    curves.appendChild(le);
+
+    function draw() {
+      var a = 100 * beta, e = 100 * (Math.exp(beta) - 1);
+      while (marks.firstChild) marks.removeChild(marks.firstChild);
+      marks.appendChild(s("line", { x1: c.x(beta), y1: c.y(0), x2: c.x(beta), y2: c.y(e),
+                                    stroke: P.ruleSoft, "stroke-width": 1 }));
+      marks.appendChild(s("line", { x1: c.x(beta), y1: c.y(a), x2: c.x(beta), y2: c.y(e),
+                                    stroke: P.ink, "stroke-width": 3 }));
+      marks.appendChild(s("circle", { cx: c.x(beta), cy: c.y(a), r: 4.5, fill: P.accent2 }));
+      marks.appendChild(s("circle", { cx: c.x(beta), cy: c.y(e), r: 4.5, fill: P.accent }));
+
+      left.textContent = "β̂ = " + beta.toFixed(3) + "    approximate " + a.toFixed(1)
+                       + "%    exact " + e.toFixed(1) + "%";
+      right.textContent = "understated by " + (e - a).toFixed(1) + " percentage points"
+                        + (e - a < 0.5 ? "  — either will do here" : "");
+      sld.setAttribute("aria-valuenow", beta);
+      c.svg.setAttribute("aria-label",
+        "The exact percentage difference rising above the straight-line approximation as the "
+        + "dummy coefficient grows; at " + beta.toFixed(2) + " they are " + a.toFixed(1)
+        + " and " + e.toFixed(1) + " per cent.");
+    }
+
+    var controls = h("div", "viz-controls");
+    var lab = h("label", null, "the estimated dummy coefficient β̂:");
+    var sld = document.createElement("input");
+    sld.type = "range"; sld.min = "0"; sld.max = "1"; sld.step = "0.01"; sld.value = "0.287";
+    sld.addEventListener("input", function () { beta = +sld.value; draw(); });
+    lab.appendChild(sld);
+    controls.appendChild(lab);
+    var left = h("span", "viz-readout");
+    var right = h("span", "viz-readout");
+    controls.appendChild(left);
+    controls.appendChild(right);
+
+    host.appendChild(c.svg);
+    host.appendChild(controls);
+    host.appendChild(h("p", "viz-caption",
+      "The dashed line is the rule of thumb — multiply the coefficient by a hundred — and the "
+      + "solid curve is the truth. Below about 0.1 they are indistinguishable, which is why the "
+      + "approximation survives: applied to the quantitative regressors of a log-lin wage "
+      + "equation, where a coefficient of 0.09 is typical, the error is a tenth of a point. A "
+      + "dummy is different, because it moves a whole unit rather than a marginal one, and its "
+      + "coefficient is routinely three or five times larger. At the 0.287 of the unit's wage "
+      + "equation the gap is already four and a half points; at 0.5 the honest figure is 64.9% "
+      + "against a quoted 50%. The approximation always understates a positive effect, so the "
+      + "error is never in your favour when the result is the one you are arguing for."));
+
+    draw();
+  });
+
   /* ---------- boot ---------- */
   function boot() {
     palette();

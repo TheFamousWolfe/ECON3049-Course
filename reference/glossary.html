@@ -9,13 +9,13 @@ try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
 z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
 if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
 <title>Glossary · ECON 3049</title>
-<link rel="stylesheet" href="../assets/lesson.css?v=73dd4b83">
-<link rel="stylesheet" href="../assets/course.css?v=73dd4b83">
-<script src="../assets/course.js?v=73dd4b83"></script>
-<script src="../assets/nav.js?v=73dd4b83" defer></script>
-<script src="../assets/export.js?v=73dd4b83" defer></script>
-<script src="../assets/reader.js?v=73dd4b83" defer></script>
-<script src="../assets/glossary.js?v=73dd4b83" defer></script>
+<link rel="stylesheet" href="../assets/lesson.css?v=165f4254">
+<link rel="stylesheet" href="../assets/course.css?v=165f4254">
+<script src="../assets/course.js?v=165f4254"></script>
+<script src="../assets/nav.js?v=165f4254" defer></script>
+<script src="../assets/export.js?v=165f4254" defer></script>
+<script src="../assets/reader.js?v=165f4254" defer></script>
+<script src="../assets/glossary.js?v=165f4254" defer></script>
 </head>
 <body>
 <div class="masthead">
@@ -37,7 +37,7 @@ if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
   Each entry ends with the unit that introduces the term — follow it to see the term in
   context, with the derivation or the figure that goes with it. This page is a reminder of
   what a word means, not a substitute for the unit that explains it. Terms are added as each
-  unit is written; this covers <strong>the whole of Units 1 and 2</strong>.
+  unit is written; this covers <strong>the whole of Units 1 and 2, and Unit 3A</strong>.
 </div>
 
 <h2 id="notation">Notation</h2>
@@ -68,7 +68,7 @@ before trusting them.</p>
   <a href="#g-e">E</a> <a href="#g-f">F</a> <a href="#g-g">G</a> <a href="#g-h">H</a>
   <a href="#g-i">I</a> <span class="off">J</span> <a href="#g-k">K</a> <a href="#g-l">L</a>
   <a href="#g-m">M</a> <a href="#g-n">N</a> <a href="#g-o">O</a> <a href="#g-p">P</a>
-  <span class="off">Q</span> <a href="#g-r">R</a> <a href="#g-s">S</a> <a href="#g-t">T</a>
+  <a href="#g-q">Q</a> <a href="#g-r">R</a> <a href="#g-s">S</a> <a href="#g-t">T</a>
   <a href="#g-u">U</a> <a href="#g-v">V</a> <a href="#g-w">W</a>
 </p>
 
@@ -90,6 +90,13 @@ The measure to quote when comparing models of different size.</dd>
 variables v; the first term falls as variables are added, the second rises. Smallest wins.
 Penalises extra variables less heavily than the <a href="#schwarz-criterion">Schwarz
 criterion</a>.</dd>
+
+<dt id="anova-ancova" data-match="ANOVA model, ANCOVA model, ANOVA, ANCOVA">ANOVA and ANCOVA models <a class="g-unit" href="../units/3a-qualitative-variables.html">Unit 3A</a></dt>
+<dd>Gujarati's names for two kinds of dummy variable regression. An <strong>ANOVA</strong> model has
+<em>only</em> dummies on the right-hand side, so its fitted values are group means and it
+reproduces the analysis of variance. An <strong>ANCOVA</strong> model — analysis of covariance —
+mixes dummies with quantitative regressors, which is the case that matters in practice. Nothing in
+the estimation depends on the distinction; it is vocabulary for reading the chapter.</dd>
 
 <dt id="ar1" data-match="AR(1), first-order autocorrelation">AR(1) — first-order autocorrelation <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></dt>
 <dd>u<sub>t</sub> = ρu<sub>t−1</sub> + ε<sub>t</sub>, where ε is well behaved and ρ is the
@@ -122,6 +129,15 @@ and in the diagnostic tests for heteroscedasticity and autocorrelation.</dd>
 <h2 id="g-b">B</h2>
 
 <dl>
+
+<dt id="base-category" data-match="base category, reference category, benchmark category, omitted category">Base category <a class="g-unit" href="../units/3a-qualitative-variables.html">Unit 3A</a></dt>
+<dd>The category of a qualitative variable that is left <em>out</em> of the regression — coded 0 by
+every <a href="#dummy-variable">dummy</a> in the set. The intercept is its mean, and every dummy
+coefficient is a comparison with it, so a table of dummy coefficients cannot be read without
+knowing which category it is. Changing the base changes every coefficient and no fitted value:
+the same regression, differently written. It does change the tests, though, since each t-test
+compares one category with the base — which is the one real reason to prefer one base over
+another.</dd>
 
 <dt id="breusch-godfrey" data-match="Breusch–Godfrey test, Breusch-Godfrey test, Breusch–Godfrey, Breusch-Godfrey">Breusch–Godfrey test <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></dt>
 <dd>The general test for autocorrelation. Regress the OLS residuals on <em>all the original
@@ -255,6 +271,14 @@ equation it sits on, <em>not</em> that it is caused by X.</dd>
 β<sub>2</sub>X is deterministic; adding u makes it stochastic, and no economic relationship
 has ever been the former.</dd>
 
+<dt id="differential-coefficients" data-match="differential intercept coefficient, differential slope coefficient, differential intercept, differential slope">Differential intercept and slope coefficients <a class="g-unit" href="../units/3a-qualitative-variables.html">Unit 3A</a></dt>
+<dd>Gujarati's names for what a <a href="#dummy-variable">dummy</a> does to a fitted line. The
+coefficient on the dummy itself is the <strong>differential intercept</strong>: it shifts the line
+up or down without tilting it. The coefficient on the dummy interacted with a quantitative
+regressor is the <strong>differential slope</strong>: it tilts the line. With both present the two
+groups have entirely separate lines, and the dummy coefficient is then the gap
+<em>where the interacted regressor is zero</em> — not the average gap.</dd>
+
 <dt id="disturbance">Disturbance <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
 <dd>u<sub>i</sub>, the vertical distance from an observation to the <em>population</em>
 regression line. Unobservable, because the population line is. Not the same as the
@@ -267,6 +291,21 @@ Cobb–Douglas, and delivers coefficients that read directly as
 <a href="#elasticity">elasticities</a>: a 1% rise in X gives a β<sub>2</sub>% change in Y.
 Contrast the <a href="#semi-log">semi-log</a> forms.</dd>
 
+
+<dt id="dummy-variable" data-match="dummy variable, binary variable, indicator variable">Dummy variable <a class="g-unit" href="../units/3a-qualitative-variables.html">Unit 3A</a></dt>
+<dd>A regressor taking the value 1 when an observation belongs to a category and 0 when it does
+not — the device that gets qualitative information into a regression. Regressed on its own with a
+constant, it returns the group means exactly: β̂<sub>1</sub> = Ȳ<sub>0</sub> and
+β̂<sub>2</sub> = Ȳ<sub>1</sub> − Ȳ<sub>0</sub>, so its t-test is a difference-of-means test. Never
+logged, since ln(0) does not exist, and when the dependent variable is logged its exact
+percentage effect is 100(e<sup>β̂</sup> − 1), not 100β̂.</dd>
+
+<dt id="dummy-variable-trap" data-match="dummy variable trap">Dummy variable trap <a class="g-unit" href="../units/3a-qualitative-variables.html">Unit 3A</a></dt>
+<dd>Including a dummy for <em>every</em> category alongside an intercept. The dummies then sum to
+the column of ones, which is <a href="#perfect-multicollinearity">perfect multicollinearity</a>:
+X′X is singular and no unique estimate exists. The rule is <strong>m − 1 dummies with a
+constant</strong>, or all m and no constant. The same failure arrives disguised as a full set of
+expenditure shares, or four quarterly dummies, entered alongside an intercept.</dd>
 
 <dt id="durbin-watson" data-match="Durbin–Watson test, Durbin-Watson test, Durbin–Watson, Durbin-Watson">Durbin–Watson test <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></dt>
 <dd>DW = Σ(û<sub>t</sub> − û<sub>t−1</sub>)<sup>2</sup>/Σû<sub>t</sub><sup>2</sup> ≈ 2(1 − ρ̂),
@@ -650,6 +689,20 @@ significant. Report the magnitude alongside the test, always.</dd>
 <dd>An observable stand-in for a concept that cannot be measured directly — years of
 schooling for human capital, for instance. Buys a variable at the cost of measurement
 error.</dd>
+
+</dl>
+
+<h2 id="g-q">Q</h2>
+
+<dl>
+
+<dt id="qualitative-variable" data-match="qualitative variable, categorical variable, qualitative regressor">Qualitative variable <a class="g-unit" href="../units/3a-qualitative-variables.html">Unit 3A</a></dt>
+<dd>A variable recording which category an observation falls into rather than how much of
+something it has — sex, region, marital status, occupation, ownership. Also called categorical.
+Nothing about it is naturally a number, so it enters a regression through
+<a href="#dummy-variable">dummy variables</a>: m − 1 of them alongside a constant. This unit takes
+the dependent variable to be quantitative; a qualitative <em>dependent</em> variable needs logit or
+probit, which belongs to Econometrics II.</dd>
 
 </dl>
 

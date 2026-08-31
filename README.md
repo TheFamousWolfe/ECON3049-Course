@@ -101,8 +101,13 @@ with the closed-form result — the omitted-variable figure against
 β₃δ̃₁, the variance-inflation figure against √(1/(1 − R²₂₃)), the t-distribution
 against printed tables, the Chow figure against F(2, 96) = 3.09, the 2B ridge
 against the invariance of RSS along β̂₂ + α₂β̂₃ = c, and the VIF curve against
-1/(1 − R²ⱼ) = 10 at R²ⱼ = 0.9. Two figures were wrong in ways that only showed up
-that way.
+1/(1 − R²ⱼ) = 10 at R²ⱼ = 0.9. In Unit 3A the dummy figures are checked against
+identities rather than formulas, which is stronger: β̂₁ = Ȳ₀ and β̂₂ = Ȳ₁ − Ȳ₀ for a
+lone dummy, the dummy's standard error against the pooled two-sample one, and — for
+the fully interacted model — its two fitted lines against the two subsample
+regressions and RSS_UR against RSS₁ + RSS₂. Three figures were wrong in ways that
+only showed up that way; 3A's was a caption claiming an R² that changes when the
+constant is dropped, which the centred R² the figure printed does not.
 
 Figures that simulate should draw from a **seeded** generator rather than
 `Math.random`, so that every reader sees the same sample and a tutorial answer
@@ -272,7 +277,7 @@ node dev/check-site.mjs      # catches unconverted characters
 pdflatex -interaction=nonstopmode <unit>.tex
 ```
 
-All thirteen pages currently compile. Five of them did not on the first attempt,
+All fourteen pages currently compile. Five of them did not on the first attempt,
 and the failures were only visible by actually running `pdflatex` — bare
 Greek inside `<sub>`, stacked accents (Y with *two* combining marks), and
 `\sqrt` emitted with no radicand. Unit 2B added a sixth: a `≫` that no range
@@ -318,8 +323,10 @@ the repository private would have hidden nothing that is not already served.
 
 Progress is recorded in the manifest, not here — `status: "ready"` is the
 authority, and `node dev/check-site.mjs` prints every written unit. As of the
-last session: **Units 1 and 2 are complete** — 1A–1F, 2A (both parts), 2B, 2C and 2D — with
-all of Unit 3 still `"planned"`.
+last session: **Units 1 and 2 are complete** — 1A–1F, 2A (both parts), 2B, 2C and
+2D — and **Unit 3A is written**, leaving 3B (Endogeneity) and 3C (IV, 2SLS and
+simultaneous equations) `"planned"`. Those two are one topic in two decks and are
+best written together: 3B ends on the problem that 3C's instruments solve.
 
 Three things are deliberately unfinished, and all three need input rather than
 writing:
