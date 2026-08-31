@@ -24,7 +24,10 @@
   color: var(--ink-soft); -webkit-hyphens: manual; hyphens: manual;
 }
 .hero h1 { font-size: 2.6rem; margin-bottom: 0.2rem; }
-.hero .subtitle { font-size: 1.25rem; }
+/* The subtitle is left-aligned everywhere else — it sits against body
+   text there — but in the hero it is one of five centred lines, and
+   flushing it left breaks the stack. */
+.hero .subtitle { font-size: 1.25rem; text-align: center; }
 .hero .tagline {
   font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--ink-soft); font-family: -apple-system, system-ui, sans-serif;
