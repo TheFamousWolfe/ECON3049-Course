@@ -113,6 +113,39 @@ body {
 
 .wrap { max-width: var(--maxw); margin: 0 auto; }
 
+/* ---------- Justified setting ----------
+   Prose is justified — flush at both edges, as in the textbooks this
+   course sets — rather than ragged right. Hyphenation has to come with
+   it: justification works by stretching the spaces along a line, and a
+   column this narrow, in a subject that supplies words like
+   "heteroscedasticity", opens rivers of white space without it.
+   `<html lang="en">` is what lets the browser hyphenate at all, and the
+   limits keep it to long words broken well away from either end.
+
+   Set once, on the column, and reaching everything by inheritance — so
+   any element declaring an alignment of its own keeps it, a declared
+   value always beating an inherited one. That covers the centred
+   display equations, the quiz options, table cells and the reader bar
+   without naming one of them here. Hyphenation is then switched back
+   off wherever a broken word would be wrong. */
+.wrap {
+  text-align: justify;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  -webkit-hyphenate-limit-before: 4;
+  -webkit-hyphenate-limit-after: 5;
+  hyphenate-limit-chars: 8 4 5;   /* 5 after, or you get "homoscedastic-ity" */
+}
+.math, .eqn-report, table, pre.code, code.inline, .viz-controls, .lesson-nav {
+  -webkit-hyphens: manual;
+  hyphens: manual;
+}
+/* Display lines are not prose: a wrapped subtitle, meta line or callout
+   label stretched to the full measure reads as a mistake, and the
+   uppercase letter-spaced labels worst of all. */
+.subtitle, .unit-meta, .lesson-meta, .box .box-label, .deck-link, .g-index,
+.viz-fallback, .sources { text-align: left; }
+
 /* ---------- Masthead / breadcrumb ---------- */
 .masthead {
   max-width: var(--maxw);
@@ -323,4 +356,8 @@ sup.cite a { text-decoration: none; color: var(--accent); font-size: 0.75em; }
   html[data-text="l"]   { font-size: 18px; }
   html[data-text="xl"]  { font-size: 20px; }
   body { padding: 0 1rem 4rem; }
+  /* Justification needs a measure to work with. At roughly 35 characters
+     a line, stretching the spaces opens gaps wide enough to read as
+     errors, so a phone gets the ragged right edge back. */
+  .wrap { text-align: left; }
 }

@@ -13,7 +13,16 @@
    ============================================================ */
 
 /* ---------- Index hero ---------- */
-.hero { text-align: center; padding: 2.5rem 0 1rem; border-bottom: 1px solid var(--rule); }
+.hero { text-align: center; padding: 2.5rem 0 1rem; border-bottom: 1px solid var(--rule);
+        -webkit-hyphens: manual; hyphens: manual; }
+
+/* The home page's opening paragraph is centred on purpose. Centred text
+   must not hyphenate: a broken word on a line with no fixed edge reads
+   as damage rather than as typesetting. */
+.page-intro {
+  text-align: center; max-width: 34rem; margin: 0 auto 2.5rem;
+  color: var(--ink-soft); -webkit-hyphens: manual; hyphens: manual;
+}
 .hero h1 { font-size: 2.6rem; margin-bottom: 0.2rem; }
 .hero .subtitle { font-size: 1.25rem; }
 .hero .tagline {
@@ -78,7 +87,10 @@ ol.units .num {
   padding: 0.15rem 0.4rem; text-align: center; letter-spacing: 0.03em;
 }
 ol.units .u-title { grid-area: title; font-weight: 600; text-decoration: none; }
-ol.units .blurb   { grid-area: blurb; font-size: 0.85rem; color: var(--ink-soft); }
+/* Left, not justified: a two-line blurb stretched to the full column is
+   all gaps and no rhythm. Justification is for running prose. */
+ol.units .blurb   { grid-area: blurb; font-size: 0.85rem; color: var(--ink-soft);
+                    text-align: left; }
 ol.units .wk      { grid-area: wk; font-size: 0.75rem; color: var(--ink-soft); white-space: nowrap; }
 ol.units li.todo .num { background: var(--rule-soft); }
 ol.units li.todo .u-title { color: var(--ink-soft); }
@@ -169,8 +181,11 @@ ol.units li.todo .u-title { color: var(--ink-soft); }
   font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
   font-size: 0.78rem; color: var(--accent-2);
 }
+/* Justified, not centred: these captions run to a paragraph or more, and
+   a centred block of that length is a ragged shape on both edges rather
+   than a caption. The smaller, softer type is what marks it as one. */
 .viz-caption {
-  font-size: 0.82rem; color: var(--ink-soft); margin: 0.6rem 0 0; text-align: center;
+  font-size: 0.82rem; color: var(--ink-soft); margin: 0.6rem 0 0;
 }
 .viz-fallback { font-size: 0.85rem; color: var(--ink-soft); font-style: italic; }
 
@@ -333,7 +348,9 @@ footer.site {
   text-align: right;
   font-size: 1.02rem;
 }
-.notation dd { margin: 0; }
+/* Left, not justified: these are one- and two-line fragments in a
+   narrow column, where stretching the spaces is all cost. */
+.notation dd { margin: 0; text-align: left; }
 
 /* ---------- Glossary ---------- */
 .g-tools {
