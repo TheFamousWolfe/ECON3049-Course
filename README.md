@@ -113,6 +113,23 @@ regressions and RSS_UR against RSS₁ + RSS₂. Three figures were wrong in ways
 only showed up that way; 3A's was a caption claiming an R² that changes when the
 constant is dropped, which the centred R² the figure printed does not.
 
+Units 3B and 3C are checked the same way, and every one of their six figures has a
+closed form to land on: the Keynesian plim against β₂ + (1 − β₂)σ²/(σ² + σ²I), the
+market scatter against the variance-weighted average (1 − w)b₂ + w a₂, the IV
+asymptotic variance against σ²/(Σx² r²ₓz), and the two-stage estimate against the
+ratio cov(Z,Y)/cov(Z,X) — the last to every digit, since they are one estimator.
+Three things that only came out of driving them: the Keynesian figure's fixed axes
+made the angle between the two lines invisible, so it now frames itself to the
+sample; the market figure's single sample of sixty was too noisy to check a closed
+form against, so it reports a Monte Carlo beside the fitted line; and the
+weak-instrument caption named the wrong threshold — the *spread* is unusable by a
+first-stage t of three, but the *median* holds until t falls below about one.
+
+**Report a median, not a mean, for anything IV.** A just-identified IV estimator is
+a ratio of two random quantities and has no finite expectation: a Monte Carlo
+average of it is decided by whichever replication came nearest to dividing by zero.
+The 3C figures quote medians and quartiles throughout, and say so.
+
 Figures that simulate should draw from a **seeded** generator rather than
 `Math.random`, so that every reader sees the same sample and a tutorial answer
 can quote it. `high-r2-low-t` uses MINSTD, whose products stay inside exact
@@ -382,14 +399,25 @@ the repository private would have hidden nothing that is not already served.
 
 Progress is recorded in the manifest, not here — `status: "ready"` is the
 authority, and `node dev/check-site.mjs` prints every written unit. As of the
-last session: **Units 1 and 2 are complete** — 1A–1F, 2A (both parts), 2B, 2C and
-2D — and **Unit 3A is written**, leaving 3B (Endogeneity) and 3C (IV, 2SLS and
-simultaneous equations) `"planned"`. Those two are one topic in two decks and are
-best written together: 3B ends on the problem that 3C's instruments solve.
+last session **all fourteen units are written**: 1A–1F, 2A (both parts), 2B, 2C,
+2D, 3A, 3B and 3C.
+
+3B and 3C came out of two decks that are very nearly the same deck — the second is
+the first plus two slides carrying the plim proof of inconsistency, and both run
+the whole topic. The split on the site is the manifest's and the pedagogical one:
+**3B is the problem** (what endogeneity is, its three sources, bias against
+inconsistency, simultaneity and the reduced form) and **3C is the repair**
+(instruments, the IV estimator, 2SLS, systems, and identification). 3B ends on the
+identification problem that 3C's instruments solve.
 
 **`covered` is empty**, so the roadmap ticks nothing. That is not an oversight
 either: which units have been taught is the lecturer's to say. See "Marking a
 unit as covered in class" above.
+
+Two corrections drafts sit beside the decks in `../Econ3049/LectureNotes/`, for
+the lecturer to fold into the slides: `UNIT-2D-slide9-correction.md`,
+`UNIT-3A-corrections.md` and `UNIT-3B-3C-corrections.md`. The site already carries
+the corrected forms.
 
 Three things are deliberately unfinished, and all three need input rather than
 writing:
@@ -400,8 +428,8 @@ writing:
   the dates are known — no page changes. Per-unit week numbers were removed in
   favour of `covered`, which records where the class actually got to rather
   than where a timetable said it would.
-- **`reference/formula-sheet.html`** is `"planned"`. Units 1C to 1F have now
-  derived essentially everything that belongs on it, so it is assembly work.
+- **`reference/formula-sheet.html`** is `"planned"`. With every unit written it is
+  now pure assembly work, and the natural next job.
 - **`reference/eviews-guide.html`** is `"planned"`. This is the one with stakes:
   the 25% group assignment is graded on EViews.
 

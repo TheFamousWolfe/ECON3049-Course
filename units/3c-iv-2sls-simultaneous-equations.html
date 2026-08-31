@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>/* Apply saved reader preferences before first paint, so a reader who
+chose dark does not get a white flash on every navigation. */
+try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
+z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
+if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
+<title>Unit 3C — IV, Two-Stage Least Squares and Simultaneous Equations · ECON 3049</title>
+<link rel="stylesheet" href="../assets/lesson.css?v=c825104d">
+<link rel="stylesheet" href="../assets/course.css?v=c825104d">
+<script src="../assets/course.js?v=c825104d"></script>
+<script src="../assets/nav.js?v=c825104d" defer></script>
+<script src="../assets/export.js?v=c825104d" defer></script>
+<script src="../assets/reader.js?v=c825104d" defer></script>
+<script src="../assets/quiz.js?v=c825104d" defer></script>
+<script src="../assets/viz.js?v=c825104d" defer></script>
+</head>
+<body>
+<div class="masthead" data-unit="3C"></div>
+<div class="wrap">
+
+<div class="reader-bar"></div>
+
+<h1>IV, Two-Stage Least Squares and Simultaneous Equations</h1>
+<p class="subtitle">Instruments as the way out, and systems where Y and X determine each other.</p>
+<p class="unit-meta" data-unit="3C"></p>
+
+<div class="box key">
+  <span class="box-label">By the end of this unit you should be able to</span>
+  <ul style="margin:0.3rem 0 0; padding-left:1.1rem;">
+    <li>state the two conditions an instrument must satisfy, and say which of them can be tested;</li>
+    <li>derive the IV estimator from its two moment conditions, and show that it is consistent;</li>
+    <li>read the asymptotic variance of the IV estimator, and say what it costs relative to OLS;</li>
+    <li>recognise a weak instrument and describe what it does to an IV estimate;</li>
+    <li>carry out two-stage least squares with exogenous controls and one or more instruments;</li>
+    <li>explain why the second stage must never be run by hand;</li>
+    <li>use the predetermined variables of a simultaneous system as instruments, and estimate a structural equation by 2SLS;</li>
+    <li>apply the order and rank conditions, and classify an equation as under-, just- or over-identified.</li>
+  </ul>
+</div>
+
+<div class="box refresh">
+  <span class="box-label">Where this sits</span>
+  Unit 3B ended on a diagnosis with no treatment: a regressor correlated with the disturbance
+  makes OLS biased and inconsistent, and no quantity of data repairs it. It also left one clue.
+  In the market model, the price–quantity scatter reveals the supply curve exactly when
+  something is moving demand and nothing is moving supply — so if a demand shifter can be
+  <em>observed</em>, the part of the price variation it causes is usable and the rest is not.
+  This unit turns that clue into an estimator, generalises it to any number of endogenous
+  regressors and instruments, and then asks the question that decides whether any of it can be
+  done at all: is the equation identified?
+</div>
+
+<h2>1 · Where Unit 3B left us</h2>
+
+<p>The problem, in one line. In</p>
+
+<p class="math">Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> + u<sub>i</sub></p>
+
+<p>the regressor X is <a class="gt" href="../reference/glossary.html#endogeneity">endogenous</a> — cov(X, u) ≠ 0 — whether because a variable that belongs in
+the equation was omitted, because X is measured with error, or because Y and X are determined
+together. <a class="gt" href="../reference/glossary.html#ols">OLS</a> converges on β<sub>2</sub> + cov(X, u)/var(X), and the second term does not go
+away.</p>
+
+<p>Sometimes the problem can be fixed inside the equation: find the <a class="gt" href="../reference/glossary.html#omitted-variable">omitted variable</a>, or a
+<a class="gt" href="../reference/glossary.html#proxy">proxy</a> for it, and put it in. Unit 2A Part 1 dealt with that case. Often it cannot — nobody has
+ever measured ability, and no amount of care will stop price and quantity being determined at
+the same instant. When the specification cannot be repaired, <strong>the remaining option is to
+change the method of estimation</strong>. <a class="gt" href="../reference/glossary.html#instrumental-variable">Instrumental variables</a> estimation is that change, and
+<a class="gt" href="../reference/glossary.html#two-stage-least-squares">two-stage least squares</a> is its general form.</p>
+
+<h2>2 · What an instrument has to do</h2>
+
+<p>Suppose X is endogenous. An <strong>instrumental variable</strong> — an
+<strong>instrument</strong> — is a third variable Z, not in the equation, satisfying two
+conditions:</p>
+
+<div class="box def">
+  <span class="box-label">The two conditions</span>
+  <p class="math" style="margin:0.4rem 0 0.1rem;">(1) &nbsp; cov(Z, u) = 0 &nbsp;&nbsp;&nbsp; <strong>instrument exogeneity</strong></p>
+  <p class="math" style="margin:0.1rem 0 0.4rem;">(2) &nbsp; cov(Z, X) ≠ 0 &nbsp;&nbsp;&nbsp; <strong>instrument relevance</strong></p>
+  Condition 1 says the instrument affects Y <em>only</em> through X — it is clean of everything
+  the disturbance contains. Condition 2 says it actually moves X, so that there is some variation
+  to work with. An instrument must satisfy both; either alone is worthless.
+</div>
+
+<p>The asymmetry between the two conditions is the single most important practical fact in this
+unit, and it is worth stating before any algebra.</p>
+
+<p><strong>Condition 2 is testable, and easily.</strong> Regress the endogenous variable on the
+instrument,</p>
+
+<p class="math">X<sub>i</sub> = π<sub>1</sub> + π<sub>2</sub>Z<sub>i</sub> + ε<sub>i</sub></p>
+
+<p>and test H<sub>0</sub>: π<sub>2</sub> = 0 against H<sub>1</sub>: π<sub>2</sub> ≠ 0 with the
+ordinary <a class="gt" href="../reference/glossary.html#t-statistic">t-test</a> of Unit 1F. Rejection at 5% is the minimum. Section 4 explains why the minimum is
+not enough, and why what you want is a large t-statistic rather than a barely significant one:
+<a class="gt" href="../reference/glossary.html#practical-significance">statistical significance</a> and practical significance are both required.</p>
+
+<p><strong>Condition 1 cannot be tested at all</strong>, at least not when there is one
+instrument for one endogenous regressor. The <a class="gt" href="../reference/glossary.html#disturbance">disturbance</a> is unobservable, so its covariance with
+anything is unobservable. What can be computed — the correlation between Z and the IV <a class="gt" href="../reference/glossary.html#residual">residuals</a>
+— is zero by construction, because that is the equation the <a class="gt" href="../reference/glossary.html#estimator">estimator</a> solves. So no regression
+output will ever tell you whether an instrument is <a class="gt" href="../reference/glossary.html#exogenous">exogenous</a>. The case for condition 1 is made
+by argument: from economic theory, from how the variable came to be recorded, from institutional
+detail. <strong>It is a claim about the world, defended in prose, and a reader is entitled to
+disbelieve it.</strong></p>
+
+<h2>3 · The IV estimator</h2>
+
+<p>The estimator follows from the two conditions by the <a class="gt" href="../reference/glossary.html#method-of-moments">method of moments</a>, which Unit 1B named
+as one of the three estimation principles in this course. The idea is to write down the
+population facts we are prepared to assert, and then impose their sample versions.</p>
+
+<p>With the constant in the equation there are two such facts. The disturbance has mean zero,
+and it is uncorrelated with the instrument:</p>
+
+<p class="math">E(u<sub>i</sub>) = 0 &nbsp;⟹&nbsp; E(Y<sub>i</sub> − β<sub>1</sub> − β<sub>2</sub>X<sub>i</sub>) = 0</p>
+<p class="math">E(Z<sub>i</sub>u<sub>i</sub>) = 0 &nbsp;⟹&nbsp; E[Z<sub>i</sub>(Y<sub>i</sub> − β<sub>1</sub> − β<sub>2</sub>X<sub>i</sub>)] = 0</p>
+
+<p>Replace each expectation by the corresponding sample average and solve. The first condition
+gives β̂<sub>1</sub> = Ȳ − β̂<sub>2</sub>X̄, exactly as in OLS. Substituting that into the second
+and writing the result in deviation form:</p>
+
+<div class="box key">
+  <span class="box-label">The instrumental variables estimator</span>
+  <p class="math" style="margin:0.4rem 0 0.3rem;">β̂<sub>2</sub><sup>IV</sup> = Σ(Z<sub>i</sub> − Z̄)(Y<sub>i</sub> − Ȳ) &nbsp;/&nbsp; Σ(Z<sub>i</sub> − Z̄)(X<sub>i</sub> − X̄) &nbsp; = &nbsp; cov(Z, Y) / cov(Z, X)</p>
+  Compare the OLS estimator, Σ(X<sub>i</sub> − X̄)(Y<sub>i</sub> − Ȳ)/Σ(X<sub>i</sub> −
+  X̄)<sup>2</sup>. The change is that the instrument replaces the regressor in one slot of the
+  numerator and in one slot of the denominator. <strong>Set Z = X and the IV estimator
+  <em>is</em> OLS</strong> — which is the sense in which OLS is the special case where the
+  regressor is its own instrument, valid exactly when the regressor is exogenous.
+</div>
+
+<h3>Why it works</h3>
+
+<p>Substitute the true model Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> +
+u<sub>i</sub> into the numerator. The constant drops out of the deviations and</p>
+
+<p class="math">β̂<sub>2</sub><sup>IV</sup> = β<sub>2</sub> + Σ(Z<sub>i</sub> − Z̄)u<sub>i</sub> / Σ(Z<sub>i</sub> − Z̄)(X<sub>i</sub> − X̄)</p>
+
+<p>Divide the top and bottom of the second term by n and take <a class="gt" href="../reference/glossary.html#probability-limit">probability limits</a>, as in Unit 3B.
+The numerator converges on cov(Z, u), which condition 1 sets to zero. The denominator converges
+on cov(Z, X), which condition 2 keeps away from zero. Hence</p>
+
+<p class="math">plim(β̂<sub>2</sub><sup>IV</sup>) = β<sub>2</sub> + cov(Z, u)/cov(Z, X) = β<sub>2</sub> + 0/cov(Z, X) = β<sub>2</sub></p>
+
+<p>The estimator is <strong><a class="gt" href="../reference/glossary.html#consistency">consistent</a></strong>. Notice that both conditions have now been used,
+and used in different places: exogeneity kills the numerator, relevance keeps the denominator
+alive. That is why an irrelevant instrument is not merely unhelpful but catastrophic — it puts a
+zero in a denominator, and section 4 shows what that does in a finite sample.</p>
+
+<div class="box warn">
+  <span class="box-label">Consistent is not unbiased</span>
+  IV is a ratio of two random quantities, and the expectation of a ratio is not the ratio of the
+  expectations. <strong>The IV estimator is biased in small samples even when both conditions
+  hold perfectly.</strong> What it offers is a bias that vanishes as the sample grows, which is
+  more than OLS offers here and less than the finite-sample guarantee Unit 1C provided for an
+  exogenous regressor. IV is a large-sample method; with thirty observations, treat any IV
+  estimate with caution.
+</div>
+
+<h2>4 · The price: variance, and weak instruments</h2>
+
+<p>Consistency is bought, and the bill is precision. For the simple regression the estimated
+asymptotic variance of the IV estimator is</p>
+
+<p class="math">var(β̂<sub>2</sub><sup>IV</sup>) = σ̂<sup>2</sup> / [ Σ(X<sub>i</sub> − X̄)<sup>2</sup> · r<sup>2</sup><sub>X,Z</sub> ]</p>
+
+<p>where r<sup>2</sup><sub>X,Z</sub> is the squared correlation between the regressor and the
+instrument — equivalently, the R<sup>2</sup> of the first-stage regression of X on Z. Set beside
+the OLS variance σ<sup>2</sup>/Σ(X<sub>i</sub> − X̄)<sup>2</sup>, the comparison is immediate:</p>
+
+<div class="box key">
+  <span class="box-label">IV is always less precise, by a factor you can compute</span>
+  <p class="math" style="margin:0.4rem 0 0.3rem;">var(β̂<sub>2</sub><sup>IV</sup>) / var(β̂<sub>2</sub><sup>OLS</sup>) = 1 / r<sup>2</sup><sub>X,Z</sub> &nbsp;≥&nbsp; 1</p>
+  If the instrument explains a quarter of the variation in X, the IV variance is four times the
+  OLS variance and the standard error doubles. The mechanism is the one Unit 2B described for
+  the variance inflation factor: <strong>only the part of X that the instrument accounts for is
+  being used</strong>, and the rest of the sample's variation is thrown away. IV is OLS run on
+  less information, deliberately.
+</div>
+
+<p>That formula also says where the danger lies. As r<sup>2</sup><sub>X,Z</sub> approaches zero
+the variance approaches infinity, and long before it gets there the asymptotic formula stops
+describing the estimator at all.</p>
+
+<div class="box def">
+  <span class="box-label">Weak instruments</span>
+  An instrument is <strong>weak</strong> when it is correlated with the endogenous regressor,
+  but only slightly. Weak instruments are not a mild version of the problem; they produce three
+  distinct failures at once:
+  <ul style="margin:0.4rem 0 0; padding-left:1.1rem;">
+    <li><strong>Enormous variance.</strong> The 1/r<sup>2</sup> factor blows up, and the
+    confidence interval becomes too wide to exclude anything.</li>
+    <li><strong>Severe finite-sample bias, towards OLS.</strong> The IV estimator drifts back
+    towards the biased estimate it was supposed to replace. In the limiting case of an
+    instrument with no correlation at all, IV lands where OLS lands — so a useless instrument
+    buys nothing and costs everything.</li>
+    <li><strong>Standard errors that understate the trouble.</strong> The asymptotic formula
+    above is derived for a strong instrument and is too small when the instrument is weak, so
+    the reported t-ratios cannot be believed either.</li>
+  </ul>
+  This is what the lecture means by saying that a weak instrument can be worse than the OLS
+  estimator it replaces.
+</div>
+
+<p>The practical defence is to look hard at the first stage. Report the t-statistic on the
+instrument (or, with several instruments, the F-statistic on all of them jointly), and treat a
+value that merely clears the 5% <a class="gt" href="../reference/glossary.html#critical-value">critical value</a> as a warning rather than a licence. A widely used
+rule of thumb asks for a first-stage F of at least 10 before an IV <a class="gt" href="../reference/glossary.html#estimate">estimate</a> is taken seriously.
+The figure below shows why a rule of that kind is needed.</p>
+
+<div class="viz" data-viz="weak-instrument">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It repeats an IV estimation many times over
+    simulated samples and draws the distribution of the estimates, alongside the distribution of
+    the OLS estimates from the same samples. A slider weakens the instrument. The IV
+    distribution starts tight and centred on the true value, and as the instrument weakens it
+    spreads out and slides towards the OLS distribution.
+  </p>
+</div>
+
+<h2>5 · Finding an instrument</h2>
+
+<p>Return to the returns-to-schooling equation of Unit 3B. What is wanted is</p>
+
+<p class="math">ln(wage<sub>i</sub>) = β<sub>1</sub> + β<sub>2</sub>Educ<sub>i</sub> + β<sub>3</sub>Abil<sub>i</sub> + ε<sub>i</sub></p>
+
+<p>with ability unobserved, so that the estimable equation carries u<sub>i</sub> =
+β<sub>3</sub>Abil<sub>i</sub> + ε<sub>i</sub> and education is endogenous. A valid instrument
+must be something that moves education around without belonging in the wage equation itself and
+without being tangled up with ability. Candidates, and what is wrong with each, are the substance
+of the literature:</p>
+
+<div class="table-scroll"><table class="cal" style="margin-top:0.5rem;">
+  <tr><th>Candidate</th><th>Relevant?</th><th>Exogenous?</th></tr>
+  <tr><th>An IQ or test score</th><td class="cov">yes</td><td class="cov">No — this is a <em>proxy</em> for the omitted variable, and belongs in the equation rather than outside it.</td></tr>
+  <tr><th>Parents' education</th><td class="cov">yes, strongly</td><td class="cov">Doubtful. If ability is transmitted between generations, parents' education is correlated with the child's ability, which is in u.</td></tr>
+  <tr><th>Number of siblings</th><td class="cov">yes — resources per child</td><td class="cov">Arguable. Family size may correlate with the same background that affects earnings directly.</td></tr>
+  <tr><th>Distance to the nearest college</th><td class="cov">moderately</td><td class="cov">Plausible, and widely used. It requires that where a person grew up affects wages only through the schooling it made cheap — which local labour market conditions may spoil.</td></tr>
+  <tr><th>Quarter of birth</th><td class="cov">weakly</td><td class="cov">Very plausible, since nobody chooses it. The relevance comes from compulsory-schooling laws, and it is famously weak — the textbook example of the problem in section 4.</td></tr>
+</table></div>
+
+<div class="box warn">
+  <span class="box-label">An instrument is not a proxy</span>
+  The two devices are opposites and are constantly confused. A <strong>proxy</strong> (Unit 2A
+  Part 1) is a stand-in for the omitted variable and goes <em>into</em> the equation, so it must
+  be correlated with the thing it replaces. An <strong>instrument</strong> stays <em>out</em> of
+  the equation and must be uncorrelated with the disturbance — including with the omitted
+  variable inside it. A good proxy makes a bad instrument, precisely because it is a good
+  proxy.
+</div>
+
+<h2>6 · Two-stage least squares</h2>
+
+<p>The IV estimator of section 3 handles one endogenous regressor, one instrument and nothing
+else. Real equations have controls, and useful instruments often come in groups.
+<strong>Two-stage least squares</strong> is the generalisation that copes with both.</p>
+
+<p>Take the model with one endogenous regressor X, one exogenous regressor T, and one instrument
+Z:</p>
+
+<p class="math">Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> + β<sub>3</sub>T<sub>i</sub> + u<sub>i</sub></p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">1</span><span>
+    <strong>Stage 1.</strong> Regress the endogenous variable on the instrument
+    <em>and on every exogenous variable in the equation</em>:
+    <p class="math" style="margin:0.4rem 0;">X<sub>i</sub> = π<sub>1</sub> + π<sub>2</sub>T<sub>i</sub> + π<sub>3</sub>Z<sub>i</sub> + ε<sub>i</sub></p>
+    and save the fitted values X̂<sub>i</sub>. This is a <strong>reduced form equation</strong>:
+    an endogenous variable written as a function of exogenous variables only, exactly as in
+    Unit 3B.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">2</span><span>
+    <strong>Stage 2.</strong> Estimate the structural equation with the fitted values in place
+    of the endogenous regressor:
+    <p class="math" style="margin:0.4rem 0;">Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X̂<sub>i</sub> + β<sub>3</sub>T<sub>i</sub> + u<sub>i</sub></p>
+  </span></div>
+</div>
+
+<p>The logic is worth saying slowly, because it is what the whole method rests on. Stage 1 splits
+X into two parts: the fitted value X̂, which is a linear combination of exogenous variables and
+therefore uncorrelated with u, and the residual, which carries everything else — including
+whatever correlation with the disturbance made X endogenous in the first place. Stage 2 uses only
+the first part. <strong>The first stage purges X of its correlation with u</strong>, and discards
+the contaminated variation rather than trying to correct it.</p>
+
+<p>Two details of stage 1 are examinable and are easy to get wrong.</p>
+
+<div class="box key">
+  <span class="box-label">Every exogenous variable goes in the first stage</span>
+  T appears in the first-stage regression even though it is not an instrument and has no
+  endogeneity problem. Leaving it out gives the wrong X̂ and an inconsistent second stage. The
+  test on the instrument is then a test of π<sub>3</sub> = 0 <strong>in the presence of
+  T</strong>: what is needed is that Z moves X for reasons T does not already account for. An
+  instrument that is strongly correlated with X only because both are correlated with a control
+  variable is no instrument at all.
+</div>
+
+<div class="box warn">
+  <span class="box-label">Never run the second stage by hand</span>
+  Running the two regressions separately in OLS produces the <em>correct coefficients</em> and
+  <strong>wrong standard errors</strong>, and nothing on the output flags the fact. The reason:
+  the standard errors need σ̂<sup>2</sup> computed from residuals taken against the
+  <em>actual</em> X, whereas a hand-run second stage computes them against X̂, and treats the
+  fitted values as though they were data rather than estimates. Use the package's own 2SLS or
+  TSLS command — in EViews, <em>Estimation method: TSLS</em>, with the instrument list supplied
+  separately — and let it do both stages internally.
+</div>
+
+<div class="viz" data-viz="2sls-stages">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It shows the two stages side by side: the
+    first-stage regression of the endogenous variable on the instrument, and the second-stage
+    regression of Y on the fitted values. A slider changes the strength of the instrument. The
+    readout reports the true coefficient, the OLS estimate, and the 2SLS estimate obtained
+    through the two stages, together with the ratio formula of section 3.
+  </p>
+</div>
+
+<div class="box def">
+  <span class="box-label">2SLS with one instrument is IV</span>
+  With exactly one endogenous regressor and exactly one instrument, the two-stage procedure
+  returns the number the ratio formula of section 3 returns — not approximately, but to every
+  decimal place. The two are the same estimator written two ways, which is why "IV" and "2SLS"
+  are often used interchangeably. They part company only when there is more than one
+  instrument, which is section 7.
+</div>
+
+<h2>7 · Several instruments at once</h2>
+
+<p>Suppose more than one candidate instrument is available: Z<sub>1</sub>, Z<sub>2</sub>, …,
+Z<sub>K</sub>, each of them arguably exogenous, none of them individually very strongly
+correlated with X. Nothing needs to change except the first stage, which now contains all of
+them:</p>
+
+<p class="math">X<sub>i</sub> = π<sub>1</sub> + π<sub>2</sub>T<sub>i</sub> + π<sub>3</sub>Z<sub>1i</sub> + π<sub>4</sub>Z<sub>2i</sub> + … + ε<sub>i</sub></p>
+
+<p>and stage 2 proceeds as before with the fitted values from that regression. The gain is
+real: <strong>a linear combination of several instruments can be much more strongly correlated
+with X than any one of them</strong>, and section 4 showed that the correlation is what buys
+precision. The first stage chooses the combination that fits X best, which is the best one
+available.</p>
+
+<p>The relevance condition becomes a joint one: at least one of the coefficients on the
+instruments must be non-zero, so the test is an <a class="gt" href="../reference/glossary.html#f-test">F-test</a> on all of them together — the Unit 1F
+F-test of a set of restrictions, applied to the first-stage regression. It is this F that the
+rule of thumb in section 4 refers to.</p>
+
+<div class="box key">
+  <span class="box-label">Counting: identification in miniature</span>
+  Let there be one endogenous regressor and K instruments excluded from the equation.<br>
+  <strong>K = 0</strong> — nothing to work with. The equation is <strong>underidentified</strong>
+  and no consistent estimator exists.<br>
+  <strong>K = 1</strong> — <strong>just identified</strong>. IV and 2SLS coincide, and the
+  estimate is exactly determined.<br>
+  <strong>K &gt; 1</strong> — <strong>overidentified</strong>. There are more moment conditions
+  than parameters, and 2SLS combines them optimally rather than choosing between them. The
+  surplus also makes a limited test of exogeneity possible, since the instruments can be
+  checked against each other. That test is beyond this course, but the counting is not: it is
+  exactly the order condition of section 9.
+</div>
+
+<h2>8 · 2SLS in a simultaneous system</h2>
+
+<p>Everything so far has treated a single equation with an endogeneity problem. A <a class="gt" href="../reference/glossary.html#simultaneous-equations">simultaneous
+system</a> is the same problem several times over, and it supplies its own instruments.</p>
+
+<p>Unit 3B established the two facts that make this work. First, in a system every endogenous
+variable has a <strong><a class="gt" href="../reference/glossary.html#reduced-form">reduced form</a></strong>: an expression in the <a class="gt" href="../reference/glossary.html#predetermined">predetermined variables</a> alone.
+Second, the predetermined variables are uncorrelated with every structural disturbance, since
+they are determined outside the system or in an earlier period. Put together:</p>
+
+<div class="box key">
+  <span class="box-label">The predetermined variables are the instruments</span>
+  <strong>Every predetermined variable in a simultaneous system is a candidate instrument for
+  every endogenous variable in it.</strong> Estimating the reduced form of an endogenous
+  right-hand-side variable <em>is</em> the first stage of 2SLS, and the fitted values from it are
+  the purged regressor the structural equation needs.
+</div>
+
+<p>So the procedure for a system is the one already learnt, with the instrument list written for
+you:</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">1</span><span>
+    <strong>Stage 1.</strong> For each endogenous variable that appears on the <em>right-hand
+    side</em> of a structural equation, run OLS on its reduced form — that variable regressed on
+    all the predetermined variables in the whole system — and keep the fitted values.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">2</span><span>
+    <strong>Stage 2.</strong> Re-estimate each structural equation with the fitted values
+    substituted for the endogenous variables <em>where they appear on the right-hand side
+    only</em>. The left-hand variable is never replaced.
+  </span></div>
+</div>
+
+<h3>A worked macroeconomic example</h3>
+
+<p>The lecture's example is a small Keynesian model with two behavioural equations and two
+identities:</p>
+
+<p class="math">Y<sub>t</sub> = C<sub>t</sub> + I<sub>t</sub> + G<sub>t</sub> + NX<sub>t</sub></p>
+<p class="math">C<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>Y<sup>D</sup><sub>t</sub> + β<sub>3</sub>C<sub>t−1</sub> + u<sub>Ct</sub></p>
+<p class="math">Y<sup>D</sup><sub>t</sub> = Y<sub>t</sub> − T<sub>t</sub></p>
+<p class="math">I<sub>t</sub> = β<sub>4</sub> + β<sub>5</sub>Y<sub>t</sub> + β<sub>6</sub>r<sub>t−1</sub> + u<sub>It</sub></p>
+
+<p>with Y output, C consumption, Y<sup>D</sup> disposable income, I investment, G government
+spending, NX net exports, T taxes and r the interest rate. Before estimating anything, classify:</p>
+
+<p class="math"><strong>endogenous:</strong> Y<sub>t</sub>, C<sub>t</sub>, Y<sup>D</sup><sub>t</sub>, I<sub>t</sub> &nbsp;·&nbsp; <strong>predetermined:</strong> G<sub>t</sub>, NX<sub>t</sub>, T<sub>t</sub>, C<sub>t−1</sub>, r<sub>t−1</sub></p>
+
+<p>Four equations, four endogenous variables. C<sub>t−1</sub> and r<sub>t−1</sub> are lagged
+endogenous variables, which is why they count as predetermined rather than endogenous: whatever
+determined them has already happened.</p>
+
+<p>Only Y<sup>D</sup> and Y appear as endogenous regressors, so stage 1 needs two reduced form
+regressions, each on all five predetermined variables:</p>
+
+<p class="math">Y<sub>t</sub> = π<sub>1</sub> + π<sub>2</sub>G<sub>t</sub> + π<sub>3</sub>NX<sub>t</sub> + π<sub>4</sub>T<sub>t</sub> + π<sub>5</sub>C<sub>t−1</sub> + π<sub>6</sub>r<sub>t−1</sub> + ε<sub>Yt</sub></p>
+<p class="math">Y<sup>D</sup><sub>t</sub> = π<sub>7</sub> + π<sub>8</sub>G<sub>t</sub> + π<sub>9</sub>NX<sub>t</sub> + π<sub>10</sub>T<sub>t</sub> + π<sub>11</sub>C<sub>t−1</sub> + π<sub>12</sub>r<sub>t−1</sub> + ε<sub>YDt</sub></p>
+
+<p>and stage 2 re-estimates the two behavioural equations with the fitted values in place:</p>
+
+<p class="math">C<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>Ŷ<sup>D</sup><sub>t</sub> + β<sub>3</sub>C<sub>t−1</sub> + ε<sub>Ct</sub> &nbsp;·&nbsp; I<sub>t</sub> = β<sub>4</sub> + β<sub>5</sub>Ŷ<sub>t</sub> + β<sub>6</sub>r<sub>t−1</sub> + ε<sub>It</sub></p>
+
+<p>The estimates the lecture reports, with the OLS results beneath them for comparison:</p>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>C&#770;<sub>t</sub> =</span><span>OLS:</span></span>
+  <span class="er-col"><span>−209.06</span><span>−266.65</span></span>
+  <span class="er-col er-op"><span>+</span><span>+</span></span>
+  <span class="er-col"><span>0.37 Ŷ<sup>D</sup><sub>t</sub></span><span>0.46 Y<sup>D</sup><sub>t</sub></span></span>
+  <span class="er-col er-op"><span>+</span><span>+</span></span>
+  <span class="er-col"><span>0.66 C<sub>t−1</sub></span><span>0.56 C<sub>t−1</sub></span></span>
+  <span class="er-note">2SLS on the first line, OLS on the second; the slides report point estimates only</span>
+</div>
+
+<div class="eqn-report">
+  <span class="er-col er-lhs"><span>I&#770;<sub>t</sub> =</span><span>OLS:</span></span>
+  <span class="er-col"><span>−261.48</span><span>−267.16</span></span>
+  <span class="er-col er-op"><span>+</span><span>+</span></span>
+  <span class="er-col"><span>0.19 Ŷ<sub>t</sub></span><span>0.19 Y<sub>t</sub></span></span>
+  <span class="er-col er-op"><span>−</span><span>−</span></span>
+  <span class="er-col"><span>9.55 r<sub>t−1</sub></span><span>9.26 r<sub>t−1</sub></span></span>
+  <span class="er-note">the investment equation barely moves</span>
+</div>
+
+<p>The consumption equation is the one to read carefully, because it does exactly what Unit 3B
+predicted. The OLS <a class="gt" href="../reference/glossary.html#mpc">marginal propensity to consume</a> is 0.46; the 2SLS estimate is 0.37. OLS is the
+larger, which is the direction the algebra required — plim(β̂<sub>2</sub>) &gt; β<sub>2</sub>
+when consumption feeds back into income — and the gap of nine percentage points is
+economically large, since it is the multiplier that depends on it. The investment equation, by
+contrast, is almost unchanged, and that is a useful corrective: <strong><a class="gt" href="../reference/glossary.html#simultaneity-bias">simultaneity bias</a> is not
+uniform across a system</strong>, and finding it small in one equation says nothing about
+another.</p>
+
+<div class="box def">
+  <span class="box-label">Indirect least squares, and why 2SLS supersedes it</span>
+  When an equation is <em>just</em> identified there is a second route to the same answer.
+  Estimate the reduced form by OLS, then solve the known relationships between the π's and the
+  β's backwards. For Unit 3B's two-equation model, π<sub>2</sub> = 1/(1 − β<sub>2</sub>) gives
+  β<sub>2</sub> = (π<sub>2</sub> − 1)/π<sub>2</sub>, and π<sub>4</sub> = β<sub>2</sub>/(1 −
+  β<sub>2</sub>) gives β<sub>2</sub> = π<sub>4</sub>/(1 + π<sub>4</sub>). This is
+  <strong>indirect least squares</strong>, and on a just-identified equation the two solutions
+  agree with each other and with 2SLS to the last decimal place.<br>
+  It stops working the moment an equation is overidentified: there are then more ways to solve
+  back than there are parameters, the answers disagree, and nothing says which to keep. 2SLS
+  has no such difficulty — it combines all the information in one regression — which is why it,
+  and not ILS, is the standard method.
+</div>
+
+<h2>9 · The identification problem</h2>
+
+<p>Every method in this unit runs through the reduced form. So the question that decides whether
+any of them can be used is this: <strong>can the <a class="gt" href="../reference/glossary.html#structural-equation">structural parameters</a> be recovered from the
+reduced form coefficients?</strong></p>
+
+<div class="box def">
+  <span class="box-label">Identification</span>
+  An equation is <strong>identified</strong> if numerical estimates of its structural parameters
+  can be obtained from the estimated reduced form coefficients. If they cannot, it is
+  <strong>underidentified</strong> (or unidentified), and no estimation method whatsoever will
+  produce them — the data simply do not contain the answer.<br>
+  An identified equation is <strong>just identified</strong> (also called exactly or fully
+  identified) if there is one way to recover each parameter, and <strong>overidentified</strong>
+  if there is more than one.
+</div>
+
+<p><a class="gt" href="../reference/glossary.html#identification">Identification</a> is a property of the <em>model</em>, not of the sample. It cannot be fixed by
+collecting more data, and this is the point at which an <a class="gt" href="../reference/glossary.html#econometrics">econometrics</a> problem becomes an economics
+problem: an equation is identified because theory says some variable belongs in one equation and
+not in another. Unit 3B's market model shows both outcomes at once.</p>
+
+<h3>Why demand cannot be identified and supply can</h3>
+
+<p>Recall the system:</p>
+
+<p class="math">Q<sub>i</sub><sup>D</sup> = β<sub>1</sub> + β<sub>2</sub>P<sub>i</sub> + β<sub>3</sub>Y<sub>i</sub> + β<sub>4</sub>T<sub>i</sub> + u<sub>i</sub> &nbsp;·&nbsp; Q<sub>i</sub><sup>S</sup> = α<sub>1</sub> + α<sub>2</sub>P<sub>i</sub> + α<sub>3</sub>T<sub>i</sub> + e<sub>i</sub> &nbsp;·&nbsp; Q<sub>i</sub><sup>D</sup> = Q<sub>i</sub><sup>S</sup></p>
+
+<p>Income Y shifts demand and does not appear in supply. Tastes T shift both. Nothing shifts
+supply alone. Unit 3B's figure showed why that settles matters: a curve is traced out by the
+shifting of the <em>other</em> curve. Income moves demand up and down along a stable supply
+curve, so the equilibria sweep out supply and the supply slope can be recovered. Nothing performs
+the same service for demand, and the demand curve is therefore invisible in the data.</p>
+
+<div class="viz" data-viz="identification-shifts">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It draws the market with an observed demand
+    shifter, plots the equilibria, and lets the reader switch between OLS on the whole scatter
+    and IV using the shifter. Turning the shifter's strength down to zero removes the
+    identification and the IV estimate becomes unusable; turning it up recovers the supply slope
+    exactly.
+  </p>
+</div>
+
+<h3>The order condition</h3>
+
+<p>The counting rule that formalises this comes in two equivalent statements. Both are
+<strong>necessary but not sufficient</strong>.</p>
+
+<div class="box key">
+  <span class="box-label">Order condition — counting exclusions</span>
+  In a system of <strong>M</strong> simultaneous equations, an equation is identified only if it
+  <strong>excludes at least M − 1</strong> of the variables — endogenous or predetermined —
+  appearing in the model.<br>
+  Excludes exactly M − 1 → <strong>just identified</strong>.<br>
+  Excludes more than M − 1 → <strong>overidentified</strong>.<br>
+  Excludes fewer than M − 1 → <strong>underidentified</strong>.
+</div>
+
+<div class="box key">
+  <span class="box-label">Order condition — counting instruments</span>
+  Equivalently: the number of <strong>predetermined variables in the system</strong> must be
+  greater than or equal to the number of <strong>slope coefficients in the equation being
+  estimated</strong>. This is the same requirement seen from the other side — every slope
+  coefficient needs an instrument, and the predetermined variables are the instruments
+  available.
+</div>
+
+<p>Apply both to the market model. There are M = 2 endogenous variables (P and Q), four variables
+in the model (Q, P, Y, T), and two predetermined variables (Y and T).</p>
+
+<div class="table-scroll"><table class="cal" style="margin-top:0.5rem;">
+  <tr><th>Equation</th><th>Variables excluded</th><th>M − 1</th><th>Slopes to estimate</th><th>Predetermined available</th><th>Verdict</th></tr>
+  <tr><th>Demand</th><td class="cov">none</td><td class="cov">1</td><td class="cov">3 &nbsp;(β<sub>2</sub>, β<sub>3</sub>, β<sub>4</sub>)</td><td class="cov">2</td><td class="cov"><strong>underidentified</strong></td></tr>
+  <tr><th>Supply</th><td class="cov">Y</td><td class="cov">1</td><td class="cov">2 &nbsp;(α<sub>2</sub>, α<sub>3</sub>)</td><td class="cov">2</td><td class="cov"><strong>just identified</strong></td></tr>
+</table></div>
+
+<p>The two statements agree, as they must, and they agree with the economics: supply is
+identified because income is excluded from it, and demand is identified by nothing because
+nothing is excluded from it.</p>
+
+<div class="box warn">
+  <span class="box-label">If your copy of the slides differs</span>
+  The exclusion count is <strong>M − 1</strong>, where M is the number of endogenous variables in
+  the model — Gujarati's Definition 19.1. Some versions of the slide introduce a second letter
+  for the number of variables excluded and then state the rule in terms of that letter, which
+  makes it circular. Use the form above, check it against the second statement of the order
+  condition, and expect the two to give the same verdict; when they do not, the counting has
+  gone wrong somewhere.
+</div>
+
+<h3>The rank condition</h3>
+
+<p>The <a class="gt" href="../reference/glossary.html#order-condition">order condition</a> counts, and counting is not enough. An equation can exclude the right
+number of variables and still be unidentified, if the excluded variables turn out not to matter.
+The <strong><a class="gt" href="../reference/glossary.html#rank-condition">rank condition</a></strong> is both necessary and sufficient, and for a two-equation
+system it reads:</p>
+
+<div class="box key">
+  <span class="box-label">Rank condition, two equations</span>
+  Equation 1 is identified if <strong>at least one of the exogenous variables excluded from
+  equation 1 has a non-zero coefficient in equation 2</strong>, and symmetrically for equation 2.
+</div>
+
+<p>Read against section 2, this should look familiar. It is <strong>instrument relevance</strong>
+under another name. The excluded variables are the instruments; the rank condition asks that at
+least one of them genuinely shifts the equation it was excluded from. Take the market model and
+suppose income turns out not to affect demand after all, so that β<sub>3</sub> = 0. The order
+condition is untouched — income is still absent from the supply equation — but the rank condition
+now fails, and supply is no longer identified. In estimation language: the instrument has become
+irrelevant, and section 4's weak-instrument problem in its extreme form.</p>
+
+<div class="box def">
+  <span class="box-label">The two conditions, and the two languages</span>
+  Identification theory and IV estimation are the same subject with different vocabulary, and it
+  is worth holding the translation in mind:<br>
+  <strong>order condition</strong> ⟷ are there <em>enough</em> instruments? (counting)<br>
+  <strong>rank condition</strong> ⟷ are the instruments <em>relevant</em>? (substance)<br>
+  <strong>predetermined variables excluded from the equation</strong> ⟷ the instrument list<br>
+  <strong>just identified</strong> ⟷ one instrument per endogenous regressor; IV = 2SLS<br>
+  <strong>overidentified</strong> ⟷ more instruments than needed; 2SLS combines them<br>
+  Beyond two equations the rank condition is stated with matrices — Gujarati chapter 19.3 — but
+  it is saying the same thing.
+</div>
+
+<h2>10 · What 2SLS fixes, and what it does not</h2>
+
+<p>A summary of the properties, all of which follow from what has been derived above.</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span>
+    <strong>2SLS estimates are still biased</strong> in finite samples, since the estimator is
+    a ratio. The bias is usually smaller than the OLS bias, and it disappears as the sample
+    grows, which the OLS bias does not.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span>
+    <strong>Variances and standard errors are larger than OLS's</strong>, by the factor
+    1/r<sup>2</sup> of section 4. An estimate that is consistent and imprecise is often more
+    useful than one that is precise and wrong, but the trade is real and should be reported.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">iii</span><span>
+    <strong>If the reduced form fits badly, 2SLS does not rid the equation of bias.</strong>
+    A poor first stage is a weak instrument, and section 4 applies in full.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">iv</span><span>
+    <strong>Everything rests on the exogeneity of the instruments</strong>, which is untestable
+    when the equation is just identified. 2SLS does not verify its own assumptions; it makes
+    the consequences of an assumption computable.
+  </span></div>
+</div>
+
+<p>Other estimators exist for simultaneous systems and are not covered here. Some, like 2SLS,
+work equation by equation through the reduced form; others — full information <a class="gt" href="../reference/glossary.html#maximum-likelihood">maximum likelihood</a>
+is the leading example — estimate the whole system at once, gaining <a class="gt" href="../reference/glossary.html#efficiency">efficiency</a> when every
+equation is <a class="gt" href="../reference/glossary.html#specification-bias">correctly specified</a> and spreading one equation's misspecification across all the
+others when it is not. For this course, 2SLS is the method, and the reason is proportion: it is
+the one that is robust to being wrong somewhere else in the system.</p>
+
+<h2>11 · Tutorial</h2>
+
+<p style="font-size:0.85rem; color:var(--ink-soft); font-style:italic;">
+Draft questions, to be replaced by the tutorial sheet issued in class.</p>
+
+<div class="tutorial">
+
+  <div class="tq">
+    <span class="qtext">State the two conditions for a valid instrument. For each, say how you
+    would establish that it holds, and derive the IV estimator of β<sub>2</sub> in
+    Y = β<sub>1</sub> + β<sub>2</sub>X + u from the two moment conditions. At which step is each
+    condition used?</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>The conditions.</strong> (1) cov(Z, u) = 0, instrument exogeneity: Z is
+        uncorrelated with the disturbance, so it affects Y only through X. (2) cov(Z, X) ≠ 0,
+        instrument relevance: Z actually moves X.</p>
+        <p><strong>Establishing them.</strong> Condition 2 is tested: regress X on Z (and on any
+        other exogenous variables in the equation) and test its coefficient with a t-test, or
+        several instruments jointly with an F-test. Condition 1 cannot be tested when there is
+        one instrument for one endogenous regressor — u is unobservable, and the sample
+        correlation between Z and the IV residuals is zero by construction. It has to be argued
+        from theory and institutional knowledge.</p>
+        <p><strong>The derivation.</strong> The two population moment conditions are
+        E(u) = 0 and E(Zu) = 0, that is</p>
+        <p class="math">E(Y − β<sub>1</sub> − β<sub>2</sub>X) = 0 &nbsp;·&nbsp; E[Z(Y − β<sub>1</sub> − β<sub>2</sub>X)] = 0</p>
+        <p>Impose the sample analogues. The first gives β̂<sub>1</sub> = Ȳ − β̂<sub>2</sub>X̄.
+        Substituting into the second and collecting terms in deviations from means:</p>
+        <p class="math">Σ(Z<sub>i</sub> − Z̄)[(Y<sub>i</sub> − Ȳ) − β̂<sub>2</sub>(X<sub>i</sub> − X̄)] = 0</p>
+        <p class="math">β̂<sub>2</sub><sup>IV</sup> = Σ(Z<sub>i</sub> − Z̄)(Y<sub>i</sub> − Ȳ) / Σ(Z<sub>i</sub> − Z̄)(X<sub>i</sub> − X̄)</p>
+        <p><strong>Where each condition enters.</strong> Substituting the true model gives
+        β̂<sub>2</sub><sup>IV</sup> = β<sub>2</sub> + [Σ(Z − Z̄)u]/[Σ(Z − Z̄)(X − X̄)]. Dividing
+        top and bottom by n, condition 1 sends the <em>numerator</em> to cov(Z, u) = 0, and
+        condition 2 keeps the <em>denominator</em> at cov(Z, X) ≠ 0. Exogeneity delivers
+        consistency; relevance makes the expression well defined. Note also that setting Z = X
+        returns the OLS formula exactly.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">A student estimates ln(wage) = β<sub>1</sub> + β<sub>2</sub>Educ +
+    β<sub>3</sub>Exper + u, treating education as endogenous and using mother's education as an
+    instrument. The first stage gives a t-statistic of 14.2 on the instrument. (a) Set out the
+    two stages in full. (b) Comment on the two conditions. (c) The student runs the two
+    regressions separately in EViews and reports the second stage's standard errors. What is
+    wrong, and what is not wrong?</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>(a) The two stages.</strong> Stage 1 regresses the endogenous variable on the
+        instrument <em>and on every exogenous variable in the structural equation</em>, so
+        experience appears here too:</p>
+        <p class="math">Educ<sub>i</sub> = π<sub>1</sub> + π<sub>2</sub>Exper<sub>i</sub> + π<sub>3</sub>MotherEduc<sub>i</sub> + ε<sub>i</sub></p>
+        <p>Keep the fitted values E&#770;duc. Stage 2 replaces the endogenous regressor with
+        them, leaving the exogenous regressor as it is:</p>
+        <p class="math">ln(wage<sub>i</sub>) = β<sub>1</sub> + β<sub>2</sub>E&#770;duc<sub>i</sub> + β<sub>3</sub>Exper<sub>i</sub> + u<sub>i</sub></p>
+        <p><strong>(b) The two conditions.</strong> Relevance is amply satisfied: t = 14.2 is far
+        beyond any conventional critical value, and this is a case where a strong instrument is
+        not in doubt. Exogeneity is the problem. The disturbance contains the individual's
+        ability; if ability is transmitted between generations — genetically, or through the
+        home — then mother's education is correlated with what is in u, and condition 1 fails.
+        The instrument is strong and probably invalid, which is the worst combination, because
+        a strong invalid instrument produces a tight <a class="gt" href="../reference/glossary.html#confidence-interval">confidence interval</a> around a biased
+        estimate. Nothing in the output will reveal it.</p>
+        <p><strong>(c) The hand-run second stage.</strong> The <em>coefficients</em> are right —
+        running the two OLS regressions by hand returns exactly the 2SLS point estimates. The
+        <em><a class="gt" href="../reference/glossary.html#standard-error">standard errors</a></em> are wrong. They are built from σ̂<sup>2</sup> computed against
+        residuals from the fitted E&#770;duc rather than actual Educ, and they treat the stage-1
+        fitted values as data rather than as estimates. So every t-ratio, confidence interval and
+        <a class="gt" href="../reference/glossary.html#p-value">p-value</a> on the printout is wrong, in a way nothing on the output flags. The fix is to use
+        the TSLS estimation method with the instrument list supplied, and let the package run
+        both stages internally.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">For the system Q<sup>D</sup> = β<sub>1</sub> + β<sub>2</sub>P +
+    β<sub>3</sub>Y + u, Q<sup>S</sup> = α<sub>1</sub> + α<sub>2</sub>P + α<sub>3</sub>W + e,
+    Q<sup>D</sup> = Q<sup>S</sup>, where Y is consumer income and W is the wage rate paid by
+    producers: (a) classify the variables; (b) apply both statements of the order condition to
+    each behavioural equation; (c) state the rank condition for each; (d) explain in words which
+    variable identifies which curve.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>(a) Classification.</strong> P and Q are endogenous — the market determines
+        them jointly, so M = 2. Y and W are exogenous, hence predetermined. The variables
+        appearing in the model are Q, P, Y and W.</p>
+        <p><strong>(b) The order condition, both ways.</strong></p>
+        <p><em>Counting exclusions.</em> M − 1 = 1. The demand equation excludes W: exactly one,
+        so demand is <strong>just identified</strong>. The supply equation excludes Y: exactly
+        one, so supply is <strong>just identified</strong> too.</p>
+        <p><em>Counting instruments.</em> There are two predetermined variables in the system.
+        Demand has two slope coefficients (β<sub>2</sub>, β<sub>3</sub>) and 2 ≥ 2; supply has
+        two (α<sub>2</sub>, α<sub>3</sub>) and 2 ≥ 2. Both satisfied, both just identified. The
+        two statements agree.</p>
+        <p><strong>(c) The rank condition.</strong> For the demand equation: at least one
+        exogenous variable excluded from demand must have a non-zero coefficient in supply —
+        here that is W, so the condition is α<sub>3</sub> ≠ 0. For the supply equation: the
+        excluded variable is Y, so the condition is β<sub>3</sub> ≠ 0. Both are substantive
+        claims about the economics, not about the data.</p>
+        <p><strong>(d) In words.</strong> Each curve is identified by the variable that shifts
+        the <em>other</em> one. The wage rate shifts supply and not demand, so as wages move the
+        equilibrium slides along a <a class="gt" href="../reference/glossary.html#stationarity">stationary</a> demand curve and traces it out: W identifies
+        demand. Income shifts demand and not supply, so it traces out supply: Y identifies
+        supply. This system is the fortunate case in which each curve has its own shifter, which
+        is why both are estimable — unlike Unit 3B's version, where tastes entered both equations
+        and only supply could be recovered.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">An IV estimate is reported as 0.42 with a standard error of 0.39; the
+    OLS estimate on the same data is 0.51 with a standard error of 0.04, and the first-stage
+    t-statistic on the instrument is 2.1. (a) What does the first-stage t say? (b) Why is the IV
+    standard error so much larger? (c) Should the IV estimate be preferred? (d) What would you
+    want to see before deciding?</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>(a) The first stage.</strong> t = 2.1 clears the 5% critical value of about
+        1.96, so the relevance condition is satisfied in the narrow statistical sense — but only
+        just. An F of about 4.4 is far below the rule-of-thumb 10, so this is a
+        <strong><a class="gt" href="../reference/glossary.html#weak-instrument">weak instrument</a></strong>.</p>
+        <p><strong>(b) The standard error.</strong> From section 4, the ratio of variances is
+        1/r<sup>2</sup><sub>X,Z</sub>. Here the standard errors are 0.39 against 0.04, a ratio of
+        about 9.75, so the variance ratio is about 95 and r<sup>2</sup> is around 0.01 — the
+        instrument accounts for roughly one per cent of the variation in the regressor, and IV is
+        estimating β<sub>2</sub> from that one per cent alone. Everything else in the sample has
+        been deliberately discarded.</p>
+        <p><strong>(c) Should it be preferred?</strong> Not on this evidence. The
+        <em>reason</em> to prefer IV is consistency, and with a weak instrument the argument
+        fails on its own terms: the finite-sample bias of IV is severe and points back towards
+        OLS, and the asymptotic standard error understates the true uncertainty, so even the
+        interval is not to be trusted. The two estimates are also statistically
+        indistinguishable — 0.42 ± 2(0.39) contains 0.51 comfortably — so the data are not
+        capable of telling them apart.</p>
+        <p><strong>(d) What to look for.</strong> The full first-stage regression rather than one
+        t-statistic; additional instruments that might be combined to strengthen it; the argument
+        for the exogeneity of the instrument, which no statistic supplies; and, if the instrument
+        stays weak, an honest report of the OLS estimate with the direction of its likely bias
+        signed from theory. A weak-instrument IV estimate presented as though it had settled the
+        question is worse than an OLS estimate presented with its bias acknowledged.</p>
+      </div>
+    </details>
+  </div>
+
+</div>
+
+<h2>12 · Check yourself</h2>
+
+<div class="quiz" data-answer="1">
+  <div class="q">Which pair of conditions makes Z a valid instrument for an endogenous X?</div>
+  <button class="opt">cov(Z, u) ≠ 0 and cov(Z, X) = 0, so Z replaces X in the model</button>
+  <button class="opt">cov(Z, u) = 0 and cov(Z, X) ≠ 0, so Z moves X but not u</button>
+  <button class="opt">cov(Z, u) = 0 and cov(Z, X) = 0, so Z is clean of both of them</button>
+  <button class="opt">cov(Z, u) ≠ 0 and cov(Z, X) ≠ 0, so Z is related to each one</button>
+  <div class="feedback right">Correct — exogeneity kills the numerator of the IV estimator, relevance keeps its denominator alive.</div>
+  <div class="feedback wrong">An instrument must be clean of the disturbance and correlated with the regressor. Uncorrelated with X gives a zero denominator; correlated with u reintroduces the very bias IV exists to remove.</div>
+</div>
+
+<div class="quiz" data-answer="2">
+  <div class="q">Of the two conditions for a valid instrument, which can be tested from the data?</div>
+  <button class="opt">both of them, using the first-stage regression output alone</button>
+  <button class="opt">exogeneity, by correlating the instrument with the residuals</button>
+  <button class="opt">relevance, by a t- or F-test in the first-stage regression</button>
+  <button class="opt">neither, since the disturbance is never observed in a sample</button>
+  <div class="feedback right">Correct — relevance is a testable restriction on observables; exogeneity is an argument about an unobservable and must be defended in prose.</div>
+  <div class="feedback wrong">Relevance is testable: regress X on Z and the controls and test the coefficient. Exogeneity is not — u is unobservable, and the correlation between Z and the IV residuals is zero by construction, so that calculation can never fail.</div>
+</div>
+
+<div class="quiz" data-answer="0">
+  <div class="q">Running the two stages of 2SLS by hand as separate OLS regressions gives</div>
+  <button class="opt">the right coefficients but the wrong standard errors</button>
+  <button class="opt">the right standard errors but the wrong coefficients</button>
+  <button class="opt">the wrong coefficients and the wrong standard errors</button>
+  <button class="opt">exactly what the package's own 2SLS command reports</button>
+  <div class="feedback right">Correct — σ̂² must be built from residuals against the actual X, not the fitted X̂, so every t-ratio and interval on a hand-run second stage is wrong.</div>
+  <div class="feedback wrong">The point estimates come out exactly right, which is what makes the mistake so easy to miss. What is wrong is the inference: the second stage computes its residual variance against X̂ and treats fitted values as data, so the standard errors are incorrect and nothing on the output says so.</div>
+</div>
+
+<div class="quiz" data-answer="3">
+  <div class="q">In a two-equation model, an equation that excludes exactly M − 1 of the model's variables is</div>
+  <button class="opt">underidentified, since one exclusion can never be enough here</button>
+  <button class="opt">overidentified, so 2SLS combines the surplus instruments</button>
+  <button class="opt">identified only if the rank condition is also known to fail</button>
+  <button class="opt">just identified, subject to the rank condition also holding</button>
+  <div class="feedback right">Correct — exactly M − 1 exclusions is just identification, and the order condition is necessary but not sufficient, so the rank condition still has to hold.</div>
+  <div class="feedback wrong">Exactly M − 1 exclusions is the just-identified case; more than M − 1 is overidentification. And the order condition is only necessary — the rank condition must hold as well, which is the requirement that an excluded variable genuinely shifts the other equation.</div>
+</div>
+
+<p class="deck-link" data-unit="3C"></p>
+
+<div class="ask-teacher">
+  <strong>The examinable core: the two conditions and which is testable, deriving the IV estimator from its moment conditions, the two stages of 2SLS and why the second must not be run by hand, treating predetermined variables as the instrument list in a system, and applying the order and rank conditions to classify an equation.</strong>
+  Identification is where marks are most often lost, because the counting is easy to do quickly and wrongly. Work both statements of the order condition every time and check that they agree. If any of it is still unclear, bring it to the tutorial or to office hours — <span data-course="officeHours"></span>.
+</div>
+
+<ol class="sources">
+  <li id="s1">Wooldridge, J. (2016), <em>Introductory Econometrics: A Modern Approach</em>, Chapter 15.1–15.3 — instrumental variables estimation, the two conditions, the IV estimator and its variance, weak instruments, and two-stage least squares.</li>
+  <li id="s2">Wooldridge, J. (2016), <em>Introductory Econometrics: A Modern Approach</em>, Chapter 16.1–16.4 — simultaneous equation models, simultaneity bias, identification and 2SLS in systems.</li>
+  <li id="s3">Gujarati, D. &amp; Porter, D. (2008), <em>Basic Econometrics</em>, Chapter 19 — the identification problem: the order and rank conditions, and the matrix statement of the rank condition in section 19.3.</li>
+  <li id="s4">Gujarati, D. &amp; Porter, D. (2008), <em>Basic Econometrics</em>, Chapter 20.3–20.4 — indirect least squares and two-stage least squares as methods for simultaneous systems.</li>
+  <li id="s5">Staiger, D. &amp; Stock, J. (1997), "Instrumental Variables Regression with Weak Instruments", <em>Econometrica</em> 65(3) — the source of the first-stage F rule of thumb quoted in section 4.</li>
+</ol>
+
+<div class="lesson-nav" data-unit="3C"></div>
+
+</div>
+</body>
+</html>

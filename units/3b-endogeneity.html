@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>/* Apply saved reader preferences before first paint, so a reader who
+chose dark does not get a white flash on every navigation. */
+try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
+z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
+if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
+<title>Unit 3B — Endogeneity · ECON 3049</title>
+<link rel="stylesheet" href="../assets/lesson.css?v=c825104d">
+<link rel="stylesheet" href="../assets/course.css?v=c825104d">
+<script src="../assets/course.js?v=c825104d"></script>
+<script src="../assets/nav.js?v=c825104d" defer></script>
+<script src="../assets/export.js?v=c825104d" defer></script>
+<script src="../assets/reader.js?v=c825104d" defer></script>
+<script src="../assets/quiz.js?v=c825104d" defer></script>
+<script src="../assets/viz.js?v=c825104d" defer></script>
+</head>
+<body>
+<div class="masthead" data-unit="3B"></div>
+<div class="wrap">
+
+<div class="reader-bar"></div>
+
+<h1>Endogeneity</h1>
+<p class="subtitle">When X is correlated with the error, OLS is biased and stays biased.</p>
+<p class="unit-meta" data-unit="3B"></p>
+
+<div class="box key">
+  <span class="box-label">By the end of this unit you should be able to</span>
+  <ul style="margin:0.3rem 0 0; padding-left:1.1rem;">
+    <li>state the exogeneity assumption in both its forms, and say what makes a regressor endogenous;</li>
+    <li>explain why endogeneity is the one assumption failure that a larger sample does not repair;</li>
+    <li>distinguish bias from inconsistency, and show that endogeneity delivers both;</li>
+    <li>name the three sources of endogeneity, and identify which one an equation suffers from;</li>
+    <li>write a simultaneous system in structural and in reduced form, and classify each variable as endogenous, exogenous or predetermined;</li>
+    <li>show algebraically that a jointly determined regressor is correlated with the disturbance;</li>
+    <li>derive plim(β̂<sub>2</sub>) for the Keynesian consumption function and sign the bias;</li>
+    <li>say why the reduced form may be estimated by OLS when the structural form may not.</li>
+  </ul>
+</div>
+
+<div class="box refresh">
+  <span class="box-label">Where this sits</span>
+  Unit 2 took the classical assumptions apart one at a time, and every failure it examined was
+  survivable. Heteroscedasticity and autocorrelation cost efficiency and wreck the standard
+  errors, but leave the coefficients themselves centred on the truth, so a large enough sample
+  still tells you what you want to know. This unit is about the failure that is not like that.
+  One case of it has already been met: Unit 2A Part 1's omitted variable bias. What follows
+  gives the general condition, adds the source Unit 2 never touched — variables that determine
+  each other — and shows why no amount of data helps. Unit 3C then supplies the repair.
+</div>
+
+<h2>1 · The assumption everything rests on</h2>
+
+<p>Return to the two-variable model, and to the assumption in Unit 1C's list that has done the
+most work:</p>
+
+<p class="math">Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> + u<sub>i</sub></p>
+
+<p><a class="gt" href="../reference/glossary.html#unbiasedness">Unbiasedness</a> of the <a class="gt" href="../reference/glossary.html#ols">OLS</a> <a class="gt" href="../reference/glossary.html#estimator">estimator</a> required that the regressor carry no information about the
+<a class="gt" href="../reference/glossary.html#disturbance">disturbance</a>. The assumption comes in two strengths, and both are worth having in mind:</p>
+
+<p class="math">E(u<sub>i</sub> | X<sub>i</sub>) = 0 &nbsp;&nbsp;(the strong form) &nbsp;·&nbsp; cov(X<sub>i</sub>, u<sub>i</sub>) = 0 &nbsp;&nbsp;(the weak form)</p>
+
+<p>The first says the disturbance averages to zero at every value of X, and it is what
+unbiasedness in a finite sample needs. The second says only that X and u are uncorrelated, and
+it is what <a class="gt" href="../reference/glossary.html#consistency">consistency</a> needs. The strong form implies the weak one; the weak one does not imply
+the strong. In this course the distinction rarely bites, and the shorthand for either is the
+same word.</p>
+
+<div class="box def">
+  <span class="box-label">Exogenous and endogenous</span>
+  A regressor is <strong>exogenous</strong> if it is uncorrelated with the disturbance:
+  cov(X<sub>i</sub>, u<sub>i</sub>) = 0. It is <strong>endogenous</strong> if it is not:
+  <p class="math" style="margin:0.5rem 0 0.2rem;">cov(X<sub>i</sub>, u<sub>i</sub>) ≠ 0 &nbsp;⟹&nbsp; X is endogenous</p>
+  The words are borrowed from simultaneous equation models, where <em>endogenous</em> means
+  <strong>determined inside the system</strong> and <em>exogenous</em> means determined outside
+  it. Section 4 returns to that reading. Used of a single equation, they simply record whether a
+  regressor is correlated with the error.
+</div>
+
+<p>Two things about the assumption are easy to lose sight of. First, it is required of
+<strong>every</strong> regressor, not just the one of interest. Second — and this is the reason
+<a class="gt" href="../reference/glossary.html#endogeneity">endogeneity</a> is not a local problem — one endogenous regressor contaminates the <a class="gt" href="../reference/glossary.html#estimate">estimates</a> of
+<em>all</em> the coefficients in the equation, including the coefficients on regressors that are
+perfectly well behaved. There is no such thing as a partly reliable regression.</p>
+
+<div class="box warn">
+  <span class="box-label">A notation caution</span>
+  The slides write the weak form as E(u, X) = cov(u, X). Read that E as the expectation of the
+  <em>product</em>, E(uX), which equals cov(u, X) only because E(u) = 0 is assumed separately.
+  If the constant is in the equation that is guaranteed, so nothing goes wrong; but E(u, X) is
+  not standard notation and it is worth writing E(u<sub>i</sub>X<sub>i</sub>) = 0 in an
+  examination script.
+</div>
+
+<h2>2 · Why this failure is different</h2>
+
+<p>Unit 1C's proof of unbiasedness has one step where the assumption enters. Writing x<sub>i</sub>
+= X<sub>i</sub> − X̄ and using the <a class="gt" href="../reference/glossary.html#k-weights">OLS weights</a> k<sub>i</sub> = x<sub>i</sub>/Σx<sub>i</sub><sup>2</sup>:</p>
+
+<p class="math">β̂<sub>2</sub> = β<sub>2</sub> + Σk<sub>i</sub>u<sub>i</sub> = β<sub>2</sub> + Σx<sub>i</sub>u<sub>i</sub> / Σx<sub>i</sub><sup>2</sup></p>
+
+<p>Everything then turned on the expectation of that second term. If X is <a class="gt" href="../reference/glossary.html#fixed-in-repeated-sampling">fixed in repeated
+sampling</a>, or at least uncorrelated with u, the term averages to zero and β̂<sub>2</sub> is
+unbiased. If X moves with u it does not, and the estimator is biased by exactly the amount that
+the <a class="gt" href="../reference/glossary.html#sampling-error">sampling error</a> term fails to vanish.</p>
+
+<p>So far this is the <a class="gt" href="../reference/glossary.html#omitted-variable">omitted variable</a> story of Unit 2A Part 1. What is new is what happens next.
+Consider what a bigger sample does. <a class="gt" href="../reference/glossary.html#heteroscedasticity">Heteroscedasticity</a> and <a class="gt" href="../reference/glossary.html#autocorrelation">autocorrelation</a> both leave
+E(Σx<sub>i</sub>u<sub>i</sub>) = 0, so the extra term shrinks as n grows and the estimator closes
+in on β<sub>2</sub>. Endogeneity does not: the numerator Σx<sub>i</sub>u<sub>i</sub>/n converges
+on the covariance cov(X, u), which is not zero, and the estimator closes in on the wrong number.</p>
+
+<div class="box def">
+  <span class="box-label">Consistency, and its failure</span>
+  An estimator is <strong>consistent</strong> if its probability limit — its <strong>plim</strong>,
+  the value it converges on as n grows without bound — equals the parameter it estimates. For a
+  well-behaved regression,
+  <p class="math" style="margin:0.5rem 0 0.2rem;">plim(β̂<sub>2</sub>) = β<sub>2</sub> + plim(Σx<sub>i</sub>u<sub>i</sub>/n) / plim(Σx<sub>i</sub><sup>2</sup>/n) = β<sub>2</sub> + cov(X, u)/var(X)</p>
+  because the two averages converge on the population covariance and the population variance.
+  An estimator that converges on something else is <strong>inconsistent</strong>, and the gap
+  cov(X, u)/var(X) is the <strong>asymptotic bias</strong>. Consistency is a weaker property
+  than unbiasedness in one sense and a more basic one in another: an estimator can be biased in
+  every finite sample and still consistent, which is tolerable, but an inconsistent estimator is
+  answering a different question and more data will not change its answer.
+</div>
+
+<p>That last sentence is the whole point of the unit, and it is worth having the comparison with
+Unit 2 in one place:</p>
+
+<div class="table-scroll"><table class="cal" style="margin-top:0.5rem;">
+  <tr><th>Assumption that fails</th><th>Unbiased?</th><th>Consistent?</th><th>Standard errors</th><th>Does more data help?</th></tr>
+  <tr><th>Homoscedasticity (2C)</th><td class="cov">yes</td><td class="cov">yes</td><td class="cov">wrong</td><td class="cov">yes</td></tr>
+  <tr><th>No autocorrelation (2D)</th><td class="cov">yes</td><td class="cov">yes</td><td class="cov">wrong</td><td class="cov">yes</td></tr>
+  <tr><th>No perfect collinearity (2B)</th><td class="cov">n/a</td><td class="cov">n/a</td><td class="cov">n/a</td><td class="cov">yes, if imperfect</td></tr>
+  <tr><th>Exogeneity — this unit</th><td class="cov">no</td><td class="cov">no</td><td class="cov">wrong</td><td class="cov"><strong>no</strong></td></tr>
+</table></div>
+
+<p>Everything in Unit 2 was a problem about <em>precision</em>, and precision is bought with
+observations. Endogeneity is a problem about <em>what the estimator is aiming at</em>, and no
+number of observations improves the aim. A researcher with an endogenous regressor and a million
+observations has a very precise estimate of the wrong quantity, reported with a <a class="gt" href="../reference/glossary.html#standard-error">standard error</a>
+small enough to make it look authoritative. That is the danger.</p>
+
+<div class="viz" data-viz="bias-does-not-vanish">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It runs the same regression at a sample size the
+    reader chooses, once with an exogenous regressor and once with an endogenous one, and draws
+    the sampling distribution of β̂<sub>2</sub> in each case. Both distributions tighten as the
+    sample grows; only one of them tightens around the true value.
+  </p>
+</div>
+
+<h2>3 · Where endogeneity comes from</h2>
+
+<p>Three mechanisms produce a regressor correlated with the disturbance. The first has already
+been met, the second is named here and not pursued, and the third occupies the rest of this
+unit.</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">i</span><span>
+    <strong>Omitted variables.</strong> A variable that belongs in the equation and is left out
+    of it goes into the disturbance instead. If it is correlated with a regressor that stayed in
+    — and there would be no bias if it were not — that regressor is now correlated with the
+    error. This is Unit 2A Part 1 exactly.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">ii</span><span>
+    <strong>Measurement error.</strong> If the regressor is recorded with error, what appears in
+    the data is X* = X + w, and the equation's disturbance absorbs −β<sub>2</sub>w. The recorded
+    X* contains w, so regressor and disturbance move together by construction. The
+    <em>errors-in-variables</em> problem is not examined this semester; the point to carry away
+    is that it is an endogeneity problem, not a separate topic.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">iii</span><span>
+    <strong>Simultaneity.</strong> Y and X determine each other, so a shock to Y feeds back into
+    X. This is the case Unit 2 never touched, and the one economic theory produces most often.
+  </span></div>
+</div>
+
+<h3>The omitted variable case, once more</h3>
+
+<p>The standard illustration, and the one Unit 3C uses to introduce <a class="gt" href="../reference/glossary.html#instrumental-variable">instruments</a>, is the return
+to schooling. What a wage equation ought to contain is</p>
+
+<p class="math">ln(wage<sub>i</sub>) = β<sub>1</sub> + β<sub>2</sub>Educ<sub>i</sub> + β<sub>3</sub>Abil<sub>i</sub> + ε<sub>i</sub></p>
+
+<p>and ability is not observed. Unit 2A Part 1 offered a <a class="gt" href="../reference/glossary.html#proxy">proxy</a>; suppose no acceptable one exists.
+The equation that can actually be estimated is</p>
+
+<p class="math">ln(wage<sub>i</sub>) = β<sub>1</sub> + β<sub>2</sub>Educ<sub>i</sub> + u<sub>i</sub> &nbsp;&nbsp;where&nbsp;&nbsp; u<sub>i</sub> = β<sub>3</sub>Abil<sub>i</sub> + ε<sub>i</sub></p>
+
+<p>More able people are, on any plausible account, more educated, so cov(Educ, u) =
+β<sub>3</sub>cov(Educ, Abil) ≠ 0. Education is endogenous, and the sign of the bias follows the
+Unit 2A rule: with β<sub>3</sub> &gt; 0 and cov(Educ, Abil) &gt; 0 the return to schooling is
+<strong>overstated</strong>, because part of what ability earns is being credited to the years of
+schooling that went with it.</p>
+
+<h2>4 · Simultaneous equations</h2>
+
+<p>Every model so far in this course has been a single equation with one variable on the left
+and the causation running one way:</p>
+
+<p class="math">Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>2i</sub> + β<sub>3</sub>X<sub>3i</sub> + … + β<sub>k</sub>X<sub>ki</sub> + u<sub>i</sub></p>
+
+<p>Most relationships economists care about are not like that. Price determines quantity demanded
+and quantity demanded determines price; income determines consumption and consumption is most of
+income; money supply and interest rates move together. In each case the right-hand variable is
+determined jointly with the left-hand one, and the equation cannot be read as a one-way street.</p>
+
+<h3>The Keynesian aggregate demand model</h3>
+
+<p>The example the lecture works with is the smallest interesting one. The consumption function
+is a behavioural relationship:</p>
+
+<p class="math">C<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>Y<sub>t</sub> + u<sub>t</sub></p>
+
+<p>with C aggregate consumption, Y aggregate income and β<sub>2</sub> the <a class="gt" href="../reference/glossary.html#mpc">marginal propensity to
+consume</a>. But in a closed economy with no government, income is not something handed down from
+outside — it is the sum of consumption and investment:</p>
+
+<p class="math">Y<sub>t</sub> = C<sub>t</sub> + I<sub>t</sub></p>
+
+<p>Those two equations are a <strong><a class="gt" href="../reference/glossary.html#simultaneous-equations">simultaneous equation model</a></strong>, and they must be read
+together. The first is a <strong>behavioural equation</strong>, expressing a theory about how
+households act; the second is an <strong>identity</strong>, true by the definition of national
+income and carrying no <a class="gt" href="../reference/glossary.html#parameter">parameters</a> to estimate and no disturbance. Both are
+<strong><a class="gt" href="../reference/glossary.html#structural-equation">structural equations</a></strong>: together they portray the structure of the model, each
+endogenous variable written in terms of the others and of whatever comes from outside.</p>
+
+<div class="box def">
+  <span class="box-label">The three kinds of variable</span>
+  <strong>Endogenous</strong> variables are determined <em>within</em> the system. Here C and Y
+  are both endogenous — solving the two equations together produces both of them at once.<br>
+  <strong>Exogenous</strong> variables are determined outside it and taken as given. Here I is
+  exogenous.<br>
+  <strong>Predetermined</strong> variables are the exogenous variables <em>plus</em> lagged
+  endogenous variables. C<sub>t−1</sub> was determined by last period's system, so as far as this
+  period is concerned its value is already fixed, and it can be treated exactly as an exogenous
+  variable can. The distinction matters in Unit 3C, where every predetermined variable in a
+  system is a candidate instrument.
+</div>
+
+<div class="box warn">
+  <span class="box-label">Which side of the equals sign proves nothing</span>
+  It is tempting to read off the endogenous variables as "the ones on the left". That is wrong,
+  and the lecture makes the point with a deliberately abstract pair. In
+  <p class="math" style="margin:0.4rem 0;">Y = α<sub>1</sub> + α<sub>2</sub>X + α<sub>3</sub>Z + u &nbsp;·&nbsp; Z = β<sub>1</sub> + β<sub>2</sub>Y + e</p>
+  Z appears on the right of the first equation and is endogenous all the same, because the second
+  equation determines it inside the system. X is exogenous. A variable is endogenous if the
+  system determines it, wherever it happens to be written.
+</div>
+
+<h3>A supply and demand system</h3>
+
+<p>The other standard example is the market for a good. Demand depends on price, on income Y and
+on tastes T; supply depends on price and on tastes; and the market clears:</p>
+
+<p class="math">Q<sub>i</sub><sup>D</sup> = β<sub>1</sub> + β<sub>2</sub>P<sub>i</sub> + β<sub>3</sub>Y<sub>i</sub> + β<sub>4</sub>T<sub>i</sub> + u<sub>i</sub></p>
+<p class="math">Q<sub>i</sub><sup>S</sup> = α<sub>1</sub> + α<sub>2</sub>P<sub>i</sub> + α<sub>3</sub>T<sub>i</sub> + e<sub>i</sub></p>
+<p class="math">Q<sub>i</sub><sup>D</sup> = Q<sub>i</sub><sup>S</sup></p>
+
+<p>P and Q are jointly determined by the intersection of the two curves, so both are endogenous.
+Y and T are <a class="gt" href="../reference/glossary.html#exogenous">exogenous</a>. And the question the unit is building towards is already visible here:
+if what we observe is a cloud of price–quantity pairs, each of them an intersection, what does a
+regression of Q on P actually estimate? Section 7 answers it exactly.</p>
+
+<h2>5 · The intuition: a shock that comes back</h2>
+
+<p>Before any algebra, the mechanism is worth walking through in words, because it is what an
+examination question usually asks for.</p>
+
+<p>Take the consumption function and suppose the disturbance rises in some period — households
+feel confident, or a category of spending is mismeasured, or anything else that raises C without
+raising income first. Then:</p>
+
+<div class="assumption-grid">
+  <div class="ag-item"><span class="ag-n">1</span><span>
+    u<sub>t</sub> rises, so C<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>Y<sub>t</sub> +
+    u<sub>t</sub> rises.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">2</span><span>
+    But Y<sub>t</sub> = C<sub>t</sub> + I<sub>t</sub>, so income rises with it.
+  </span></div>
+  <div class="ag-item"><span class="ag-n">3</span><span>
+    So the regressor Y<sub>t</sub> is high exactly when the disturbance u<sub>t</sub> is high:
+    cov(Y<sub>t</sub>, u<sub>t</sub>) &gt; 0. The assumption fails, and it fails in a known
+    direction.
+  </span></div>
+</div>
+
+<p>The same walk works in the market. A positive demand shock raises quantity demanded, which
+shifts the demand curve out along the supply curve, which raises the price. So cov(P, u) ≠ 0 in
+the demand equation, and by the mirror argument cov(P, e) ≠ 0 in the supply equation. Note what
+is <em>not</em> affected: income and tastes are determined outside the market, so they remain
+uncorrelated with both disturbances. <strong>Exogenous variables stay exogenous.</strong> That is
+what makes Unit 3C possible.</p>
+
+<h2>6 · The algebra: reduced form, and the size of the damage</h2>
+
+<p>The intuition can be made exact, and the route to it introduces the object Unit 3C is built
+on. Take the two structural equations and solve them for the endogenous variables in terms of
+the <a class="gt" href="../reference/glossary.html#predetermined">predetermined</a> ones alone. Substituting the consumption function into the identity:</p>
+
+<p class="math">Y<sub>t</sub> = (β<sub>1</sub> + β<sub>2</sub>Y<sub>t</sub> + u<sub>t</sub>) + I<sub>t</sub> &nbsp;⟹&nbsp; Y<sub>t</sub>(1 − β<sub>2</sub>) = β<sub>1</sub> + I<sub>t</sub> + u<sub>t</sub></p>
+
+<p>and therefore, with the companion expression for C obtained the same way,</p>
+
+<p class="math">Y<sub>t</sub> = β<sub>1</sub>/(1 − β<sub>2</sub>) + [1/(1 − β<sub>2</sub>)] I<sub>t</sub> + [1/(1 − β<sub>2</sub>)] u<sub>t</sub></p>
+<p class="math">C<sub>t</sub> = β<sub>1</sub>/(1 − β<sub>2</sub>) + [β<sub>2</sub>/(1 − β<sub>2</sub>)] I<sub>t</sub> + [1/(1 − β<sub>2</sub>)] u<sub>t</sub></p>
+
+<div class="box def">
+  <span class="box-label">The reduced form</span>
+  The <strong>reduced form</strong> of a simultaneous system expresses each endogenous variable
+  as a function of the <em>predetermined variables only</em>, plus a disturbance. Writing
+  π<sub>1</sub> = β<sub>1</sub>/(1 − β<sub>2</sub>), π<sub>2</sub> = 1/(1 − β<sub>2</sub>),
+  π<sub>3</sub> = β<sub>1</sub>/(1 − β<sub>2</sub>), π<sub>4</sub> = β<sub>2</sub>/(1 − β<sub>2</sub>),
+  and v<sub>t</sub> = w<sub>t</sub> = u<sub>t</sub>/(1 − β<sub>2</sub>):
+  <p class="math" style="margin:0.5rem 0 0.2rem;">Y<sub>t</sub> = π<sub>1</sub> + π<sub>2</sub>I<sub>t</sub> + v<sub>t</sub> &nbsp;·&nbsp; C<sub>t</sub> = π<sub>3</sub> + π<sub>4</sub>I<sub>t</sub> + w<sub>t</sub></p>
+  The π's are the <strong>reduced form coefficients</strong>. Section 8 says what they mean and
+  why they can be estimated when the β's cannot.
+</div>
+
+<h3>The covariance, exactly</h3>
+
+<p>The <a class="gt" href="../reference/glossary.html#reduced-form">reduced form</a> for Y makes the covariance a one-line calculation, because it puts the
+disturbance where it can be seen. Since E(u<sub>t</sub>) = 0,</p>
+
+<p class="math">cov(Y<sub>t</sub>, u<sub>t</sub>) = E(u<sub>t</sub>Y<sub>t</sub>) = E{ [β<sub>1</sub>/(1 − β<sub>2</sub>)]u<sub>t</sub> } + E{ [1/(1 − β<sub>2</sub>)]u<sub>t</sub>I<sub>t</sub> } + E{ [1/(1 − β<sub>2</sub>)]u<sub>t</sub><sup>2</sup> }</p>
+
+<p>The first term is zero because E(u<sub>t</sub>) = 0. The second is zero because investment is
+exogenous, so cov(u<sub>t</sub>, I<sub>t</sub>) = 0. The third is not zero, because
+E(u<sub>t</sub><sup>2</sup>) = var(u<sub>t</sub>) = σ<sup>2</sup>. Hence</p>
+
+<p class="math">cov(Y<sub>t</sub>, u<sub>t</sub>) = σ<sup>2</sup> / (1 − β<sub>2</sub>) &nbsp;&gt; 0 &nbsp;&nbsp;for 0 &lt; β<sub>2</sub> &lt; 1</p>
+
+<p>which is the intuition of section 5 written as a number. Notice that it is bigger the closer
+the marginal propensity to consume is to one — the stronger the feedback, the worse the
+violation.</p>
+
+<h3>Bias, and then inconsistency</h3>
+
+<p>Estimating the consumption function by OLS gives, in deviation form with y<sub>t</sub> =
+Y<sub>t</sub> − Ȳ,</p>
+
+<p class="math">β̂<sub>2</sub> = Σy<sub>t</sub>C<sub>t</sub> / Σy<sub>t</sub><sup>2</sup> = β<sub>2</sub> + Σy<sub>t</sub>u<sub>t</sub> / Σy<sub>t</sub><sup>2</sup></p>
+
+<p>For β̂<sub>2</sub> to be unbiased we would need E(Y<sub>t</sub>u<sub>t</sub>) = 0, and we have
+just shown it is σ<sup>2</sup>/(1 − β<sub>2</sub>). So the estimator is biased. Is it also
+<a class="gt" href="../reference/glossary.html#inconsistency">inconsistent</a>? Divide numerator and denominator by n, so that each becomes a sample moment, and
+take <a class="gt" href="../reference/glossary.html#probability-limit">probability limits</a>:</p>
+
+<p class="math">plim(β̂<sub>2</sub>) = β<sub>2</sub> + plim(Σy<sub>t</sub>u<sub>t</sub>/n) / plim(Σy<sub>t</sub><sup>2</sup>/n)</p>
+
+<p>As n grows, the sample covariance between Y and u converges on the population covariance just
+computed, and the sample variance of Y converges on σ<sub>Y</sub><sup>2</sup>. Therefore</p>
+
+<p class="math">plim(β̂<sub>2</sub>) = β<sub>2</sub> + [σ<sup>2</sup>/(1 − β<sub>2</sub>)] / σ<sub>Y</sub><sup>2</sup> = β<sub>2</sub> + [1/(1 − β<sub>2</sub>)](σ<sup>2</sup>/σ<sub>Y</sub><sup>2</sup>)</p>
+
+<div class="box key">
+  <span class="box-label">The result, and how to state it</span>
+  With 0 &lt; β<sub>2</sub> &lt; 1 and both variances positive, the second term is strictly
+  positive. So plim(β̂<sub>2</sub>) &gt; β<sub>2</sub>: <strong>OLS overestimates the marginal
+  propensity to consume, and goes on overestimating it however large the sample gets.</strong>
+  The estimator is biased in every finite sample and inconsistent in the limit — the bias does
+  not disappear, which is precisely the property that makes endogeneity worth a unit of its own.
+</div>
+
+<p>One further step is worth taking, because it turns the result into something a figure can be
+checked against. The reduced form says Y<sub>t</sub> = π<sub>1</sub> + π<sub>2</sub>I<sub>t</sub>
++ u<sub>t</sub>/(1 − β<sub>2</sub>), so var(Y) = [var(I) + σ<sup>2</sup>]/(1 −
+β<sub>2</sub>)<sup>2</sup>. Substituting that for σ<sub>Y</sub><sup>2</sup> above and cancelling:</p>
+
+<p class="math">plim(β̂<sub>2</sub>) = β<sub>2</sub> + (1 − β<sub>2</sub>) · σ<sup>2</sup>/(σ<sup>2</sup> + σ<sub>I</sub><sup>2</sup>)</p>
+
+<p>Read that as a sentence. The asymptotic bias is the distance from β<sub>2</sub> to one,
+multiplied by the share of income's variation that comes from the disturbance rather than from
+investment. Two limiting cases make it concrete. If investment is the only thing that moves,
+σ<sub>I</sub><sup>2</sup> dominates, the share goes to zero and OLS is almost fine. If investment
+never moves, income varies only because u varies, the share is one, and plim(β̂<sub>2</sub>) = 1
+whatever the true propensity to consume is — the regression simply recovers the accounting
+identity. <strong>The size of the <a class="gt" href="../reference/glossary.html#simultaneity-bias">simultaneity bias</a> is governed by how much of the regressor's
+variation is the feedback and how much is genuinely from outside.</strong></p>
+
+<div class="viz" data-viz="simultaneity-bias">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It simulates the two-equation Keynesian model,
+    plots consumption against income, and draws both the true consumption function and the OLS
+    line through the simulated data. Sliders set the true marginal propensity to consume and how
+    volatile investment is; the readout compares the OLS estimate with the closed-form
+    probability limit derived above.
+  </p>
+</div>
+
+<h2>7 · What a regression of Q on P actually estimates</h2>
+
+<p>The market model of section 4 admits the same treatment, and the answer is exact and worth
+knowing. Strip it to two curves and their shocks:</p>
+
+<p class="math">demand: Q<sub>i</sub> = a<sub>1</sub> + a<sub>2</sub>P<sub>i</sub> + u<sub>i</sub> &nbsp;·&nbsp; supply: Q<sub>i</sub> = b<sub>1</sub> + b<sub>2</sub>P<sub>i</sub> + e<sub>i</sub></p>
+
+<p>with a<sub>2</sub> &lt; 0 and b<sub>2</sub> &gt; 0. Setting the two equal and solving gives
+the reduced form for price, P<sub>i</sub> = (a<sub>1</sub> − b<sub>1</sub> + u<sub>i</sub> −
+e<sub>i</sub>)/(b<sub>2</sub> − a<sub>2</sub>), and working through the covariance and the
+variance as before produces</p>
+
+<p class="math">plim(β̂) = (1 − w) b<sub>2</sub> + w a<sub>2</sub> &nbsp;&nbsp;where&nbsp;&nbsp; w = σ<sub>e</sub><sup>2</sup> / (σ<sub>u</sub><sup>2</sup> + σ<sub>e</sub><sup>2</sup>)</p>
+
+<div class="box key">
+  <span class="box-label">OLS estimates a blend of the two curves</span>
+  The slope OLS converges on is a <strong>weighted average of the supply slope and the demand
+  slope</strong>, with weights given by where the shocks come from. If only demand shifts
+  (w = 0), the equilibria trace out the supply curve and OLS estimates
+  <strong>b<sub>2</sub></strong> — the supply slope, whatever equation you thought you were
+  fitting. If only supply shifts (w = 1), OLS estimates the demand slope
+  <strong>a<sub>2</sub></strong>. If both shift, it estimates neither, and the number it reports
+  need not even have the right sign.
+</div>
+
+<p>This is the classic <strong><a class="gt" href="../reference/glossary.html#identification">identification</a> problem</strong>, and stating it this way makes
+the way out visible. The scatter is informative about supply precisely when something is moving
+demand and nothing is moving supply. If we could <em>observe</em> that demand shifter — income,
+say, which appears in the demand equation of section 4 and not in the supply equation — we could
+use the variation in price that it causes, and discard the rest. That is exactly what an
+instrument is, and it is Unit 3C's subject.</p>
+
+<div class="viz" data-viz="supply-demand-mix">
+  <p class="viz-fallback">
+    Interactive figure — requires JavaScript. It draws a market in which both curves are hit by
+    shocks, plots the equilibrium price–quantity pairs, and fits a line through them. A slider
+    changes how much of the movement comes from demand and how much from supply; the fitted line
+    swings between the supply slope and the demand slope, and the readout compares it with the
+    weighted average derived above.
+  </p>
+</div>
+
+<h2>8 · The reduced form, and what it is good for</h2>
+
+<p>Section 6 produced the reduced form as a step in an algebraic argument. It is more than that.
+Look again at what it contains: on the right-hand side of every reduced form equation there are
+<strong>only predetermined variables</strong>. Investment is exogenous, so it is uncorrelated
+with u, and therefore with v = u/(1 − β<sub>2</sub>) as well.</p>
+
+<div class="box key">
+  <span class="box-label">Why the reduced form is estimable when the structural form is not</span>
+  The classical assumption that fails in the structural equation <strong>holds in the reduced
+  form</strong>. Every regressor there is predetermined, so cov(regressor, disturbance) = 0,
+  and OLS applied to a reduced form equation is unbiased and consistent in the ordinary way.<br>
+  This is the hinge of Unit 3C: if the structural parameters can be recovered from the reduced
+  form coefficients, they can be estimated after all, by estimating the reduced form first. That
+  recovery is not always possible, and whether it is is the identification problem.
+</div>
+
+<p>The reduced form coefficients have an economic reading of their own. π<sub>2</sub> =
+1/(1 − β<sub>2</sub>) is the derivative of income with respect to investment: it says by how much
+income changes in the same period when investment changes by one unit. Coefficients of this kind
+are called <strong><a class="gt" href="../reference/glossary.html#impact-multiplier">impact multipliers</a></strong>, and π<sub>2</sub> is the Keynesian investment
+multiplier that appears in a first-year macroeconomics course. A reduced form estimate of
+π<sub>2</sub> = 5 says a dollar of extra investment raises income by five dollars on impact —
+and, since π<sub>2</sub> = 1/(1 − β<sub>2</sub>), that the marginal propensity to consume is
+0.8.</p>
+
+<p>That last inference is the whole of Unit 3C in miniature: a structural parameter, recovered
+from a reduced form coefficient that OLS was entitled to estimate. Whether the trick can always
+be worked, what to do when there is more than one way to work it, and how to handle systems too
+large to solve by hand, are the questions the next unit takes up.</p>
+
+<h2>9 · Tutorial</h2>
+
+<p style="font-size:0.85rem; color:var(--ink-soft); font-style:italic;">
+Draft questions, to be replaced by the tutorial sheet issued in class.</p>
+
+<div class="tutorial">
+
+  <div class="tq">
+    <span class="qtext">Explain carefully the difference between a biased estimator and an
+    inconsistent one. Give an example of an estimator that is biased but consistent, and say why
+    endogeneity produces an estimator that is both. Why does the second property make
+    endogeneity a more serious problem than heteroscedasticity?</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>Bias</strong> is a property of a fixed sample size: an estimator is unbiased
+        if E(β̂) = β, that is, if it is right <em>on average over repeated samples of size n</em>.
+        <strong>Consistency</strong> is a property of the limit: an estimator is consistent if
+        plim(β̂) = β, that is, if it converges on the true value as n grows without bound.</p>
+        <p><strong>Biased but consistent.</strong> Unit 1E's σ̃<sup>2</sup> = Σû<sup>2</sup>/n
+        is biased downward in every finite sample, because it does not charge for the <a class="gt" href="../reference/glossary.html#degrees-of-freedom">degrees of
+        freedom</a> used to estimate the coefficients. But the bias is of order 1/n, so it vanishes:
+        σ̃<sup>2</sup> is consistent. Such an estimator is usable — a large enough sample makes
+        the bias negligible.</p>
+        <p><strong>Endogeneity gives both.</strong> β̂<sub>2</sub> = β<sub>2</sub> +
+        Σx<sub>i</sub>u<sub>i</sub>/Σx<sub>i</sub><sup>2</sup>. The expectation of the second term
+        is non-zero, so the estimator is biased. Dividing top and bottom by n, that term converges
+        on cov(X, u)/var(X), which is also non-zero, so the estimator is inconsistent as well.
+        The bias does not shrink with n; it settles at a constant.</p>
+        <p><strong>Why it is worse.</strong> Heteroscedasticity leaves OLS unbiased and
+        consistent; what it damages is <a class="gt" href="../reference/glossary.html#efficiency">efficiency</a> and the standard errors, and both of those can
+        be repaired — by a <a class="gt" href="../reference/glossary.html#hc-standard-errors">robust standard error</a>, by <a class="gt" href="../reference/glossary.html#wls">WLS</a>, or simply by collecting more data.
+        Endogeneity damages the estimate itself, and collecting more data makes matters worse in
+        one practical sense: the standard error shrinks around the wrong number, so the estimate
+        looks more trustworthy the more of it there is.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">A researcher estimates a wage equation on 40,000 observations and
+    reports a return to schooling of 9.2% per year with a standard error of 0.3 percentage
+    points, concluding that "the effect is precisely estimated and the sample is large enough
+    that any bias is negligible." Criticise the conclusion.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p>The conclusion confuses precision with accuracy, and it invokes the sample size for a
+        property the sample size cannot deliver.</p>
+        <p><strong>The standard error measures the wrong thing.</strong> A standard error of 0.3
+        points says the estimate would vary little across repeated samples of 40,000. It says
+        nothing whatever about whether those samples are all centred on the truth. If ability is
+        omitted and correlated with schooling, every one of them is centred on
+        β<sub>2</sub> + cov(Educ, u)/var(Educ), and the small standard error simply means that
+        wrong centre is pinned down tightly.</p>
+        <p><strong>"Large enough that any bias is negligible" is the specific error.</strong>
+        That reasoning is correct for a bias of order 1/n — the σ̃<sup>2</sup> case. It is
+        exactly wrong for an endogeneity bias, whose plim is a constant independent of n. Forty
+        thousand observations remove sampling noise and leave the asymptotic bias untouched.</p>
+        <p><strong>The likely direction.</strong> If ability raises wages and is positively
+        correlated with schooling, both factors are positive and 9.2% is an <em>overestimate</em>
+        of the causal return. The honest report says so and either finds an instrument (Unit 3C)
+        or presents the number as a conditional association rather than a return.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">For the system C<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>Y<sub>t</sub>
+    + u<sub>t</sub>, Y<sub>t</sub> = C<sub>t</sub> + I<sub>t</sub> + G<sub>t</sub>, with
+    government spending G exogenous: (a) classify every variable; (b) derive the reduced form
+    for Y and for C; (c) obtain cov(Y<sub>t</sub>, u<sub>t</sub>); (d) if β<sub>2</sub> = 0.75,
+    σ<sup>2</sup> = 4 and the exogenous spending I + G has variance 36, compute the probability
+    limit of the OLS estimate of β<sub>2</sub>.</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>(a) Classification.</strong> C and Y are endogenous — the two equations
+        determine them jointly. I and G are exogenous, hence predetermined. There are two
+        equations and two endogenous variables, as there must be.</p>
+        <p><strong>(b) Reduced form.</strong> Substitute the consumption function into the
+        identity and write A<sub>t</sub> = I<sub>t</sub> + G<sub>t</sub> for autonomous
+        spending:</p>
+        <p class="math">Y<sub>t</sub>(1 − β<sub>2</sub>) = β<sub>1</sub> + A<sub>t</sub> + u<sub>t</sub></p>
+        <p class="math">Y<sub>t</sub> = β<sub>1</sub>/(1 − β<sub>2</sub>) + [1/(1 − β<sub>2</sub>)]A<sub>t</sub> + [1/(1 − β<sub>2</sub>)]u<sub>t</sub></p>
+        <p class="math">C<sub>t</sub> = Y<sub>t</sub> − A<sub>t</sub> = β<sub>1</sub>/(1 − β<sub>2</sub>) + [β<sub>2</sub>/(1 − β<sub>2</sub>)]A<sub>t</sub> + [1/(1 − β<sub>2</sub>)]u<sub>t</sub></p>
+        <p>Both are functions of predetermined variables only, which is the test that the
+        reduced form has been reached.</p>
+        <p><strong>(c) The covariance.</strong> From the reduced form for Y, and using
+        E(u) = 0, cov(u, A) = 0 and E(u<sup>2</sup>) = σ<sup>2</sup>:</p>
+        <p class="math">cov(Y<sub>t</sub>, u<sub>t</sub>) = E(u<sub>t</sub>Y<sub>t</sub>) = σ<sup>2</sup>/(1 − β<sub>2</sub>)</p>
+        <p>Positive, so Y is endogenous and OLS on the consumption function is biased upward.</p>
+        <p><strong>(d) The probability limit.</strong> Use the form derived in section 6, with
+        the exogenous variance in place of σ<sub>I</sub><sup>2</sup>:</p>
+        <p class="math">plim(β̂<sub>2</sub>) = β<sub>2</sub> + (1 − β<sub>2</sub>)σ<sup>2</sup>/(σ<sup>2</sup> + σ<sub>A</sub><sup>2</sup>) = 0.75 + 0.25 × 4/40 = 0.775</p>
+        <p>An asymptotic bias of 0.025, or about 3.3% of the true value. Checking it the long way
+        gives the same answer: cov(Y, u) = 4/0.25 = 16, var(Y) = (36 + 4)/0.25<sup>2</sup> = 640,
+        and 0.75 + 16/640 = 0.775.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="tq">
+    <span class="qtext">In the market model Q = a<sub>1</sub> + a<sub>2</sub>P + u (demand) and
+    Q = b<sub>1</sub> + b<sub>2</sub>P + e (supply), a researcher regresses quantity on price
+    over 30 years of data for a staple food and obtains a slope of +0.6, which he reports as a
+    supply elasticity. (a) What is OLS actually converging on? (b) Under what circumstance would
+    his interpretation be defensible? (c) He then repeats the exercise for a luxury good and
+    obtains −1.2. Has anything about the method changed?</span>
+    <details>
+      <summary>Show solution</summary>
+      <div class="solution">
+        <p><strong>(a) What OLS converges on.</strong> Neither structural slope, but the blend
+        of section 7:</p>
+        <p class="math">plim(β̂) = (1 − w)b<sub>2</sub> + w a<sub>2</sub>, &nbsp; w = σ<sub>e</sub><sup>2</sup>/(σ<sub>u</sub><sup>2</sup> + σ<sub>e</sub><sup>2</sup>)</p>
+        <p>Both curves are being hit by shocks, and the observed scatter is the cloud of
+        intersections. The number 0.6 is a variance-weighted average of a positive supply slope
+        and a negative demand slope, and there is no way to tell from the regression which
+        weights produced it.</p>
+        <p><strong>(b) When the interpretation would be defensible.</strong> Only if
+        w ≈ 0 — if supply is essentially stable and virtually all the movement comes from
+        demand. Then the equilibria are being dragged along a fixed supply curve and the scatter
+        does trace it out. For an agricultural staple that is the wrong way round: harvests are
+        the volatile side and demand is steady, which puts w near one and makes the estimate
+        closer to the <em>demand</em> slope. His positive number is therefore hard to square with
+        the story he tells about it.</p>
+        <p><strong>(c) Nothing has changed.</strong> The sign flip says only that the mix of
+        shocks differs between the two markets. It is evidence about w, not about <a class="gt" href="../reference/glossary.html#elasticity">elasticities</a>.
+        Neither regression identifies either curve, and the fact that one produced a plausible
+        supply number and the other a plausible demand number is precisely the trap: a
+        simultaneity-biased estimate can land anywhere between the two slopes, including on a
+        value that looks exactly like the answer expected.</p>
+      </div>
+    </details>
+  </div>
+
+</div>
+
+<h2>10 · Check yourself</h2>
+
+<div class="quiz" data-answer="3">
+  <div class="q">A regressor is endogenous. Compared with heteroscedasticity, the distinctive damage is that</div>
+  <button class="opt">the standard errors are wrong, so every t-ratio is unreliable</button>
+  <button class="opt">the estimator loses efficiency, so its variance is not the smallest</button>
+  <button class="opt">the R&#178; falls, so the equation explains less of the variation in Y</button>
+  <button class="opt">the estimator is inconsistent, so a larger sample does not repair it</button>
+  <div class="feedback right">Correct — plim(β̂₂) = β₂ + cov(X,u)/var(X), a constant that does not shrink with n.</div>
+  <div class="feedback wrong">Heteroscedasticity also wrecks the standard errors and costs efficiency, yet leaves OLS unbiased and consistent. What is peculiar to endogeneity is that the estimator converges on the wrong number, so more data does not help. R² is not the issue at all.</div>
+</div>
+
+<div class="quiz" data-answer="1">
+  <div class="q">In C = β₁ + β₂Y + u with Y = C + I, why is income correlated with the disturbance?</div>
+  <button class="opt">income is measured with error in the national accounts data</button>
+  <button class="opt">a rise in u raises C, and the identity then raises Y with it</button>
+  <button class="opt">investment is volatile, so income inherits that volatility</button>
+  <button class="opt">consumption is lagged, so this period's u is still present</button>
+  <div class="feedback right">Correct — the feedback runs u → C → Y, so income is high exactly when the disturbance is high: cov(Y, u) = σ²/(1 − β₂) &gt; 0.</div>
+  <div class="feedback wrong">The correlation is created by the identity, not by measurement or by lags. A shock to consumption raises consumption, and because Y = C + I it raises income too, so the regressor moves with the error by construction. Investment's volatility affects the size of the bias, not its existence.</div>
+</div>
+
+<div class="quiz" data-answer="0">
+  <div class="q">The reduced form of a simultaneous system expresses each endogenous variable in terms of</div>
+  <button class="opt">the predetermined variables only, plus a disturbance term</button>
+  <button class="opt">the other endogenous variables, plus a disturbance term</button>
+  <button class="opt">the structural coefficients only, with no disturbance term</button>
+  <button class="opt">the lagged dependent variables only, plus a disturbance</button>
+  <div class="feedback right">Correct — and because every regressor is then predetermined, OLS on a reduced form equation is consistent.</div>
+  <div class="feedback wrong">The defining feature is that no endogenous variable survives on the right-hand side: everything there is exogenous or a lagged endogenous variable. That is what makes the reduced form estimable by OLS when the structural equations are not. Lagged endogenous variables are predetermined, but they are not the only ones allowed.</div>
+</div>
+
+<div class="quiz" data-answer="2">
+  <div class="q">Quantity is regressed on price using market equilibria. If only supply is shifting, OLS converges on</div>
+  <button class="opt">a weighted average of the demand and the supply slope</button>
+  <button class="opt">the supply slope, since supply is what is moving here</button>
+  <button class="opt">the demand slope, which the shifting supply traces out</button>
+  <button class="opt">zero, since the two opposing effects cancel each other</button>
+  <div class="feedback right">Correct — plim(β̂) = (1 − w)b₂ + wa₂ with w = 1, so the estimate is a₂. A moving curve traces out the one that stays still.</div>
+  <div class="feedback wrong">The curve that <em>moves</em> sweeps its intersections along the curve that stays put, so shifting supply reveals demand. The weighted average is the general case; here the weight w = σ²ₑ/(σ²ᵤ + σ²ₑ) equals one, which picks out a₂ exactly.</div>
+</div>
+
+<p class="deck-link" data-unit="3B"></p>
+
+<div class="ask-teacher">
+  <strong>The examinable core: the exogeneity assumption in both forms, the three sources of endogeneity, the difference between bias and inconsistency, deriving the reduced form of a two-equation system, showing cov(Y, u) = σ<sup>2</sup>/(1 − β<sub>2</sub>), and signing the resulting bias.</strong>
+  The derivation in section 6 is the one that appears on examination papers most often, and it is worth being able to write out from the structural equations without notes. If the step from bias to inconsistency is not yet clear, bring it to the tutorial or to office hours — <span data-course="officeHours"></span>.
+</div>
+
+<ol class="sources">
+  <li id="s1">Gujarati, D. &amp; Porter, D. (2008), <em>Basic Econometrics</em>, Chapter 18 — simultaneous-equation models: the nature of the problem, structural and reduced form equations, and the demonstration that OLS on a structural equation is biased and inconsistent.</li>
+  <li id="s2">Wooldridge, J. (2016), <em>Introductory Econometrics: A Modern Approach</em>, Chapter 15.1 and Chapter 16.1–16.2 — endogeneity, its sources, and simultaneity bias.</li>
+  <li id="s3">Gujarati, D. &amp; Porter, D. (2008), <em>Basic Econometrics</em>, Chapter 19.1–19.3 — the identification problem, taken up in Unit 3C.</li>
+</ol>
+
+<div class="lesson-nav" data-unit="3B"></div>
+
+</div>
+</body>
+</html>

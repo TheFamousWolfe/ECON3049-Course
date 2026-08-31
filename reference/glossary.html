@@ -9,13 +9,13 @@ try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
 z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
 if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
 <title>Glossary · ECON 3049</title>
-<link rel="stylesheet" href="../assets/lesson.css?v=53e8a07c">
-<link rel="stylesheet" href="../assets/course.css?v=53e8a07c">
-<script src="../assets/course.js?v=53e8a07c"></script>
-<script src="../assets/nav.js?v=53e8a07c" defer></script>
-<script src="../assets/export.js?v=53e8a07c" defer></script>
-<script src="../assets/reader.js?v=53e8a07c" defer></script>
-<script src="../assets/glossary.js?v=53e8a07c" defer></script>
+<link rel="stylesheet" href="../assets/lesson.css?v=c825104d">
+<link rel="stylesheet" href="../assets/course.css?v=c825104d">
+<script src="../assets/course.js?v=c825104d"></script>
+<script src="../assets/nav.js?v=c825104d" defer></script>
+<script src="../assets/export.js?v=c825104d" defer></script>
+<script src="../assets/reader.js?v=c825104d" defer></script>
+<script src="../assets/glossary.js?v=c825104d" defer></script>
 </head>
 <body>
 <div class="masthead">
@@ -37,7 +37,7 @@ if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
   Each entry ends with the unit that introduces the term — follow it to see the term in
   context, with the derivation or the figure that goes with it. This page is a reminder of
   what a word means, not a substitute for the unit that explains it. Terms are added as each
-  unit is written; this covers <strong>the whole of Units 1 and 2, and Unit 3A</strong>.
+  unit is written; this covers <strong>the whole of Units 1, 2 and 3</strong>.
 </div>
 
 <h2 id="notation">Notation</h2>
@@ -337,11 +337,22 @@ coefficient of a <a href="#double-log">double-log</a> regression. A
 <strong>semi-elasticity</strong> is the mixed case: in log–lin, 100β<sub>2</sub> is the
 percentage change in Y per one-<em>unit</em> change in X, exactly 100[e<sup>β2</sup> − 1].</dd>
 
-<dt id="endogeneity" data-match="endogeneity, endogenous">Endogeneity <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dt id="endogeneity" data-match="endogeneity, endogenous">Endogeneity <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
 <dd>Failure of assumption 3: cov(X<sub>i</sub>, u<sub>i</sub>) ≠ 0, so a regressor moves with
-the disturbance. OLS is then <em>biased</em>, and more data does not repair it — unlike
-heteroscedasticity or autocorrelation, which cost efficiency but not unbiasedness. The most
-serious failure in the list. Unit 3B.</dd>
+the disturbance. OLS is then <em>biased</em> and, worse,
+<a href="#inconsistency">inconsistent</a> — unlike heteroscedasticity or autocorrelation,
+which cost efficiency but not unbiasedness. The most serious failure in the list. It arises from
+omitted variables, from <a href="#errors-in-variables">measurement error</a> and from
+<a href="#simultaneity-bias">simultaneity</a>, and the repair is not a better specification but a
+different estimator: see <a href="#instrumental-variable">instrumental variables</a>. Named in
+Unit 1C, derived here.</dd>
+
+<dt id="errors-in-variables" data-match="errors in variables, errors-in-variables">Errors in variables <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>Endogeneity produced by <a href="#measurement-error">measurement error</a> in a regressor.
+What is recorded is X* = X + w, so the disturbance of the estimated equation absorbs
+−β<sub>2</sub>w while the recorded regressor contains the same w: the two move together by
+construction. Not examined this semester, but it belongs on the list of sources rather than in a
+topic of its own.</dd>
 
 <dt id="ess" data-match="explained sum of squares, ESS">ESS — explained sum of squares <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
 <dd>Σŷ<sub>i</sub><sup>2</sup> = Σ(Ŷ<sub>i</sub> − Ȳ)<sup>2</sup> =
@@ -357,6 +368,15 @@ Contrast <a href="#estimator">estimator</a>.</dd>
 of moments and maximum likelihood are three of them. Because it is a function of random data,
 an estimator is itself a random variable, which is why it has a
 <a href="#sampling-distribution">sampling distribution</a>.</dd>
+
+<dt id="exogenous" data-match="exogenous">Exogenous variable <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>A variable uncorrelated with the disturbance, cov(X, u) = 0 — the condition OLS needs. In a
+<a href="#simultaneous-equations">simultaneous system</a> the word carries its stronger original
+meaning: <strong>determined outside the system</strong>, as against
+<a href="#endogeneity">endogenous</a>, determined within it. Exogenous variables remain
+uncorrelated with every structural disturbance, which is what makes them usable as
+<a href="#instrumental-variable">instruments</a>. Together with lagged endogenous variables they
+make up the <a href="#predetermined">predetermined</a> variables.</dd>
 
 </dl>
 
@@ -460,6 +480,23 @@ correct, which is why economists say "do not reject" rather than "accept" the
 
 <dl>
 
+<dt id="identification" data-match="identification, underidentified, overidentified, just identified, unidentified">Identification <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></dt>
+<dd>Whether the structural parameters of a simultaneous system can be recovered from its
+<a href="#reduced-form">reduced form</a> coefficients. <strong>Underidentified</strong>: they
+cannot, and no estimation method will produce them. <strong>Just identified</strong>: there is
+exactly one way to recover each, and <a href="#indirect-least-squares">ILS</a>,
+<a href="#instrumental-variable">IV</a> and <a href="#two-stage-least-squares">2SLS</a> all
+return it. <strong>Overidentified</strong>: there is more than one way, the answers disagree, and
+2SLS combines them. Identification is a property of the model rather than of the sample, so more
+data cannot supply it. Tested by the <a href="#order-condition">order</a> and
+<a href="#rank-condition">rank</a> conditions.</dd>
+
+<dt id="impact-multiplier" data-match="impact multiplier">Impact multiplier <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>A <a href="#reduced-form">reduced form</a> coefficient, read as the change in an endogenous
+variable in the same period when a predetermined variable changes by one unit. In the Keynesian
+model π<sub>2</sub> = 1/(1 − β<sub>2</sub>) is the investment multiplier of a first-year
+macroeconomics course, arriving here as a regression coefficient.</dd>
+
 <dt id="imperfect-multicollinearity" data-match="imperfect multicollinearity, high multicollinearity">Imperfect multicollinearity <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></dt>
 <dd>X<sub>3</sub> = α<sub>1</sub> + α<sub>2</sub>X<sub>2</sub> + ε with ε ≠ 0: a linear
 relationship among regressors that is strong but not exact. Estimation is still possible —
@@ -468,9 +505,33 @@ everything rests on the variation in X<sub>3</sub> that X<sub>2</sub> cannot exp
 what econometricians mean by "the problem of multicollinearity"; contrast
 <a href="#perfect-multicollinearity">perfect multicollinearity</a>.</dd>
 
+<dt id="inconsistency" data-match="inconsistency, inconsistent, asymptotic bias">Inconsistency <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>Failure of <a href="#consistency">consistency</a>: plim(β̂) ≠ β, so the estimator converges on
+the wrong value and the gap — the <strong>asymptotic bias</strong> — does not shrink with the
+sample. For OLS with an endogenous regressor, plim(β̂<sub>2</sub>) = β<sub>2</sub> +
+cov(X, u)/var(X). The distinction from ordinary bias is the practical one:
+σ̃<sup>2</sup> is biased in every finite sample yet consistent, and therefore usable, whereas an
+inconsistent estimator answers a different question however much data it is given.</dd>
+
 <dt id="independent-variable">Independent variable <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
 <dd>X — also explanatory, control or predictor variable, or <em>regressor</em>. As with
 "dependent", the name is positional and carries no causal claim.</dd>
+
+<dt id="indirect-least-squares" data-match="indirect least squares, ILS">Indirect least squares (ILS) <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></dt>
+<dd>Estimate the <a href="#reduced-form">reduced form</a> by OLS, then solve the known
+relationships between the π's and the structural parameters backwards. Works only on a
+<a href="#identification">just identified</a> equation, where it agrees exactly with
+<a href="#two-stage-least-squares">2SLS</a>; on an overidentified one there are more solutions
+than parameters and nothing says which to keep, which is why 2SLS is the standard method.</dd>
+
+<dt id="instrumental-variable" data-match="instrumental variable, instrument, IV estimator">Instrumental variable (IV) <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></dt>
+<dd>A variable Z used to estimate an equation containing an <a href="#endogeneity">endogenous</a>
+regressor X. It must satisfy <strong>exogeneity</strong>, cov(Z, u) = 0, and
+<strong>relevance</strong>, cov(Z, X) ≠ 0. The estimator is
+β̂<sub>2</sub><sup>IV</sup> = Σ(Z − Z̄)(Y − Ȳ) / Σ(Z − Z̄)(X − X̄), which is consistent but
+biased in small samples, and reduces to OLS when Z = X. Relevance is testable in the first-stage
+regression; exogeneity is not, and has to be argued. Contrast a <a href="#proxy">proxy</a>, which
+goes <em>into</em> the equation and must be correlated with what it replaces.</dd>
 
 <dt id="interaction-term" data-match="interaction term, interaction">Interaction term <a class="g-unit" href="../units/2a-part2-functional-form.html">Unit 2A Part 2</a></dt>
 <dd>The product of two regressors, included so that the effect of one may depend on the level
@@ -621,6 +682,16 @@ It does <em>not</em> shrink with n, which makes OLS inconsistent as well as bias
 <dd>An influence on Y left out of the equation, and therefore inside u. Harmless if unrelated
 to the included regressors; if related, it makes X endogenous and biases OLS. Unit 2A Part 1.</dd>
 
+<dt id="order-condition" data-match="order condition">Order condition <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></dt>
+<dd>A necessary but not sufficient counting rule for
+<a href="#identification">identification</a>. In a system of M equations, an equation must
+exclude at least <strong>M − 1</strong> of the model's variables: exactly M − 1 is just
+identified, more is overidentified, fewer is underidentified. Equivalently, the number of
+<a href="#predetermined">predetermined</a> variables in the system must be at least the number of
+slope coefficients in the equation being estimated. The two statements always agree; use both as
+a check on the counting. Being necessary only, it must be paired with the
+<a href="#rank-condition">rank condition</a>.</dd>
+
 <dt id="ols" data-match="ordinary least squares, OLS">Ordinary least squares (OLS) <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
 <dd>The estimator that chooses β̂<sub>1</sub> and β̂<sub>2</sub> to minimise the sum of
 <em>squared</em> residuals. Squared, so that positive and negative misses cannot cancel;
@@ -676,6 +747,14 @@ is identified and nothing determines how to split it. Not a matter of imprecisio
 estimates do not exist. Easy to avoid, since you have to build it yourself; the usual culprits
 are a variable entered twice in different units and the dummy variable trap.</dd>
 
+<dt id="predetermined" data-match="predetermined variable, predetermined">Predetermined variable <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>An <a href="#exogenous">exogenous</a> variable <em>or</em> a lagged endogenous one. A lagged
+endogenous variable was settled by an earlier period's system, so as far as this period is
+concerned its value is already fixed and it is uncorrelated with the current disturbance.
+Predetermined variables are what a <a href="#reduced-form">reduced form</a> is written in terms
+of, and every one of them in a system is a candidate
+<a href="#instrumental-variable">instrument</a>.</dd>
+
 <dt id="prf" data-match="population regression function, PRF">Population regression function (PRF) <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
 <dd>E(Y<sub>i</sub> | X<sub>i</sub>) = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub>. Fixed,
 unknown, and never observed. Contrast <a href="#srf">SRF</a>.</dd>
@@ -684,6 +763,13 @@ unknown, and never observed. Contrast <a href="#srf">SRF</a>.</dd>
 <dd>Whether an effect is large enough to matter economically, as opposed to being merely
 distinguishable from zero. A large sample can make a trivial coefficient statistically
 significant. Report the magnitude alongside the test, always.</dd>
+
+<dt id="probability-limit" data-match="probability limit, plim">Probability limit (plim) <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>The value an estimator converges on as the sample size grows without bound. plim(β̂) = β is
+<a href="#consistency">consistency</a>; plim(β̂) ≠ β is
+<a href="#inconsistency">inconsistency</a>. Its convenience is that it passes through ratios —
+plim(A/B) = plim(A)/plim(B) — which an expectation does not, and that is what makes the
+asymptotic argument about endogeneity tractable where the finite-sample one is not.</dd>
 
 <dt id="proxy" data-match="proxy, proxies">Proxy <a class="g-unit" href="../units/1a-introducing-econometrics.html">Unit 1A</a></dt>
 <dd>An observable stand-in for a concept that cannot be measured directly — years of
@@ -716,6 +802,26 @@ and Ŷ³ added, and <a href="#f-test">F-test</a> whether their coefficients are 
 H<sub>0</sub> is that the model is correctly specified. Powers of Ŷ stand in for non-linear
 functions of all the regressors at once, so no data on the omitted variable is needed — but a
 rejection says only that something is wrong, not what.</dd>
+
+<dt id="rank-condition" data-match="rank condition">Rank condition <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></dt>
+<dd>The necessary <em>and sufficient</em> condition for
+<a href="#identification">identification</a>. For a two-equation system: at least one of the
+exogenous variables excluded from the first equation must have a non-zero coefficient in the
+second, and symmetrically. It is <a href="#instrumental-variable">instrument</a> relevance in
+another vocabulary — the excluded variables are the instruments, and the condition asks that one
+of them genuinely shifts the equation it was excluded from. An equation can satisfy the
+<a href="#order-condition">order condition</a> and fail this one, in which case the counting
+looks right and nothing is estimable.</dd>
+
+<dt id="reduced-form" data-match="reduced form, reduced-form">Reduced form <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>Each endogenous variable of a system written as a function of the
+<a href="#predetermined">predetermined</a> variables alone, plus a disturbance. Its coefficients
+are the π's, or <a href="#impact-multiplier">impact multipliers</a>. Because nothing endogenous
+survives on the right-hand side, every regressor is uncorrelated with the disturbance and OLS on
+a reduced form equation is consistent — which is exactly why it is the first stage of
+<a href="#two-stage-least-squares">2SLS</a>, and why
+<a href="#identification">identification</a> is asked as a question about recovering the
+<a href="#structural-equation">structural</a> parameters from it.</dd>
 
 <dt id="redundant-variable">Redundant variable <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></dt>
 <dd>Two or more regressors measuring essentially the same thing. Dropping one is the second
@@ -784,6 +890,22 @@ own side of the sentence into a percentage.</dd>
 you agree to run before testing. If none is stated, default to 5%. Lowering α raises the
 <a href="#critical-value">critical value</a> and makes rejection harder.</dd>
 
+<dt id="simultaneity-bias" data-match="simultaneity bias, simultaneity">Simultaneity bias <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>The <a href="#endogeneity">endogeneity</a> that arises when a regressor is determined jointly
+with the dependent variable, so that a shock to Y feeds back into X. In the Keynesian model
+cov(Y<sub>t</sub>, u<sub>t</sub>) = σ<sup>2</sup>/(1 − β<sub>2</sub>) &gt; 0 and the marginal
+propensity to consume is overestimated, by
+(1 − β<sub>2</sub>)σ<sup>2</sup>/(σ<sup>2</sup> + σ<sub>I</sub><sup>2</sup>) in the limit. In a
+market, OLS on the equilibria estimates a variance-weighted average of the supply and demand
+slopes rather than either of them.</dd>
+
+<dt id="simultaneous-equations" data-match="simultaneous equation model, simultaneous equations, simultaneous system">Simultaneous equation model <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>A set of equations that jointly determine several variables at once, so that no one of them
+can be read as a one-way relationship. Consumption and income in the Keynesian model, price and
+quantity in a market. The equations that state the theory are the
+<a href="#structural-equation">structural</a> ones; solving them out gives the
+<a href="#reduced-form">reduced form</a>.</dd>
+
 <dt id="specification-bias" data-match="specification bias, specification error, correctly specified">Specification error <a class="g-unit" href="../units/2a-part1-specification.html">Unit 2A Part 1</a></dt>
 <dd>Choosing wrongly among the three things that specify an equation: the independent
 variables, the functional form, or the form of the error term. Assumption 9 failing. Detected
@@ -810,6 +932,15 @@ variance is not finite at all.</dd>
 <dt id="stochastic">Stochastic <a class="g-unit" href="../units/1a-introducing-econometrics.html">Unit 1A</a></dt>
 <dd>Random. The stochastic part of a regression is u<sub>i</sub>; the deterministic part is
 β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub>.</dd>
+
+<dt id="structural-equation" data-match="structural equation, structural parameter, structural form">Structural equation <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>An equation of a <a href="#simultaneous-equations">simultaneous system</a> as economic theory
+writes it, with endogenous variables on both sides. Its coefficients are the
+<strong>structural parameters</strong> — the marginal propensity to consume, the elasticity of
+supply — and they are the quantities of interest. Behavioural equations carry a disturbance;
+identities, such as Y = C + I, carry neither disturbance nor parameters. OLS on a structural
+equation is biased and <a href="#inconsistency">inconsistent</a>, which is why the
+<a href="#reduced-form">reduced form</a> is estimated instead.</dd>
 
 </dl>
 
@@ -847,6 +978,16 @@ about its own mean. It splits exactly: <strong>TSS = ESS + RSS</strong>, because
 X* = −β̂<sub>2</sub>/2β̂<sub>3</sub>: a <em>maximum</em> when β̂<sub>3</sub> &lt; 0 (inverted U)
 and a <em>minimum</em> when β̂<sub>3</sub> &gt; 0 (U-shaped). Always check X* falls inside the
 range of the data.</dd>
+
+<dt id="two-stage-least-squares" data-match="two-stage least squares, two stage least squares, 2SLS">Two-stage least squares (2SLS) <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></dt>
+<dd>The general form of <a href="#instrumental-variable">IV</a> estimation. <strong>Stage 1</strong>
+regresses the endogenous regressor on the instruments <em>and every exogenous variable in the
+equation</em>, and keeps the fitted values, which are purged of the correlation with u.
+<strong>Stage 2</strong> re-estimates the structural equation with those fitted values in place of
+the endogenous regressor. With one instrument it is identical to IV. Running the two stages by
+hand gives the right coefficients and <strong>wrong standard errors</strong>, because
+σ̂<sup>2</sup> must be computed against the actual regressor: use the package's own 2SLS
+command.</dd>
 
 </dl>
 
@@ -902,6 +1043,14 @@ EViews: View → Covariance Matrix.</dd>
 <h2 id="g-w">W</h2>
 
 <dl>
+
+<dt id="weak-instrument" data-match="weak instrument">Weak instrument <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></dt>
+<dd>An <a href="#instrumental-variable">instrument</a> correlated with the endogenous regressor
+only slightly. Three failures at once: the variance inflates by 1/r<sup>2</sup><sub>X,Z</sub>, the
+finite-sample bias grows and points back towards the OLS estimate that IV was meant to replace,
+and the asymptotic standard error understates the true spread, so the reported t-ratios cannot be
+believed either. A first-stage F below about 10 is the conventional warning. An instrument with no
+correlation at all reproduces OLS exactly, having discarded all the precision on the way.</dd>
 
 <dt id="wls" data-match="weighted least squares, WLS">Weighted least squares (WLS) <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></dt>
 <dd>A special case of generalised least squares for heteroscedastic errors: divide the whole

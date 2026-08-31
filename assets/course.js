@@ -162,13 +162,13 @@ window.COURSE = {
     { unit: "3B", part: "3", slug: "3b-endogeneity",
       title: "Endogeneity",
       blurb: "When X is correlated with the error, OLS is biased and stays biased.",
-      wooldridge: "Ch. 15", gujarati: "Ch. 17 · 19", slides: 33,
-      deck: "Unit 3B - Endogeniety.pdf", status: "planned" },
+      wooldridge: "Ch. 15 · 16", gujarati: "Ch. 18", slides: 33,
+      deck: "Unit 3B - Endogeniety.pdf", status: "ready" },
 
     { unit: "3C", part: "3", slug: "3c-iv-2sls-simultaneous-equations",
       title: "IV, Two-Stage Least Squares and Simultaneous Equations",
       blurb: "Instruments as the way out, and systems where Y and X determine each other.",
-      wooldridge: "Ch. 15 · 16", gujarati: "Ch. 18–20", slides: 35,
-      deck: "Unit 3B - IV, Two-Stage Least Square, Simultaneous Equations.pdf", status: "planned" }
+      wooldridge: "Ch. 15 · 16", gujarati: "Ch. 19–20", slides: 35,
+      deck: "Unit 3B - IV, Two-Stage Least Square, Simultaneous Equations.pdf", status: "ready" }
   ]
 };

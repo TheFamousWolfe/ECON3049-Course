@@ -48,11 +48,13 @@
   var TEX_CHAR = {
     "β":"\\beta","α":"\\alpha","γ":"\\gamma","δ":"\\delta","ε":"\\epsilon",
     "σ":"\\sigma","μ":"\\mu","ρ":"\\rho","χ":"\\chi","λ":"\\lambda","π":"\\pi",
+    "ϵ":"\\epsilon",                                          /* U+03F5, the lunate form */
     "θ":"\\theta","φ":"\\phi","ω":"\\omega","η":"\\eta","τ":"\\tau",
     "Σ":"\\sum","Δ":"\\Delta","Ω":"\\Omega","∂":"\\partial","√":"\\surd",   /* not \\sqrt: there is no radicand to brace */
     "≈":"\\approx","≠":"\\neq","≤":"\\leq","≥":"\\geq","±":"\\pm",
     "≫":"\\gg","≪":"\\ll",
     "⟹":"\\Rightarrow","⇒":"\\Rightarrow","→":"\\to","←":"\\leftarrow",
+    "⟷":"\\leftrightarrow","↔":"\\leftrightarrow","↑":"\\uparrow","↓":"\\downarrow",
     "×":"\\times","·":"\\cdot","∼":"\\sim","∞":"\\infty","≡":"\\equiv",
     "∈":"\\in","∀":"\\forall","∫":"\\int","…":"\\dots","⋯":"\\cdots",
     "′":"'","″":"''","−":"-","—":"---","–":"--",
