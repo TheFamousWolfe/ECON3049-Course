@@ -80,7 +80,7 @@ window.COURSE = {
       status: "planned" },
     { slug: "formula-sheet", title: "Formula sheet",
       blurb: "Every result derived in the units, on one page.",
-      status: "planned" },
+      status: "ready" },
     { slug: "glossary",      title: "Glossary",
       blurb: "Every term defined in the units, with a link back to where it was defined.",
       status: "ready" }

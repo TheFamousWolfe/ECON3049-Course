@@ -372,6 +372,81 @@ footer.site {
    narrow column, where stretching the spaces is all cost. */
 .notation dd { margin: 0; text-align: left; }
 
+/* ---------- Formula sheet ---------- */
+/* Two columns: the name of the result on the left, the result itself on the
+   right. The name column is fixed width so the eye can run straight down it,
+   which is the whole use of a revision sheet — you scan the left edge for the
+   thing you half-remember and read across. Below 600px it stacks, because a
+   fixed name column there would leave the algebra nowhere to go. */
+.fs { margin: 0 0 2.2rem; }
+.fs-row {
+  display: grid;
+  grid-template-columns: 12.5rem 1fr;
+  gap: 0 1.3rem;
+  padding: 0.62rem 0;
+  border-bottom: 1px dotted var(--rule);
+  align-items: baseline;
+}
+.fs-row:last-child { border-bottom: none; }
+.fs-key {
+  font-family: -apple-system, system-ui, sans-serif;
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+/* The formulas sit in a column, not on the page, so they are set flush left
+   rather than centred the way a display equation in a unit is. */
+.fs-val > .math {
+  text-align: left;
+  margin: 0.1rem 0;
+  font-size: 1.02rem;
+}
+.fs-val > .math + .math { margin-top: 0.4rem; }
+.fs-note {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin: 0.35rem 0 0;
+  line-height: 1.5;
+}
+.fs-note strong { color: var(--ink); }
+.fs-key .g-unit { display: inline-block; margin-top: 0.25rem; }
+
+/* The section index at the top. Unlike the glossary's A-Z strip these are
+   phrases, so they wrap and need no letter-spacing. */
+.fs-toc {
+  margin: 0.8rem 0 2rem;
+  font-size: 0.87rem;
+  line-height: 2.1;
+  font-family: -apple-system, system-ui, sans-serif;
+}
+.fs-toc a {
+  text-decoration: none;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 0.2rem 0.5rem;
+  margin-right: 0.3rem;
+  white-space: nowrap;
+}
+.fs-toc a:hover { border-color: var(--accent); color: var(--accent); }
+
+.fs-sec { margin: 2.4rem 0 0; }
+.fs-sec h2 { margin-bottom: 0.1rem; }
+.fs-sec > .fs-lead {
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  margin: 0 0 0.6rem;
+}
+
+@media (max-width: 600px) {
+  .fs-row { grid-template-columns: 1fr; gap: 0.2rem; padding: 0.75rem 0; }
+  .fs-key { color: var(--accent); }
+}
+
+@media print {
+  .fs-toc { display: none; }
+  .fs-row { break-inside: avoid; }
+}
+
 /* ---------- Glossary ---------- */
 .g-tools {
   position: sticky;

@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>/* Apply saved reader preferences before first paint, so a reader who
+chose dark does not get a white flash on every navigation. */
+try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
+z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
+if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
+<title>Formula sheet · ECON 3049</title>
+<link rel="stylesheet" href="../assets/lesson.css?v=971159ef">
+<link rel="stylesheet" href="../assets/course.css?v=971159ef">
+<script src="../assets/course.js?v=971159ef"></script>
+<script src="../assets/nav.js?v=971159ef" defer></script>
+<script src="../assets/export.js?v=971159ef" defer></script>
+<script src="../assets/reader.js?v=971159ef" defer></script>
+</head>
+<body>
+<div class="masthead">
+  <span>
+    <a href="../index.html"><span data-course="code">ECON 3049</span></a> ·
+    <span class="course" data-course="title">Econometrics I</span>
+  </span>
+  <span>Reference · Formula sheet</span>
+</div>
+<div class="wrap">
+
+<div class="reader-bar"></div>
+
+<h1>Formula sheet</h1>
+<p class="subtitle">Every result derived in the units, on one page.</p>
+
+<div class="box key">
+  <span class="box-label">How to use this</span>
+  Each row gives a result and the unit that derives it — follow the link for the derivation,
+  the assumptions behind it and a worked example. <strong>This sheet states results; it does
+  not justify them</strong>, and a formula quoted without the condition it depends on is worth
+  very little in an examination. The <a href="glossary.html">glossary</a> defines the words.
+  Notation is <strong>Gujarati's</strong> throughout: β<sub>1</sub> is the intercept and
+  β<sub>2</sub> the slope. Download it as PDF from the bar above if you want it on paper.
+</div>
+
+<p class="fs-toc">
+  <a href="#notation">Notation</a>
+  <a href="#model">The model</a>
+  <a href="#ols">OLS in two variables</a>
+  <a href="#assumptions">The assumptions</a>
+  <a href="#properties">Properties of OLS</a>
+  <a href="#fit">Goodness of fit</a>
+  <a href="#multiple">Multiple regression</a>
+  <a href="#normality">Normality and ML</a>
+  <a href="#inference">Inference</a>
+  <a href="#forms">Functional forms</a>
+  <a href="#specification">Specification</a>
+  <a href="#stability">Structural change</a>
+  <a href="#collinearity">Multicollinearity</a>
+  <a href="#hetero">Heteroscedasticity</a>
+  <a href="#auto">Autocorrelation</a>
+  <a href="#dummies">Dummy variables</a>
+  <a href="#endogeneity">Endogeneity</a>
+  <a href="#iv">IV and 2SLS</a>
+  <a href="#tests">Which test</a>
+</p>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="notation">
+<h2>Notation</h2>
+<p class="fs-lead">The symbols used on this page. The <a href="glossary.html#notation">glossary</a> carries the same list with the words attached.</p>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">Population and sample</div>
+    <div class="fs-val">
+      <p class="math">β<sub>1</sub>, β<sub>2</sub> — unknown population parameters</p>
+      <p class="math">β̂<sub>1</sub>, β̂<sub>2</sub> — estimated from a sample</p>
+      <p class="math">u<sub>i</sub> — the disturbance, unobservable &nbsp;·&nbsp; û<sub>i</sub> — the residual, computed</p>
+      <p class="fs-note">A hat means <em>estimated</em>. β<sub>2</sub> is fixed and unknown; β̂<sub>2</sub> is random, because it is a function of the sample.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Deviations from means</div>
+    <div class="fs-val">
+      <p class="math">x<sub>i</sub> = X<sub>i</sub> − X̄ &nbsp;·&nbsp; y<sub>i</sub> = Y<sub>i</sub> − Ȳ</p>
+      <p class="fs-note">Lower case always means a deviation. Every deviation-form result below can be written in raw sums instead, and usually is not, because it is longer.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Sizes</div>
+    <div class="fs-val">
+      <p class="math">n — observations &nbsp;·&nbsp; k — parameters estimated, <em>including</em> the intercept &nbsp;·&nbsp; n − k — degrees of freedom</p>
+      <p class="fs-note">k counts the intercept. In the two-variable model k = 2 and the degrees of freedom are n − 2.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Sums of squares</div>
+    <div class="fs-val">
+      <p class="math">TSS = Σy<sub>i</sub><sup>2</sup> &nbsp;·&nbsp; ESS = Σŷ<sub>i</sub><sup>2</sup> &nbsp;·&nbsp; RSS = Σû<sub>i</sub><sup>2</sup></p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="model">
+<h2>The model</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">Population regression function <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></div>
+    <div class="fs-val">
+      <p class="math">E(Y<sub>i</sub> | X<sub>i</sub>) = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub></p>
+      <p class="math">Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> + u<sub>i</sub></p>
+      <p class="fs-note">The systematic part plus the disturbance. Regression estimates a <em>conditional mean</em>, not a value.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Sample regression function <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></div>
+    <div class="fs-val">
+      <p class="math">Ŷ<sub>i</sub> = β̂<sub>1</sub> + β̂<sub>2</sub>X<sub>i</sub> &nbsp;·&nbsp; Y<sub>i</sub> = β̂<sub>1</sub> + β̂<sub>2</sub>X<sub>i</sub> + û<sub>i</sub></p>
+      <p class="math">û<sub>i</sub> = Y<sub>i</sub> − Ŷ<sub>i</sub></p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Multiple regression <a class="g-unit" href="../units/1d-multiple-regression.html">Unit 1D</a></div>
+    <div class="fs-val">
+      <p class="math">Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>2i</sub> + β<sub>3</sub>X<sub>3i</sub> + ⋯ + β<sub>k</sub>X<sub>ki</sub> + u<sub>i</sub></p>
+      <p class="fs-note">β<sub>2</sub> is the effect of X<sub>2</sub> on Y <em>holding the other regressors constant</em> — a partial coefficient.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="ols">
+<h2>OLS in the two-variable model</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">What OLS minimises <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></div>
+    <div class="fs-val">
+      <p class="math">min &nbsp; Σû<sub>i</sub><sup>2</sup> = Σ(Y<sub>i</sub> − β̂<sub>1</sub> − β̂<sub>2</sub>X<sub>i</sub>)<sup>2</sup></p>
+      <p class="fs-note">Squared, not absolute: it penalises large misses more heavily and is differentiable everywhere.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Normal equations <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></div>
+    <div class="fs-val">
+      <p class="math">ΣY<sub>i</sub> = nβ̂<sub>1</sub> + β̂<sub>2</sub>ΣX<sub>i</sub></p>
+      <p class="math">ΣY<sub>i</sub>X<sub>i</sub> = β̂<sub>1</sub>ΣX<sub>i</sub> + β̂<sub>2</sub>ΣX<sub>i</sub><sup>2</sup></p>
+      <p class="fs-note">The first-order conditions. Solving them gives the estimators below.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The estimators, deviation form <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></div>
+    <div class="fs-val">
+      <p class="math">β̂<sub>2</sub> = Σx<sub>i</sub>y<sub>i</sub> / Σx<sub>i</sub><sup>2</sup> &nbsp;·&nbsp; β̂<sub>1</sub> = Ȳ − β̂<sub>2</sub>X̄</p>
+      <p class="fs-note">The form to memorise. Everything from Unit 1C on is built on it.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The estimators, raw sums <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></div>
+    <div class="fs-val">
+      <p class="math">β̂<sub>2</sub> = ( nΣXY − ΣXΣY ) / ( nΣX<sup>2</sup> − (ΣX)<sup>2</sup> )</p>
+      <p class="math">β̂<sub>1</sub> = ( ΣX<sup>2</sup>ΣY − ΣXΣXY ) / ( nΣX<sup>2</sup> − (ΣX)<sup>2</sup> )</p>
+      <p class="fs-note">The same estimators, in the sums a table of data hands you directly. Use these when the question gives ΣX, ΣY, ΣXY and ΣX<sup>2</sup>.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The OLS weights <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></div>
+    <div class="fs-val">
+      <p class="math">k<sub>i</sub> = x<sub>i</sub> / Σx<sub>i</sub><sup>2</sup> &nbsp;⟹&nbsp; β̂<sub>2</sub> = Σk<sub>i</sub>Y<sub>i</sub></p>
+      <p class="math">Σk<sub>i</sub> = 0 &nbsp;·&nbsp; Σk<sub>i</sub>X<sub>i</sub> = 1 &nbsp;·&nbsp; Σk<sub>i</sub><sup>2</sup> = 1 / Σx<sub>i</sub><sup>2</sup></p>
+      <p class="fs-note">β̂<sub>2</sub> is a <strong>linear</strong> function of Y — the L in BLUE. The three identities do the work in every proof that follows.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Algebraic properties of the fitted line <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></div>
+    <div class="fs-val">
+      <p class="math">Σû<sub>i</sub> = 0 &nbsp;·&nbsp; Σû<sub>i</sub>X<sub>i</sub> = 0 &nbsp;·&nbsp; the line passes through (X̄, Ȳ)</p>
+      <p class="fs-note">These hold by construction, whatever the data. They are consequences of including a constant, not evidence that the model is any good.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="assumptions">
+<h2>The classical assumptions</h2>
+<p class="fs-lead">The seven of the classical linear regression model (CLRM), in the order Unit 1C numbers them. Unit 2 is a tour of what happens when each fails.</p>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">1 · Linear in parameters <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></div>
+    <div class="fs-val">
+      <p class="math">Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> + u<sub>i</sub></p>
+      <p class="fs-note">Linear in the βs. Non-linear in the <em>variables</em> is fine: X<sup>2</sup>, ln X and interactions all satisfy it.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">2 · X fixed in repeated sampling</div>
+    <div class="fs-val">
+      <p class="fs-note">X is non-stochastic, or is treated as fixed across samples. What relaxing it costs is the subject of <a href="../units/3b-endogeneity.html">Unit 3B</a>.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">3 · Regressors uncorrelated with the disturbance</div>
+    <div class="fs-val">
+      <p class="math">cov(X<sub>i</sub>, u<sub>i</sub>) = 0</p>
+      <p class="fs-note">Fails ⟹ biased <em>and</em> inconsistent. The one failure a larger sample does not repair — <a href="../units/3b-endogeneity.html">Unit 3B</a>.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">4 · Zero conditional mean</div>
+    <div class="fs-val">
+      <p class="math">E(u<sub>i</sub> | X<sub>i</sub>) = E(u<sub>i</sub>) = 0</p>
+      <p class="fs-note">Guaranteed at the sample level by including a constant, which is why <a href="../units/2a-part2-functional-form.html">Unit 2A Part 2</a> says never to suppress it.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">5 · Homoscedasticity</div>
+    <div class="fs-val">
+      <p class="math">var(u<sub>i</sub>) = E(u<sub>i</sub><sup>2</sup>) = σ<sup>2</sup>, the same for every i</p>
+      <p class="fs-note">Fails ⟹ still unbiased, no longer efficient, standard errors wrong — <a href="../units/2c-heteroscedasticity.html">Unit 2C</a>.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">6 · No autocorrelation</div>
+    <div class="fs-val">
+      <p class="math">cov(u<sub>i</sub>, u<sub>j</sub>) = E(u<sub>i</sub>u<sub>j</sub>) = 0 &nbsp; for i ≠ j</p>
+      <p class="fs-note">Fails ⟹ still unbiased, no longer efficient, standard errors wrong — <a href="../units/2d-autocorrelation.html">Unit 2D</a>.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">7 · No perfect collinearity</div>
+    <div class="fs-val">
+      <p class="fs-note">No regressor may be an exact linear function of the others. Fails ⟹ the estimator does not exist at all — <a href="../units/2b-multicollinearity.html">Unit 2B</a>.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Normality — added, not one of the seven <a class="g-unit" href="../units/1e-normality-maximum-likelihood.html">Unit 1E</a></div>
+    <div class="fs-val">
+      <p class="math">u<sub>i</sub> ∼ N(0, σ<sup>2</sup>) &nbsp;·&nbsp; equivalently u<sub>i</sub> ∼ NID(0, σ<sup>2</sup>)</p>
+      <p class="fs-note">CLRM + normality = <strong>CNLRM</strong>. Nothing already proved is lost; what is gained is the sampling distributions that make Unit 1F's tests possible.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="properties">
+<h2>Properties of the OLS estimators</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">Sampling error <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></div>
+    <div class="fs-val">
+      <p class="math">β̂<sub>2</sub> = β<sub>2</sub> + Σk<sub>i</sub>u<sub>i</sub> = β<sub>2</sub> + Σx<sub>i</sub>u<sub>i</sub> / Σx<sub>i</sub><sup>2</sup></p>
+      <p class="fs-note">The single most useful line in the course. Take expectations for unbiasedness, square for the variance, take probability limits for consistency.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Unbiasedness</div>
+    <div class="fs-val">
+      <p class="math">E(β̂<sub>2</sub>) = β<sub>2</sub> + Σk<sub>i</sub>E(u<sub>i</sub>) = β<sub>2</sub></p>
+      <p class="fs-note">Needs assumptions 2, 3 and 4 and nothing else — not homoscedasticity, not no-autocorrelation, not normality.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Variances and covariance <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></div>
+    <div class="fs-val">
+      <p class="math">var(β̂<sub>2</sub>) = σ<sup>2</sup> / Σx<sub>i</sub><sup>2</sup> &nbsp;·&nbsp; se(β̂<sub>2</sub>) = σ / √( Σx<sub>i</sub><sup>2</sup> )</p>
+      <p class="math">var(β̂<sub>1</sub>) = σ<sup>2</sup> ΣX<sub>i</sub><sup>2</sup> / ( n Σx<sub>i</sub><sup>2</sup> )</p>
+      <p class="math">cov(β̂<sub>1</sub>, β̂<sub>2</sub>) = − X̄ · σ<sup>2</sup> / Σx<sub>i</sub><sup>2</sup> = − X̄ · var(β̂<sub>2</sub>)</p>
+      <p class="fs-note">Precision rises with the <em>spread</em> of X, not with its level. A regressor that barely moves cannot identify a slope.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Estimating σ<sup>2</sup> <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></div>
+    <div class="fs-val">
+      <p class="math">σ̂<sup>2</sup> = Σû<sub>i</sub><sup>2</sup> / (n − 2) &nbsp; with &nbsp; E(σ̂<sup>2</sup>) = σ<sup>2</sup></p>
+      <p class="fs-note">Divide by n − k in general. The two lost degrees of freedom are the two coefficients the residuals were built from.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Gauss–Markov <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></div>
+    <div class="fs-val">
+      <p class="math">var(β<sub>2</sub>*) = σ<sup>2</sup>Σ(w<sub>i</sub> − k<sub>i</sub>)<sup>2</sup> + var(β̂<sub>2</sub>) &nbsp;≥&nbsp; var(β̂<sub>2</sub>)</p>
+      <p class="fs-note">Under assumptions 1–7, OLS is <strong>BLUE</strong> — Best Linear Unbiased Estimator. Any other linear unbiased estimator differs by a sum of squares, which cannot be negative, and equals OLS only when w<sub>i</sub> = k<sub>i</sub> throughout.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="fit">
+<h2>Goodness of fit</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">The decomposition <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></div>
+    <div class="fs-val">
+      <p class="math">Σy<sub>i</sub><sup>2</sup> = Σŷ<sub>i</sub><sup>2</sup> + Σû<sub>i</sub><sup>2</sup> &nbsp;⟹&nbsp; TSS = ESS + RSS</p>
+      <p class="fs-note">Requires a constant in the model. The cross-product Σŷ<sub>i</sub>û<sub>i</sub> vanishes only because Σû = Σû<sub>i</sub>X<sub>i</sub> = 0.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Coefficient of determination</div>
+    <div class="fs-val">
+      <p class="math">r<sup>2</sup> = ESS/TSS = 1 − RSS/TSS = β̂<sub>2</sub><sup>2</sup> Σx<sub>i</sub><sup>2</sup> / Σy<sub>i</sub><sup>2</sup></p>
+      <p class="math">r<sup>2</sup> = ( Σx<sub>i</sub>y<sub>i</sub> )<sup>2</sup> / ( Σx<sub>i</sub><sup>2</sup> · Σy<sub>i</sub><sup>2</sup> )</p>
+      <p class="fs-note">0 ≤ r<sup>2</sup> ≤ 1. It measures fit and nothing else — not correctness, not causation, not significance.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Multiple R<sup>2</sup> <a class="g-unit" href="../units/1d-multiple-regression.html">Unit 1D</a></div>
+    <div class="fs-val">
+      <p class="math">R<sup>2</sup> = ( β̂<sub>2</sub>Σx<sub>2i</sub>y<sub>i</sub> + β̂<sub>3</sub>Σx<sub>3i</sub>y<sub>i</sub> ) / Σy<sub>i</sub><sup>2</sup></p>
+      <p class="fs-note"><strong>R<sup>2</sup> never falls when a regressor is added</strong>, however useless the regressor. That is why it cannot be used to choose between models of different size.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Adjusted R<sup>2</sup> <a class="g-unit" href="../units/1d-multiple-regression.html">Unit 1D</a></div>
+    <div class="fs-val">
+      <p class="math">R̄<sup>2</sup> = 1 − (1 − R<sup>2</sup>) · (n − 1) / (n − k)</p>
+      <p class="math">R̄<sup>2</sup> = 1 − [ RSS/(n − k) ] / [ TSS/(n − 1) ]</p>
+      <p class="fs-note">Charges for each parameter. It can fall when a variable is added, and it can go negative — which says the model is worse than predicting Ȳ every time.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="multiple">
+<h2>Multiple regression</h2>
+<p class="fs-lead">The three-variable model Y = β<sub>1</sub> + β<sub>2</sub>X<sub>2</sub> + β<sub>3</sub>X<sub>3</sub> + u. Beyond three regressors the algebra is done in matrices and these forms are not asked for.</p>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">Normal equations <a class="g-unit" href="../units/1d-multiple-regression.html">Unit 1D</a></div>
+    <div class="fs-val">
+      <p class="math">ΣY<sub>i</sub> = nβ̂<sub>1</sub> + β̂<sub>2</sub>ΣX<sub>2i</sub> + β̂<sub>3</sub>ΣX<sub>3i</sub></p>
+      <p class="math">ΣY<sub>i</sub>X<sub>2i</sub> = β̂<sub>1</sub>ΣX<sub>2i</sub> + β̂<sub>2</sub>ΣX<sub>2i</sub><sup>2</sup> + β̂<sub>3</sub>ΣX<sub>2i</sub>X<sub>3i</sub></p>
+      <p class="math">ΣY<sub>i</sub>X<sub>3i</sub> = β̂<sub>1</sub>ΣX<sub>3i</sub> + β̂<sub>2</sub>ΣX<sub>2i</sub>X<sub>3i</sub> + β̂<sub>3</sub>ΣX<sub>3i</sub><sup>2</sup></p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The partial slopes <a class="g-unit" href="../units/1d-multiple-regression.html">Unit 1D</a></div>
+    <div class="fs-val">
+      <p class="math">β̂<sub>2</sub> = [ (Σx<sub>2i</sub>y<sub>i</sub>)(Σx<sub>3i</sub><sup>2</sup>) − (Σx<sub>3i</sub>y<sub>i</sub>)(Σx<sub>2i</sub>x<sub>3i</sub>) ] / D</p>
+      <p class="math">β̂<sub>3</sub> = [ (Σx<sub>3i</sub>y<sub>i</sub>)(Σx<sub>2i</sub><sup>2</sup>) − (Σx<sub>2i</sub>y<sub>i</sub>)(Σx<sub>2i</sub>x<sub>3i</sub>) ] / D</p>
+      <p class="math">β̂<sub>1</sub> = Ȳ − β̂<sub>2</sub>X̄<sub>2</sub> − β̂<sub>3</sub>X̄<sub>3</sub></p>
+      <p class="math">D = (Σx<sub>2i</sub><sup>2</sup>)(Σx<sub>3i</sub><sup>2</sup>) − (Σx<sub>2i</sub>x<sub>3i</sub>)<sup>2</sup></p>
+      <p class="fs-note">D is the common denominator, and it is what perfect collinearity drives to zero.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Variances <a class="g-unit" href="../units/1d-multiple-regression.html">Unit 1D</a></div>
+    <div class="fs-val">
+      <p class="math">var(β̂<sub>2</sub>) = σ<sup>2</sup>Σx<sub>3i</sub><sup>2</sup> / D &nbsp;·&nbsp; var(β̂<sub>3</sub>) = σ<sup>2</sup>Σx<sub>2i</sub><sup>2</sup> / D</p>
+      <p class="math">cov(β̂<sub>2</sub>, β̂<sub>3</sub>) = − σ<sup>2</sup>Σx<sub>2i</sub>x<sub>3i</sub> / D</p>
+      <p class="math">var(β̂<sub>j</sub>) = σ<sup>2</sup> / [ Σx<sub>j</sub><sup>2</sup> ( 1 − R<sub>j</sub><sup>2</sup> ) ]</p>
+      <p class="fs-note">The last form is the general one and the one to remember: R<sub>j</sub><sup>2</sup> is from regressing X<sub>j</sub> on all the other regressors. It reappears in <a href="../units/2b-multicollinearity.html">Unit 2B</a> as the VIF.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Degrees of freedom</div>
+    <div class="fs-val">
+      <p class="math">σ̂<sup>2</sup> = Σû<sub>i</sub><sup>2</sup> / (n − k) &nbsp; — with three regressors, n − 3</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="normality">
+<h2>Normality and maximum likelihood</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">Sampling distributions <a class="g-unit" href="../units/1e-normality-maximum-likelihood.html">Unit 1E</a></div>
+    <div class="fs-val">
+      <p class="math">β̂<sub>2</sub> ∼ N( β<sub>2</sub>, σ<sup>2</sup>/Σx<sub>i</sub><sup>2</sup> ) &nbsp;·&nbsp; β̂<sub>1</sub> ∼ N( β<sub>1</sub>, σ<sup>2</sup>ΣX<sub>i</sub><sup>2</sup>/(nΣx<sub>i</sub><sup>2</sup>) )</p>
+      <p class="math">Z = ( β̂<sub>2</sub> − β<sub>2</sub> ) / σ<sub>β̂2</sub> ∼ N(0, 1)</p>
+      <p class="math">( n − 2 ) σ̂<sup>2</sup> / σ<sup>2</sup> ∼ χ<sup>2</sup><sub>(n−2)</sub></p>
+      <p class="fs-note">β̂ is a linear function of normal disturbances, so it is normal itself. This is where every test in Unit 1F comes from.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The likelihood <a class="g-unit" href="../units/1e-normality-maximum-likelihood.html">Unit 1E</a></div>
+    <div class="fs-val">
+      <p class="math">ln LF = − (n/2) ln σ<sup>2</sup> − (n/2) ln(2π) − ½ Σ( Y<sub>i</sub> − β<sub>1</sub> − β<sub>2</sub>X<sub>i</sub> )<sup>2</sup> / σ<sup>2</sup></p>
+      <p class="fs-note">Maximising it in β<sub>1</sub> and β<sub>2</sub> is minimising the sum of squares, so <strong>ML and OLS give the same slope and intercept</strong> under normality.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Where ML and OLS differ</div>
+    <div class="fs-val">
+      <p class="math">σ̃<sup>2</sup> = (1/n) Σû<sub>i</sub><sup>2</sup> &nbsp;·&nbsp; E(σ̃<sup>2</sup>) = σ<sup>2</sup> − (2/n)σ<sup>2</sup></p>
+      <p class="fs-note">The ML variance estimator divides by n rather than n − 2, so it is <strong>biased downward in every finite sample but consistent</strong> — the standard example of the distinction.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="inference">
+<h2>Inference</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">Why t and not Z <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a></div>
+    <div class="fs-val">
+      <p class="math">( β̂<sub>j</sub> − β<sub>j</sub> ) / se(β̂<sub>j</sub>) &nbsp;∼&nbsp; t<sub>n−k</sub></p>
+      <p class="fs-note">σ is unknown, so se(β̂) uses σ̂ — an estimate in the denominator, which fattens the tails. With large n the t and the normal coincide.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Test statistic <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a></div>
+    <div class="fs-val">
+      <p class="math">t = ( estimate − hypothesised value ) / standard error = ( β̂<sub>j</sub> − b<sub>j</sub> ) / se(β̂<sub>j</sub>)</p>
+      <p class="fs-note">With b<sub>j</sub> = 0 this is the t-ratio printed by the software. For any other hypothesis you must compute it yourself.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Decision rules</div>
+    <div class="fs-val">
+      <p class="math">two-tailed: reject if | t | &gt; t<sub>α/2, n−k</sub> &nbsp;·&nbsp; one-tailed: reject if t is beyond t<sub>α, n−k</sub> in the direction of H<sub>1</sub></p>
+      <p class="math">equivalently: reject if p &lt; α</p>
+      <p class="fs-note">The two-tailed test is the default, because it does not assume the answer. Choose one tail only when theory rules the other out in advance.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Confidence interval <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a></div>
+    <div class="fs-val">
+      <p class="math">β̂<sub>j</sub> ± t<sub>α/2, n−k</sub> · se(β̂<sub>j</sub>)</p>
+      <p class="fs-note">A 95% interval contains every value of β<sub>j</sub> a two-tailed 5% test would fail to reject — so the interval and the test are the same statement.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">A linear combination <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a></div>
+    <div class="fs-val">
+      <p class="math">se( β̂<sub>2</sub> − β̂<sub>3</sub> ) = √[ var(β̂<sub>2</sub>) + var(β̂<sub>3</sub>) − 2 cov(β̂<sub>2</sub>, β̂<sub>3</sub>) ]</p>
+      <p class="fs-note"><strong>se(β̂<sub>2</sub> − β̂<sub>3</sub>) ≠ se(β̂<sub>2</sub>) − se(β̂<sub>3</sub>).</strong> The covariance term is compulsory, and it is why the variance–covariance matrix has to be asked for.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The F-test <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a></div>
+    <div class="fs-val">
+      <p class="math">F = [ (RSS<sub>R</sub> − RSS<sub>UR</sub>) / q ] / [ RSS<sub>UR</sub> / (n − k) ] &nbsp;∼&nbsp; F(q, n − k)</p>
+      <p class="math">F = [ (R<sup>2</sup><sub>UR</sub> − R<sup>2</sup><sub>R</sub>) / q ] / [ (1 − R<sup>2</sup><sub>UR</sub>) / (n − k) ]</p>
+      <p class="fs-note">q is the number of restrictions, k the parameters in the <em>unrestricted</em> model. The R<sup>2</sup> form works only when both models have the same dependent variable.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Overall significance <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></div>
+    <div class="fs-val">
+      <p class="math">F = [ R<sup>2</sup> / (k − 1) ] / [ (1 − R<sup>2</sup>) / (n − k) ]</p>
+      <p class="fs-note">Tests H<sub>0</sub>: every slope is zero. A large F with no significant t-ratios is the classic symptom of multicollinearity.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The one-restriction identity</div>
+    <div class="fs-val">
+      <p class="math">F = t<sup>2</sup> &nbsp; when q = 1</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="forms">
+<h2>Functional forms</h2>
+<p class="fs-lead">What the coefficient means depends entirely on which of these you estimated. State the form before interpreting a magnitude.</p>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">Linear (lin–lin) <a class="g-unit" href="../units/2a-part2-functional-form.html">Unit 2A Part 2</a></div>
+    <div class="fs-val">
+      <p class="math">Y = β<sub>1</sub> + β<sub>2</sub>X + u &nbsp;⟹&nbsp; β<sub>2</sub> = ∂Y/∂X</p>
+      <p class="fs-note">A one-<em>unit</em> change in X changes Y by β<sub>2</sub> units.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Double-log</div>
+    <div class="fs-val">
+      <p class="math">ln Y = β<sub>1</sub> + β<sub>2</sub> ln X<sub>2</sub> + β<sub>3</sub> ln X<sub>3</sub> + u</p>
+      <p class="math">β<sub>k</sub> = (ΔY/Y) / (ΔX<sub>k</sub>/X<sub>k</sub>) = the elasticity of Y with respect to X<sub>k</sub></p>
+      <p class="fs-note">Constant elasticity, read straight off the coefficient. The Cobb–Douglas Q = β<sub>1</sub>L<sup>β2</sup>K<sup>β3</sup>e<sup>u</sup> becomes linear in this form.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Log–lin (semi-log)</div>
+    <div class="fs-val">
+      <p class="math">ln Y = β<sub>1</sub> + β<sub>2</sub>X + u &nbsp;⟹&nbsp; %ΔY per unit of X = 100[ e<sup>β2</sup> − 1 ]</p>
+      <p class="fs-note">100β<sub>2</sub> is the usual approximation and is good for small β<sub>2</sub>. Use the exact form when β<sub>2</sub> is large or the regressor is a dummy.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Lin–log</div>
+    <div class="fs-val">
+      <p class="math">Y = β<sub>1</sub> + β<sub>2</sub> ln X + u, &nbsp; X &gt; 0</p>
+      <p class="fs-note">A 1% rise in X changes Y by about β<sub>2</sub>/100 units.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Quadratic and its turning point <a class="g-unit" href="../units/2a-part2-functional-form.html">Unit 2A Part 2</a></div>
+    <div class="fs-val">
+      <p class="math">Y = β<sub>1</sub> + β<sub>2</sub>X + β<sub>3</sub>X<sup>2</sup> + u &nbsp;⟹&nbsp; ∂Y/∂X = β<sub>2</sub> + 2β<sub>3</sub>X</p>
+      <p class="math">X* = − β̂<sub>2</sub> / 2β̂<sub>3</sub></p>
+      <p class="fs-note">The partial effect depends on X, so it cannot be quoted as a single number. Check the turning point lies inside the range of the data before interpreting it.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Interaction term <a class="g-unit" href="../units/2a-part2-functional-form.html">Unit 2A Part 2</a></div>
+    <div class="fs-val">
+      <p class="math">Y = β<sub>1</sub> + β<sub>2</sub>X<sub>2</sub> + β<sub>3</sub>X<sub>3</sub> + β<sub>4</sub>(X<sub>2</sub>·X<sub>3</sub>) + u</p>
+      <p class="math">∂Y/∂X<sub>2</sub> = β<sub>2</sub> + β<sub>4</sub>X<sub>3</sub></p>
+      <p class="fs-note">With the product term in the model, β<sub>2</sub> is the effect of X<sub>2</sub> <strong>when X<sub>3</sub> = 0</strong> — often a value nobody in the sample has.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="specification">
+<h2>Specification</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">Omitted variable bias <a class="g-unit" href="../units/2a-part1-specification.html">Unit 2A Part 1</a></div>
+    <div class="fs-val">
+      <p class="math">true: Y = β<sub>1</sub> + β<sub>2</sub>X<sub>2</sub> + β<sub>3</sub>X<sub>3</sub> + u &nbsp;·&nbsp; run: Y = β<sub>1</sub>* + β<sub>2</sub>*X<sub>2</sub> + ε</p>
+      <p class="math">E(β̂<sub>2</sub>*) = β<sub>2</sub> + β<sub>3</sub>δ̃<sub>1</sub>, &nbsp; δ̃<sub>1</sub> = Σx<sub>2</sub>x<sub>3</sub> / Σx<sub>2</sub><sup>2</sup></p>
+      <p class="math">Bias(β̂<sub>2</sub>*) = β<sub>3</sub>δ̃<sub>1</sub></p>
+      <p class="fs-note">δ̃<sub>1</sub> is the slope from regressing the omitted variable on the included one. <strong>Sign the bias by signing β<sub>3</sub> and the correlation and multiplying.</strong> No bias if either is zero.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The direction of the bias</div>
+    <div class="fs-val">
+      <p class="math">β<sub>3</sub> &gt; 0, corr(X<sub>2</sub>, X<sub>3</sub>) &gt; 0 &nbsp;⟹&nbsp; upward &nbsp;·&nbsp; signs opposite &nbsp;⟹&nbsp; downward</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The variance trade <a class="g-unit" href="../units/2a-part1-specification.html">Unit 2A Part 1</a></div>
+    <div class="fs-val">
+      <p class="math">underfitted: var(β̂<sub>2</sub>*) = σ<sup>2</sup>/Σx<sub>2</sub><sup>2</sup> &nbsp;·&nbsp; correct: var(β̂<sub>2</sub>) = σ<sup>2</sup> / [ Σx<sub>2</sub><sup>2</sup>(1 − R<sup>2</sup><sub>23</sub>) ]</p>
+      <p class="fs-note">Omitting a relevant variable gives a <em>smaller</em> variance and a biased estimate; including an irrelevant one keeps unbiasedness and inflates the variance by 1/(1 − R<sup>2</sup><sub>23</sub>). Bias is the worse trade.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Ramsey RESET <a class="g-unit" href="../units/2a-part1-specification.html">Unit 2A Part 1</a></div>
+    <div class="fs-val">
+      <p class="math">Y<sub>i</sub> = α<sub>1</sub> + α<sub>2</sub>X<sub>2i</sub> + ⋯ + γ<sub>1</sub>Ŷ<sub>i</sub><sup>2</sup> + γ<sub>2</sub>Ŷ<sub>i</sub><sup>3</sup> + u<sub>i</sub></p>
+      <p class="math">H<sub>0</sub>: γ<sub>1</sub> = γ<sub>2</sub> = 0 &nbsp;— an F-test with q = 2, so F(2, n − k − 2)</p>
+      <p class="fs-note">Rejection says the model is inadequate. It does not say why, and never says which variable to add.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Model selection criteria <a class="g-unit" href="../units/2a-part1-specification.html">Unit 2A Part 1</a></div>
+    <div class="fs-val">
+      <p class="math">AIC = n · ln( RSS/n ) + 2v</p>
+      <p class="math">SC = ln( RSS/n ) + ( v/n ) ln n</p>
+      <p class="fs-note">Smallest wins. v is the number of parameters. SC penalises size more heavily than AIC, so it picks smaller models.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="stability">
+<h2>Structural change</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">Chow test <a class="g-unit" href="../units/2a-part2-functional-form.html">Unit 2A Part 2</a></div>
+    <div class="fs-val">
+      <p class="math">F = [ ( RSS<sub>R</sub> − RSS<sub>UR</sub> ) / k ] / [ RSS<sub>UR</sub> / ( n<sub>2</sub> + n<sub>3</sub> − 2k ) ]</p>
+      <p class="math">RSS<sub>UR</sub> = RSS<sub>2</sub> + RSS<sub>3</sub></p>
+      <p class="fs-note">RSS<sub>R</sub> is from the pooled regression; RSS<sub>2</sub> and RSS<sub>3</sub> from the two sub-periods. Assumes the same disturbance variance in both, which is worth checking first.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Test of equal variances <a class="g-unit" href="../units/2a-part2-functional-form.html">Unit 2A Part 2</a></div>
+    <div class="fs-val">
+      <p class="math">F = σ̂<sub>1</sub><sup>2</sup> / σ̂<sub>2</sub><sup>2</sup> &nbsp;∼&nbsp; F<sub>(n1−k), (n2−k)</sub>, &nbsp; with σ̂<sub>j</sub><sup>2</sup> = RSS<sub>j</sub>/(n<sub>j</sub> − k)</p>
+      <p class="fs-note">Put the larger variance on top so the statistic exceeds one.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="collinearity">
+<h2>Multicollinearity</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">Perfect collinearity <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></div>
+    <div class="fs-val">
+      <p class="math">X<sub>3</sub> = α<sub>1</sub> + α<sub>2</sub>X<sub>2</sub> &nbsp;⟹&nbsp; β̂<sub>2</sub> = 0/0</p>
+      <p class="fs-note">The estimator does not exist. What the data can identify is the combination β̂<sub>2</sub> + α<sub>2</sub>β̂<sub>3</sub>, not the two coefficients separately.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The inflated variance <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></div>
+    <div class="fs-val">
+      <p class="math">var(β̂<sub>j</sub>) = σ<sup>2</sup> / [ Σx<sub>j</sub><sup>2</sup>( 1 − R<sub>j</sub><sup>2</sup> ) ] = ( σ<sup>2</sup> / Σx<sub>j</sub><sup>2</sup> ) · VIF(β̂<sub>j</sub>)</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Variance inflation factor <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></div>
+    <div class="fs-val">
+      <p class="math">VIF(β̂<sub>j</sub>) = 1 / ( 1 − R<sub>j</sub><sup>2</sup> )</p>
+      <p class="fs-note">R<sub>j</sub><sup>2</sup> comes from the auxiliary regression of X<sub>j</sub> on <em>all</em> the other regressors. R<sub>j</sub><sup>2</sup> = 0.9 gives VIF = 10, the conventional alarm; the standard error is then √10 ≈ 3.2 times what it would otherwise be.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The symptom</div>
+    <div class="fs-val">
+      <p class="fs-note">A high R<sup>2</sup> and a significant F, with few or no significant t-ratios. Estimates that swing when a variable is added or a few observations dropped. OLS remains <strong>BLUE</strong> throughout — multicollinearity is a shortage of information in the data, not a violation of an assumption.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="hetero">
+<h2>Heteroscedasticity</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">The failure <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></div>
+    <div class="fs-val">
+      <p class="math">var(u<sub>i</sub>) = σ<sub>i</sub><sup>2</sup> &nbsp;— not constant across i</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The true variance of β̂<sub>2</sub> <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></div>
+    <div class="fs-val">
+      <p class="math">var(β̂<sub>2</sub>) = Σx<sub>i</sub><sup>2</sup>σ<sub>i</sub><sup>2</sup> / ( Σx<sub>i</sub><sup>2</sup> )<sup>2</sup></p>
+      <p class="fs-note">Set σ<sub>i</sub><sup>2</sup> = σ<sup>2</sup> and it collapses to σ<sup>2</sup>/Σx<sub>i</sub><sup>2</sup>, which is what the software prints. So <strong>the printed standard error is wrong</strong>, and can be wrong in either direction. β̂<sub>2</sub> itself stays unbiased.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Breusch–Pagan test <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></div>
+    <div class="fs-val">
+      <p class="math">û<sub>i</sub><sup>2</sup> = α<sub>1</sub> + α<sub>2</sub>X<sub>2</sub> + ⋯ + α<sub>k</sub>X<sub>k</sub> + ε</p>
+      <p class="math">LM = nR<sup>2</sup> &nbsp;∼&nbsp; χ<sup>2</sup>(d)</p>
+      <p class="fs-note">d is the number of slope terms in the auxiliary regression. R<sup>2</sup> is the auxiliary's, not the original model's.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">White test <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></div>
+    <div class="fs-val">
+      <p class="math">û<sub>i</sub><sup>2</sup> = α<sub>1</sub> + α<sub>2</sub>X<sub>2</sub> + α<sub>3</sub>X<sub>3</sub> + α<sub>4</sub>X<sub>2</sub>X<sub>3</sub> + α<sub>5</sub>X<sub>2</sub><sup>2</sup> + α<sub>6</sub>X<sub>3</sub><sup>2</sup> + ε</p>
+      <p class="math">LM = nR<sup>2</sup> &nbsp;∼&nbsp; χ<sup>2</sup>(d)</p>
+      <p class="fs-note">Squares and cross-products as well, so it catches forms Breusch–Pagan misses — at the cost of degrees of freedom. The economical variant uses Ŷ and Ŷ<sup>2</sup> alone.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Weighted least squares <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></div>
+    <div class="fs-val">
+      <p class="math">Y<sub>i</sub>/σ<sub>i</sub> = β<sub>1</sub>/σ<sub>i</sub> + β<sub>2</sub>X<sub>2i</sub>/σ<sub>i</sub> + u<sub>i</sub>/σ<sub>i</sub></p>
+      <p class="math">var(u<sub>i</sub>/σ<sub>i</sub>) = σ<sub>i</sub><sup>2</sup>/σ<sub>i</sub><sup>2</sup> = 1</p>
+      <p class="fs-note">Divide through by the standard deviation and the transformed disturbance is homoscedastic. Note the intercept is transformed too, and the equation now has no constant.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Feasible GLS <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></div>
+    <div class="fs-val">
+      <p class="math">ln(û<sub>i</sub><sup>2</sup>) = α<sub>1</sub> + δ<sub>2</sub>X<sub>2</sub> + ⋯ + δ<sub>k</sub>X<sub>k</sub> + e</p>
+      <p class="fs-note">σ<sub>i</sub> is unknown, so estimate it. The exponential form keeps the fitted variance positive.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The four remedies</div>
+    <div class="fs-val">
+      <p class="fs-note">Re-examine the specification first — much heteroscedasticity is <em>impure</em>, caused by a missing variable or the wrong functional form. Then: log the data; use heteroscedasticity-corrected (White/robust) standard errors; weighted least squares; feasible GLS.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="auto">
+<h2>Autocorrelation</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">First-order scheme <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></div>
+    <div class="fs-val">
+      <p class="math">u<sub>t</sub> = ρ u<sub>t−1</sub> + ε<sub>t</sub>, &nbsp; | ρ | &lt; 1, &nbsp; ε well behaved</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Moments of an AR(1) disturbance <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></div>
+    <div class="fs-val">
+      <p class="math">var(u<sub>t</sub>) = σ<sup>2</sup> = σ<sub>ε</sub><sup>2</sup> / ( 1 − ρ<sup>2</sup> )</p>
+      <p class="math">cov(u<sub>t</sub>, u<sub>t−s</sub>) = ρ<sup>s</sup> σ<sub>ε</sub><sup>2</sup> / ( 1 − ρ<sup>2</sup> ) &nbsp;·&nbsp; corr(u<sub>t</sub>, u<sub>t−s</sub>) = ρ<sup>s</sup></p>
+      <p class="fs-note">The memory decays geometrically and never quite ends. |ρ| &lt; 1 is what keeps the variance finite.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The variance of β̂<sub>2</sub> under AR(1) <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></div>
+    <div class="fs-val">
+      <p class="math">var(β̂<sub>2</sub>)<sub>AR1</sub> = ( σ<sup>2</sup> / Σx<sub>t</sub><sup>2</sup> ) · [ 1 + 2ρ ( Σx<sub>t</sub>x<sub>t−1</sub> / Σx<sub>t</sub><sup>2</sup> ) + 2ρ<sup>2</sup> ( Σx<sub>t</sub>x<sub>t−2</sub> / Σx<sub>t</sub><sup>2</sup> ) + ⋯ ]</p>
+      <p class="fs-note">The bracket depends on the <strong>regressor's own</strong> serial correlation as well as ρ. With both positive — the usual case in economic time series — the printed standard error understates the truth and t-ratios are inflated.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Durbin–Watson <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></div>
+    <div class="fs-val">
+      <p class="math">DW = Σ( û<sub>t</sub> − û<sub>t−1</sub> )<sup>2</sup> / Σû<sub>t</sub><sup>2</sup> &nbsp;·&nbsp; DW ≈ 2( 1 − ρ̂ )</p>
+      <p class="fs-note">0 ≤ DW ≤ 4. Near 2 is no autocorrelation; near 0 positive; near 4 negative. Two inconclusive zones between d<sub>L</sub> and d<sub>U</sub>. <strong>Invalid if the model contains a lagged dependent variable.</strong></p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Breusch–Godfrey <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></div>
+    <div class="fs-val">
+      <p class="math">û<sub>t</sub> on all the X's and û<sub>t−1</sub>, …, û<sub>t−q</sub></p>
+      <p class="math">( n − q )R<sup>2</sup> &nbsp;∼&nbsp; χ<sup>2</sup>(q)</p>
+      <p class="fs-note">Tests to order q, has no inconclusive region, and survives a lagged dependent variable. The better test in every respect except familiarity.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The GLS transformation <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></div>
+    <div class="fs-val">
+      <p class="math">Y<sub>t</sub> − ρY<sub>t−1</sub> = β<sub>1</sub>(1 − ρ) + β<sub>2</sub>( X<sub>t</sub> − ρX<sub>t−1</sub> ) + ε<sub>t</sub></p>
+      <p class="fs-note">Quasi-differencing. The transformed disturbance ε is well behaved, so OLS on the starred variables is BLUE. ρ is unknown, so estimate it from û<sub>t</sub> = ρ̂û<sub>t−1</sub> + v<sub>t</sub> and iterate — Cochrane–Orcutt, or Prais–Winsten, which keeps the first observation.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Newey–West</div>
+    <div class="fs-val">
+      <p class="fs-note">HAC standard errors: leave the coefficients alone and correct the standard errors for both autocorrelation and heteroscedasticity. A large-sample remedy, and the usual first move.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="dummies">
+<h2>Dummy variables</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">A single dummy <a class="g-unit" href="../units/3a-qualitative-variables.html">Unit 3A</a></div>
+    <div class="fs-val">
+      <p class="math">Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>D<sub>i</sub> + u<sub>i</sub> &nbsp;⟹&nbsp; β̂<sub>1</sub> = Ȳ<sub>0</sub>, &nbsp; β̂<sub>2</sub> = Ȳ<sub>1</sub> − Ȳ<sub>0</sub></p>
+      <p class="fs-note">Exactly the group means. Its t-test <em>is</em> the difference-of-means test.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The m − 1 rule</div>
+    <div class="fs-val">
+      <p class="fs-note">A qualitative variable with <strong>m categories</strong> gets <strong>at most m − 1 dummies</strong> alongside a constant. All m plus a constant sum to the column of ones: perfect multicollinearity, assumption 7 failing — the <strong>dummy variable trap</strong>. Always state which category is the base; a table of dummy coefficients without it is uninterpretable.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">With quantitative regressors <a class="g-unit" href="../units/3a-qualitative-variables.html">Unit 3A</a></div>
+    <div class="fs-val">
+      <p class="math">E(Y | X, D = 0) = β<sub>1</sub> + β<sub>3</sub>X &nbsp;·&nbsp; E(Y | X, D = 1) = (β<sub>1</sub> + β<sub>2</sub>) + β<sub>3</sub>X</p>
+      <p class="fs-note">Two parallel lines. β<sub>2</sub> is the <strong>differential intercept coefficient</strong> — a dummy on its own shifts the line, it cannot tilt it.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Logged dependent variable <a class="g-unit" href="../units/3a-qualitative-variables.html">Unit 3A</a></div>
+    <div class="fs-val">
+      <p class="math">exact percentage effect = 100[ e<sup>β̂2</sup> − 1 ]</p>
+      <p class="fs-note">100β̂<sub>2</sub> approximates it and always <em>under</em>states a positive effect. A dummy moves a whole unit, which is where the approximation is most stretched: β̂ = 0.40 is 49.2%, not 40%.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Interacted dummy <a class="g-unit" href="../units/3a-qualitative-variables.html">Unit 3A</a></div>
+    <div class="fs-val">
+      <p class="math">Y = β<sub>1</sub> + β<sub>2</sub>D + β<sub>3</sub>X + β<sub>5</sub>(D · X) + u</p>
+      <p class="math">∂Y/∂X = β<sub>3</sub> + β<sub>5</sub>D &nbsp;·&nbsp; gap at X = β<sub>2</sub> + β<sub>5</sub>X</p>
+      <p class="fs-note">Now the lines may differ in slope as well as level. β<sub>2</sub> becomes the gap at X = 0.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Do two groups share a regression? <a class="g-unit" href="../units/3a-qualitative-variables.html">Unit 3A</a></div>
+    <div class="fs-val">
+      <p class="math">H<sub>0</sub>: the dummy and all its interactions are zero &nbsp;— an F-test</p>
+      <p class="math">RSS<sub>UR</sub> = RSS<sub>1</sub> + RSS<sub>2</sub></p>
+      <p class="fs-note">The fully interacted regression <em>is</em> the two separate regressions run at once, so the identity holds and the F is exactly the Chow statistic. The single-equation form has the advantage that you can test which part differs.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="endogeneity">
+<h2>Endogeneity</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">The failure <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></div>
+    <div class="fs-val">
+      <p class="math">cov(X<sub>i</sub>, u<sub>i</sub>) ≠ 0 &nbsp;⟹&nbsp; X is endogenous</p>
+      <p class="fs-note">Three sources: <strong>omitted variables</strong>, <strong>measurement error</strong>, <strong>simultaneity</strong>.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">What OLS converges on <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></div>
+    <div class="fs-val">
+      <p class="math">plim(β̂<sub>2</sub>) = β<sub>2</sub> + cov(X, u) / var(X)</p>
+      <p class="fs-note">Biased <strong>and inconsistent</strong>: the second term is a constant, so it does not shrink with n. Unlike heteroscedasticity and autocorrelation, this is not repaired by more data.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Simultaneous system <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></div>
+    <div class="fs-val">
+      <p class="math">C<sub>t</sub> = β<sub>1</sub> + β<sub>2</sub>Y<sub>t</sub> + u<sub>t</sub> &nbsp;·&nbsp; Y<sub>t</sub> = C<sub>t</sub> + I<sub>t</sub></p>
+      <p class="fs-note"><strong>Endogenous</strong>: determined inside the system. <strong>Exogenous</strong>: outside it. <strong>Predetermined</strong>: exogenous <em>or</em> lagged endogenous. Which side of the equals sign a variable sits on proves nothing.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The reduced form <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></div>
+    <div class="fs-val">
+      <p class="math">Y<sub>t</sub> = β<sub>1</sub>/(1 − β<sub>2</sub>) + [1/(1 − β<sub>2</sub>)] I<sub>t</sub> + [1/(1 − β<sub>2</sub>)] u<sub>t</sub></p>
+      <p class="math">C<sub>t</sub> = β<sub>1</sub>/(1 − β<sub>2</sub>) + [β<sub>2</sub>/(1 − β<sub>2</sub>)] I<sub>t</sub> + [1/(1 − β<sub>2</sub>)] u<sub>t</sub></p>
+      <p class="fs-note">Every endogenous variable in terms of predetermined variables only. Its regressors are therefore uncorrelated with the disturbance, so <strong>OLS on the reduced form is consistent</strong>. The π coefficients are the <strong>impact multipliers</strong>.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Simultaneity bias, exactly <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></div>
+    <div class="fs-val">
+      <p class="math">cov(Y<sub>t</sub>, u<sub>t</sub>) = σ<sup>2</sup> / ( 1 − β<sub>2</sub> ) &nbsp;&gt; 0 &nbsp; for 0 &lt; β<sub>2</sub> &lt; 1</p>
+      <p class="math">plim(β̂<sub>2</sub>) = β<sub>2</sub> + [1/(1 − β<sub>2</sub>)]( σ<sup>2</sup>/σ<sub>Y</sub><sup>2</sup> ) = β<sub>2</sub> + (1 − β<sub>2</sub>) σ<sup>2</sup>/( σ<sup>2</sup> + σ<sub>I</sub><sup>2</sup> )</p>
+      <p class="fs-note">The marginal propensity to consume is <strong>overestimated</strong>, and the size of the error is the share of income's variation that comes from the disturbance rather than from investment.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Regressing Q on P <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></div>
+    <div class="fs-val">
+      <p class="math">plim(β̂) = (1 − w) b<sub>2</sub> + w a<sub>2</sub>, &nbsp; w = σ<sub>e</sub><sup>2</sup>/( σ<sub>u</sub><sup>2</sup> + σ<sub>e</sub><sup>2</sup> )</p>
+      <p class="fs-note">A variance-weighted average of the supply and demand slopes. A curve is traced out by the shifting of the <em>other</em> one: shift demand only and OLS returns the supply slope.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="iv">
+<h2>IV, 2SLS and identification</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">The two conditions <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></div>
+    <div class="fs-val">
+      <p class="math">(1) cov(Z, u) = 0 &nbsp;— instrument exogeneity</p>
+      <p class="math">(2) cov(Z, X) ≠ 0 &nbsp;— instrument relevance</p>
+      <p class="fs-note"><strong>Relevance is testable</strong>, by a t- or F-test in the first stage. <strong>Exogeneity is not</strong> — u is unobservable, so the case for it is an argument, not a statistic.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The IV estimator <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></div>
+    <div class="fs-val">
+      <p class="math">β̂<sub>2</sub><sup>IV</sup> = Σ(Z<sub>i</sub> − Z̄)(Y<sub>i</sub> − Ȳ) / Σ(Z<sub>i</sub> − Z̄)(X<sub>i</sub> − X̄) = cov(Z, Y)/cov(Z, X)</p>
+      <p class="math">plim(β̂<sub>2</sub><sup>IV</sup>) = β<sub>2</sub> + cov(Z, u)/cov(Z, X) = β<sub>2</sub></p>
+      <p class="fs-note">Consistent, but <strong>biased in small samples</strong> — it is a ratio, and the expectation of a ratio is not the ratio of expectations. Set Z = X and it is OLS.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The variance cost <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></div>
+    <div class="fs-val">
+      <p class="math">var(β̂<sub>2</sub><sup>IV</sup>) = σ̂<sup>2</sup> / [ Σ(X<sub>i</sub> − X̄)<sup>2</sup> · r<sup>2</sup><sub>X,Z</sub> ]</p>
+      <p class="math">var(β̂<sub>2</sub><sup>IV</sup>) / var(β̂<sub>2</sub><sup>OLS</sup>) = 1 / r<sup>2</sup><sub>X,Z</sub> &nbsp;≥&nbsp; 1</p>
+      <p class="fs-note">IV is always less precise, by exactly the reciprocal of the first-stage R<sup>2</sup>. Only the part of X the instrument accounts for is used.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Weak instruments <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></div>
+    <div class="fs-val">
+      <p class="fs-note">Three failures at once: the variance blows up; the finite-sample bias grows and points back towards OLS; and the asymptotic standard error understates the true spread. An instrument with no correlation at all reproduces OLS exactly. Look for a first-stage <strong>F of at least 10</strong> before believing an IV estimate.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">2SLS <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></div>
+    <div class="fs-val">
+      <p class="math">stage 1: X<sub>i</sub> = π<sub>1</sub> + π<sub>2</sub>T<sub>i</sub> + π<sub>3</sub>Z<sub>i</sub> + ε<sub>i</sub> &nbsp;⟹&nbsp; keep X̂<sub>i</sub></p>
+      <p class="math">stage 2: Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X̂<sub>i</sub> + β<sub>3</sub>T<sub>i</sub> + u<sub>i</sub></p>
+      <p class="fs-note">Every exogenous variable of the structural equation goes into stage 1 as well. With one instrument, 2SLS <em>is</em> IV. <strong>Never run the second stage by hand</strong>: the coefficients come out right and the standard errors do not.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">In a simultaneous system <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></div>
+    <div class="fs-val">
+      <p class="fs-note">Every <strong>predetermined variable in the system</strong> is a candidate instrument, and the reduced form of a right-hand-side endogenous variable <em>is</em> the first stage. Substitute the fitted values on the right-hand side only.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Order condition <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></div>
+    <div class="fs-val">
+      <p class="math">an equation must exclude at least <strong>M − 1</strong> of the model's variables</p>
+      <p class="math">exactly M − 1 → just identified &nbsp;·&nbsp; more → overidentified &nbsp;·&nbsp; fewer → underidentified</p>
+      <p class="fs-note">M is the number of endogenous variables. Equivalently: the predetermined variables in the system must be at least as many as the slope coefficients in the equation. <strong>Necessary, not sufficient.</strong> Work both statements and check they agree.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Rank condition <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></div>
+    <div class="fs-val">
+      <p class="fs-note">Necessary <em>and</em> sufficient. In a two-equation system: at least one exogenous variable excluded from the first equation must have a non-zero coefficient in the second. This is <strong>instrument relevance under another name</strong> — an equation can pass the counting and still be unidentified.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Indirect least squares <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></div>
+    <div class="fs-val">
+      <p class="fs-note">Estimate the reduced form by OLS and solve back for the structural parameters. Works only on a <strong>just identified</strong> equation, where it agrees exactly with 2SLS. On an overidentified one the solutions disagree and nothing says which to keep — which is why 2SLS is the standard method.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="tests">
+<h2>Which test, at a glance</h2>
+<p class="fs-lead">Every test in the course, with the statistic and the distribution to compare it against.</p>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">Is one coefficient zero? <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a></div>
+    <div class="fs-val">
+      <p class="math">t = ( β̂<sub>j</sub> − b<sub>j</sub> ) / se(β̂<sub>j</sub>)</p>
+      <p class="fs-note"><strong>t-test</strong> · compare with t(n − k)</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Are several coefficients jointly zero? <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a></div>
+    <div class="fs-val">
+      <p class="math">F = [(RSS<sub>R</sub> − RSS<sub>UR</sub>)/q] / [RSS<sub>UR</sub>/(n − k)]</p>
+      <p class="fs-note"><strong>F-test</strong> · compare with F(q, n − k), q restrictions</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Is the model significant overall? <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></div>
+    <div class="fs-val">
+      <p class="math">F = [R<sup>2</sup>/(k − 1)] / [(1 − R<sup>2</sup>)/(n − k)]</p>
+      <p class="fs-note"><strong>F-test</strong> · compare with F(k − 1, n − k)</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Is the functional form wrong? <a class="g-unit" href="../units/2a-part1-specification.html">Unit 2A Part 1</a></div>
+    <div class="fs-val">
+      <p class="math">F on H<sub>0</sub>: γ<sub>1</sub> = γ<sub>2</sub> = 0, after adding Ŷ<sup>2</sup> and Ŷ<sup>3</sup></p>
+      <p class="fs-note"><strong>Ramsey RESET</strong> · compare with F(2, n − k − 2)</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Has the relationship shifted? <a class="g-unit" href="../units/2a-part2-functional-form.html">Unit 2A Part 2</a></div>
+    <div class="fs-val">
+      <p class="math">F = [(RSS<sub>R</sub> − RSS<sub>UR</sub>)/k] / [RSS<sub>UR</sub>/(n<sub>2</sub> + n<sub>3</sub> − 2k)]</p>
+      <p class="fs-note"><strong>Chow test</strong> · compare with F(k, n<sub>2</sub> + n<sub>3</sub> − 2k)</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Do two sub-samples have the same disturbance variance? <a class="g-unit" href="../units/2a-part2-functional-form.html">Unit 2A Part 2</a></div>
+    <div class="fs-val">
+      <p class="math">F = σ̂<sub>1</sub><sup>2</sup> / σ̂<sub>2</sub><sup>2</sup>, larger on top</p>
+      <p class="fs-note"><strong>F-test of variances</strong> · compare with F(n<sub>1</sub> − k, n<sub>2</sub> − k)</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Is there heteroscedasticity? <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></div>
+    <div class="fs-val">
+      <p class="math">LM = nR<sup>2</sup>, from û<sup>2</sup> on the X's</p>
+      <p class="fs-note"><strong>Breusch–Pagan</strong> · compare with χ<sup>2</sup>(d), d slope terms in the auxiliary</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">…of any form at all? <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></div>
+    <div class="fs-val">
+      <p class="math">LM = nR<sup>2</sup>, with squares and cross-products too</p>
+      <p class="fs-note"><strong>White test</strong> · compare with χ<sup>2</sup>(d)</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Is there autocorrelation at lag 1? <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></div>
+    <div class="fs-val">
+      <p class="math">DW = Σ(û<sub>t</sub> − û<sub>t−1</sub>)<sup>2</sup> / Σû<sub>t</sub><sup>2</sup></p>
+      <p class="fs-note"><strong>Durbin–Watson</strong> · compare with the d<sub>L</sub>, d<sub>U</sub> tables. Invalid with a lagged dependent variable</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">…at any order q? <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></div>
+    <div class="fs-val">
+      <p class="math">(n − q)R<sup>2</sup>, from û<sub>t</sub> on the X's and q lagged residuals</p>
+      <p class="fs-note"><strong>Breusch–Godfrey</strong> · compare with χ<sup>2</sup>(q)</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Do two groups share a regression? <a class="g-unit" href="../units/3a-qualitative-variables.html">Unit 3A</a></div>
+    <div class="fs-val">
+      <p class="math">F = [(RSS<sub>R</sub> − RSS<sub>UR</sub>)/m] / [RSS<sub>UR</sub>/(n − k)]</p>
+      <p class="fs-note"><strong>F on the dummy and its interactions</strong> · compare with F(m, n − k). Equals the Chow statistic</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Is the instrument relevant? <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></div>
+    <div class="fs-val">
+      <p class="math">t on π<sub>3</sub> in the first stage, or F on all the instruments</p>
+      <p class="fs-note"><strong>First-stage test</strong> · significant is the minimum; F ≥ 10 is the working rule</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Can the equation be estimated at all? <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></div>
+    <div class="fs-val">
+      <p class="math">count the exclusions against M − 1, then check the rank condition</p>
+      <p class="fs-note"><strong>Order and rank conditions</strong> · no distribution — identification is a property of the model, not of the sample</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="box warn" style="margin-top:2.5rem;">
+  <span class="box-label">Two things this sheet will not do for you</span>
+  <strong>It does not say when a formula applies.</strong> Every result above sits on a set of
+  assumptions, and quoting one whose conditions have failed is worse than quoting nothing —
+  var(β̂<sub>2</sub>) = σ<sup>2</sup>/Σx<sub>i</sub><sup>2</sup> is simply wrong under
+  heteroscedasticity, and the whole of Unit 2 is about knowing which. Follow the unit link when
+  you are not certain.<br>
+  <strong>It does not interpret.</strong> Marks in this course are lost far more often on
+  reading a coefficient than on computing one — units, functional form, what is being held
+  constant, and what the base category is.
+</div>
+
+<p style="font-size:0.85rem; color:var(--ink-soft); margin-top:2rem;">
+  See also the <a href="glossary.html">glossary</a>, which defines every term, and the
+  <a href="../index.html">unit roadmap</a>.
+</p>
+
+</div>
+</body>
+</html>

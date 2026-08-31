@@ -144,7 +144,7 @@ body {
    label stretched to the full measure reads as a mistake, and the
    uppercase letter-spaced labels worst of all. */
 .subtitle, .unit-meta, .lesson-meta, .box .box-label, .deck-link, .g-index,
-.viz-fallback, .sources { text-align: left; }
+.viz-fallback, .sources, .fs-key, .fs-note, .fs-toc { text-align: left; }
 
 /* ---------- Masthead / breadcrumb ---------- */
 .masthead {

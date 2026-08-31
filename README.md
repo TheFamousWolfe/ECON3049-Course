@@ -419,8 +419,7 @@ the lecturer to fold into the slides: `UNIT-2D-slide9-correction.md`,
 `UNIT-3A-corrections.md` and `UNIT-3B-3C-corrections.md`. The site already carries
 the corrected forms.
 
-Three things are deliberately unfinished, and all three need input rather than
-writing:
+Two things are deliberately unfinished, and both need input rather than writing:
 
 - **The calendar is empty.** `teachingPeriod` and every `when` in `assessment`
   are `null`, so the home page says "teaching period to be confirmed" and the
@@ -428,10 +427,8 @@ writing:
   the dates are known — no page changes. Per-unit week numbers were removed in
   favour of `covered`, which records where the class actually got to rather
   than where a timetable said it would.
-- **`reference/formula-sheet.html`** is `"planned"`. With every unit written it is
-  now pure assembly work, and the natural next job.
 - **`reference/eviews-guide.html`** is `"planned"`. This is the one with stakes:
   the 25% group assignment is graded on EViews.
 
-Both unwritten reference pages are named but not linked on the home page, so
-nothing is broken by their absence.
+The one unwritten reference page is named but not linked on the home page, so
+nothing is broken by its absence.
