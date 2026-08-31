@@ -5,7 +5,7 @@
    that would otherwise have to be hand-maintained across pages:
 
      <div class="masthead"  data-unit="2C"></div>   breadcrumb
-     <p   class="unit-meta" data-unit="2C"></p>     unit · week · readings
+     <p   class="unit-meta" data-unit="2C"></p>     unit · readings · scope
      <p   class="deck-link" data-unit="2C"></p>     slide provenance
      <div class="lesson-nav" data-unit="2C"></div>  prev / next
      <div id="roadmap"></div>                       index: all units
@@ -53,9 +53,11 @@
     }
     return -1;
   }
-  function weekLabel(u) {
-    return u.week ? "Week " + u.week : DASH;
-  }
+  /* Units the class has actually reached, from COURSE.covered. Compared
+     on the unit code, so "2A Part 1" works as well as "2B". */
+  var COVERED = {};
+  (C.covered || []).forEach(function (code) { COVERED[code] = true; });
+  function isCovered(u) { return !!COVERED[u.unit]; }
 
   /* ---------- masthead breadcrumb ---------- */
   function renderMasthead(node) {
@@ -66,7 +68,10 @@
     left.appendChild(document.createTextNode(" · "));
     left.appendChild(el("span", "course", C.title));
     node.appendChild(left);
-    node.appendChild(el("span", null, "Unit " + u.unit + " · " + weekLabel(u)));
+    /* Just the unit code. The covered marker belongs on the meta line
+       under the title, where it has room to say what it means; twice on
+       one screen is once too many. */
+    node.appendChild(el("span", null, "Unit " + u.unit));
   }
 
   /* ---------- unit meta line ---------- */
@@ -75,7 +80,6 @@
     if (!u) return;
     var bits = [
       "Unit " + u.unit,
-      weekLabel(u),
       "Wooldridge " + u.wooldridge,
       "Gujarati " + u.gujarati
     ];
@@ -84,6 +88,10 @@
       : "On the final examination";
     bits.push(scope);
     node.textContent = bits.join("  ·  ");
+    if (isCovered(u)) {
+      node.appendChild(document.createTextNode("  "));
+      node.appendChild(el("span", "covered-tag", "✓ covered in class"));
+    }
   }
 
   /* ---------- slide provenance ---------- */
@@ -121,6 +129,19 @@
 
   /* ---------- index: the roadmap ---------- */
   function renderRoadmap(node) {
+    /* Where the class has got to, in course order rather than the order
+       the codes were added. Nothing is rendered before the first lecture,
+       when the honest summary would be "none". */
+    var done = C.units.filter(isCovered);
+    if (done.length) {
+      var p = el("p", "covered-line");
+      p.appendChild(el("strong", null, "Covered in class so far: "));
+      p.appendChild(document.createTextNode(
+        done.map(function (u) { return u.unit; }).join(" · ")
+        + "   (" + done.length + " of " + C.units.length + " units)"));
+      node.appendChild(p);
+    }
+
     C.units_meta.forEach(function (part) {
       var box = el("div", "part");
       box.appendChild(el("h2", null, "Unit " + part.id + " · " + part.title));
@@ -140,7 +161,10 @@
                             u.status === "ready" ? "Ready" : "Draft"));
         }
         li.appendChild(el("span", "blurb", u.blurb));
-        li.appendChild(el("span", "wk", weekLabel(u)));
+        if (isCovered(u)) {
+          li.classList.add("covered");
+          li.appendChild(el("span", "done", "✓ covered"));
+        }
         list.appendChild(li);
       });
 

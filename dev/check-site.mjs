@@ -44,6 +44,31 @@ ok(idx.querySelectorAll("#roadmap .part").length === C.units_meta.length,
 const codes = [...idx.querySelectorAll("#roadmap .num")].map(n => n.textContent);
 ok(codes.join("|") === C.units.map(u => u.unit).join("|"), "units render in manifest order");
 
+/* ---------- 1b. the covered list ----------
+   COURSE.covered drives a tick on the roadmap, so a typo in it would
+   silently tell a class it had covered nothing. Check the codes exist, and
+   that exactly the right rows are ticked. */
+const covered = C.covered || [];
+const codeSet = new Set(C.units.map(u => u.unit));
+const badCodes = covered.filter(c => !codeSet.has(c));
+ok(badCodes.length === 0, "every covered code is a real unit", badCodes.join(" "));
+ok(new Set(covered).size === covered.length, "no unit listed as covered twice");
+
+const ticked = [...idx.querySelectorAll("#roadmap ol.units li.covered")]
+  .map(li => li.querySelector(".num").textContent);
+ok(ticked.length === new Set(covered).size,
+   `${new Set(covered).size} unit(s) ticked as covered`, ticked.join(" "));
+ok(ticked.every(c => covered.includes(c)), "the ticked units are the covered ones",
+   ticked.join(" "));
+ok([...idx.querySelectorAll("#roadmap .done")].every(n => /covered/i.test(n.textContent)),
+   "each tick says what it means");
+ok(!!idx.querySelector(".covered-line") === covered.length > 0,
+   covered.length ? "the roadmap summarises progress" : "no progress line before the first lecture");
+
+/* The week labels were removed; nothing should reintroduce them. */
+ok(!/\bWeek\s*\d/.test(idx.querySelector("#roadmap").textContent),
+   "no week labels on the roadmap");
+
 const refLive = (C.reference || []).filter(r => r.status !== "planned");
 const refTodo = (C.reference || []).filter(r => r.status === "planned");
 ok(idx.querySelectorAll("#reference-links a").length === refLive.length,
@@ -126,6 +151,10 @@ for (const u of live) {
   ok(p.title.includes(u.title), at("title names the topic"));
   ok(p.querySelector(".masthead").textContent.includes(`Unit ${u.unit}`), at("masthead"));
   ok(p.querySelector(".unit-meta").textContent.includes(u.wooldridge), at("readings shown"));
+  ok(!/\bWeek\s*\d|—/.test(p.querySelector(".unit-meta").textContent.split("Wooldridge")[0]),
+     at("no week label in the meta line"), p.querySelector(".unit-meta").textContent);
+  ok(!!p.querySelector(".unit-meta .covered-tag") === covered.includes(u.unit),
+     at(`covered tag ${covered.includes(u.unit) ? "shown" : "absent"}`));
   ok(!!p.querySelector(".box.key"), at("has a learning-objectives box"));
   ok(!!p.querySelector(".sources"), at("has a source list"));
 

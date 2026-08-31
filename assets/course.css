@@ -66,6 +66,17 @@ table.cal .when { text-align: right; white-space: nowrap; color: var(--ink-soft)
 .table-scroll table.cal td { min-width: 8.5rem; }
 
 /* ---------- Roadmap ---------- */
+/* Where the class has got to, above the unit list. Set in
+   assets/course.js — `covered: ["1A", "1B"]` — and nowhere else. */
+.covered-line {
+  font-size: 0.85rem; margin: 0 0 0.5rem; text-align: left;
+  color: var(--ink-soft); font-family: -apple-system, system-ui, sans-serif;
+}
+.covered-line strong { color: var(--good); }
+.covered-tag {
+  color: var(--good); font-weight: 600; white-space: nowrap;
+}
+
 .part { margin-top: 2.5rem; }
 .part h2 { margin-bottom: 0.2rem; }
 .part .part-sub {
@@ -77,7 +88,7 @@ ol.units { list-style: none; padding: 0; margin: 0; }
 ol.units li {
   display: grid;
   grid-template-columns: 4.6rem 1fr auto;
-  grid-template-areas: "num title pill" ".  blurb wk";
+  grid-template-areas: "num title pill" ".  blurb done";
   gap: 0.15rem 0.7rem;
   align-items: baseline;
   padding: 0.6rem 0.2rem;
@@ -94,7 +105,13 @@ ol.units .u-title { grid-area: title; font-weight: 600; text-decoration: none; }
    all gaps and no rhythm. Justification is for running prose. */
 ol.units .blurb   { grid-area: blurb; font-size: 0.85rem; color: var(--ink-soft);
                     text-align: left; }
-ol.units .wk      { grid-area: wk; font-size: 0.75rem; color: var(--ink-soft); white-space: nowrap; }
+/* The column that used to carry a week number now carries the tick the
+   lecturer sets in COURSE.covered — same slot, and it says something a
+   student cannot work out for themselves. */
+ol.units .done    { grid-area: done; font-size: 0.75rem; color: var(--good);
+                    white-space: nowrap; font-weight: 600;
+                    font-family: -apple-system, system-ui, sans-serif; }
+ol.units li.covered .num { background: var(--good); }
 ol.units li.todo .num { background: var(--rule-soft); }
 ol.units li.todo .u-title { color: var(--ink-soft); }
 
@@ -316,7 +333,7 @@ footer.site {
 @media (max-width: 600px) {
   ol.units li {
     grid-template-columns: 3.6rem 1fr;
-    grid-template-areas: "num title" ".  blurb" ".  wk";
+    grid-template-areas: "num title" ".  blurb" ".  done";
   }
   .status-pill { display: none; }
   .eqn-report { justify-content: flex-start; font-size: 0.92rem; }

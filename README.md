@@ -56,6 +56,7 @@ assets/lesson.css     base typography and palette
 assets/course.css     course-site components (.eqn-report, .tutorial, .viz …)
 units/                one page per unit, 1A through 3C
 reference/            glossary (written); EViews guide, formula sheet (planned)
+dev/covered.mjs       mark units as covered in class
 ```
 
 ## Writing a new unit — the actual sequence
@@ -139,18 +140,64 @@ Edit `assets/course.js` and nothing else. The roadmap, the breadcrumb, the
 week labels and the prev/next arrows all read from it.
 
 ```js
-{ unit: "2C", part: "2", week: 9, slug: "2c-heteroscedasticity",
+{ unit: "2C", part: "2", slug: "2c-heteroscedasticity",
   title: "Heteroscedasticity", blurb: "…",
   wooldridge: "Ch. 8", gujarati: "Ch. 11", slides: 32,
   deck: "UNIT 2C - Heteroscedasticity.pdf", status: "ready" }
 ```
 
 - `status`: `"planned"` (listed, not linked) → `"draft"` (linked, amber pill)
-  → `"ready"` (linked, green pill).
-- `week`: `null` renders as an em dash. Re-timetabling means editing these
-  numbers; because URLs are keyed to the unit code, no link ever breaks.
+  → `"ready"` (linked, green pill). It describes **the page**, not the class.
 - `deckBaseUrl` at the top of the manifest: set it to your eLearning folder URL
   and every unit page grows a link to the original slides.
+- There is no week or date field on a unit. The course is not taught to a fixed
+  calendar on this site, and a week number that drifts out of date is worse than
+  none; what the class has actually reached is `covered`, below.
+
+## Marking a unit as covered in class
+
+`status` says whether the page is written. **`covered` says whether the class
+has got there**, which is the thing a student cannot work out for themselves.
+It is one line in the manifest:
+
+```js
+covered: ["1A", "1B", "1C"],
+```
+
+A covered unit gets a green code, a `✓ covered` on the roadmap, a
+`✓ covered in class` under its own title, and a line above the roadmap saying
+how far the class has come. An empty list renders none of it.
+
+The list is edited by a tool rather than by hand, because it validates the
+codes against the manifest:
+
+```sh
+node dev/covered.mjs                 # what is marked
+node dev/covered.mjs 1A 1B           # mark, after the lecture
+node dev/covered.mjs --undo 1B       # unmark
+node dev/covered.mjs "2A Part 1"     # codes with spaces need quotes
+```
+
+Order does not matter — the list is rewritten in course order. A code that
+matches no unit is refused by the tool and, belt and braces, by
+`check-site.mjs`, so a mistyped code cannot quietly tick nothing. Marking a
+unit that is not written yet is allowed and prints a note: the class may run
+ahead of the site.
+
+**Nothing is visible to students until it is pushed.** The whole cycle after a
+lecture is one line:
+
+```sh
+node dev/covered.mjs 1C && node dev/check-site.mjs && git commit -am "Covered 1C" && git push
+```
+
+The tool restamps the pages for you, because `course.js` is an asset and
+editing it changes the hash every page carries.
+
+Editing `assets/course.js` on github.com and committing there works too — from
+a phone, with no laptop — at the cost of the code validation and the restamp.
+The tick still appears; a reader who loaded the site in the last ten minutes
+may see it late, since the stamp did not change to bust their cache.
 
 ## The glossary
 
@@ -331,10 +378,12 @@ best written together: 3B ends on the problem that 3C's instruments solve.
 Three things are deliberately unfinished, and all three need input rather than
 writing:
 
-- **The calendar is empty.** `teachingPeriod`, every `when` in `assessment`, and
-  every `week` from 1C onwards are `null`, so the home page says "teaching period
-  to be confirmed" and the roadmap shows em dashes. This is one edit to
-  `assets/course.js` once the dates are known — no page changes.
+- **The calendar is empty.** `teachingPeriod` and every `when` in `assessment`
+  are `null`, so the home page says "teaching period to be confirmed" and the
+  assessment table shows em dashes. This is one edit to `assets/course.js` once
+  the dates are known — no page changes. Per-unit week numbers were removed in
+  favour of `covered`, which records where the class actually got to rather
+  than where a timetable said it would.
 - **`reference/formula-sheet.html`** is `"planned"`. Units 1C to 1F have now
   derived essentially everything that belongs on it, so it is assembly work.
 - **`reference/eviews-guide.html`** is `"planned"`. This is the one with stakes:
