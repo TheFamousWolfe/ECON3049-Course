@@ -55,7 +55,7 @@ assets/export.js      Word / Markdown / LaTeX converters
 assets/lesson.css     base typography and palette
 assets/course.css     course-site components (.eqn-report, .tutorial, .viz …)
 units/                one page per unit, 1A through 3C
-reference/            glossary (written); EViews guide, formula sheet (planned)
+reference/            glossary and formula sheet
 dev/covered.mjs       mark units as covered in class
 dev/check-site.mjs    the regression suite
 dev/link-glossary.mjs unit -> glossary back-links
@@ -384,8 +384,8 @@ students, so they are worth keeping.
 
 - **The textbooks.** `*.pdf` is in `.gitignore` for that reason. Gujarati &
   Porter and Wooldridge are copyrighted; students get them from eLearning.
-- **Anything that answers the graded group assignment.** The EViews guide
-  teaches the software; it does not work the assignment.
+- **Anything that answers the graded group assignment.** Units may teach the
+  software the assignment is graded on; nothing here works the assignment.
 
 ## Where things stand
 
@@ -414,21 +414,19 @@ identification problem that 3C's instruments solve.
 either: which units have been taught is the lecturer's to say. See "Marking a
 unit as covered in class" above.
 
-Two corrections drafts sit beside the decks in `../Econ3049/LectureNotes/`, for
+Three corrections drafts sit beside the decks in `../Econ3049/LectureNotes/`, for
 the lecturer to fold into the slides: `UNIT-2D-slide9-correction.md`,
 `UNIT-3A-corrections.md` and `UNIT-3B-3C-corrections.md`. The site already carries
 the corrected forms.
 
-Two things are deliberately unfinished, and both need input rather than writing:
+**Every page named in the manifest is written.** Both reference pages — the
+glossary and the formula sheet — are `ready`, and nothing is `planned`. An
+EViews guide was carried as a planned page for a while and has been dropped;
+the software is taught where it comes up in the units instead.
 
-- **The calendar is empty.** `teachingPeriod` and every `when` in `assessment`
-  are `null`, so the home page says "teaching period to be confirmed" and the
-  assessment table shows em dashes. This is one edit to `assets/course.js` once
-  the dates are known — no page changes. Per-unit week numbers were removed in
-  favour of `covered`, which records where the class actually got to rather
-  than where a timetable said it would.
-- **`reference/eviews-guide.html`** is `"planned"`. This is the one with stakes:
-  the 25% group assignment is graded on EViews.
-
-The one unwritten reference page is named but not linked on the home page, so
-nothing is broken by its absence.
+The teaching period runs **9 September to 20 November 2026**, set in
+`teachingPeriod`. What is still `null` is every `when` in `assessment`, so the
+midterm, group assignment and final examination show em dashes in the calendar
+table. Filling them in is one edit to `assets/course.js` — no page changes.
+Per-unit week numbers were removed in favour of `covered`, which records where
+the class actually got to rather than where a timetable said it would.

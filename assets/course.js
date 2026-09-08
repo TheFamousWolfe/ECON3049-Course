@@ -36,7 +36,7 @@ window.COURSE = {
   semester:    "Semester 1",
 
   /* --- Dates. Set these and the calendar strip fills itself in. --- */
-  teachingPeriod: { start: null, end: null },   /* e.g. "1 September 2026" */
+  teachingPeriod: { start: "9 September 2026", end: "20 November 2026" },
 
   /* --- Units covered in class, by unit code. ---------------------------
      Add a code the day you finish teaching it and push; the roadmap ticks
@@ -75,9 +75,6 @@ window.COURSE = {
 
   /* --- Standalone reference pages, reference/<slug>.html --- */
   reference: [
-    { slug: "eviews-guide",  title: "EViews guide",
-      blurb: "The software the group assignment is graded on.",
-      status: "planned" },
     { slug: "formula-sheet", title: "Formula sheet",
       blurb: "Every result derived in the units, on one page.",
       status: "ready" },
