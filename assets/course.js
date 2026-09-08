@@ -51,11 +51,14 @@ window.COURSE = {
   covered: [],
 
   assessment: [
-    { name: "Midterm",          weight: 25, when: null,
+    { name: "Midterm",          weight: 25,
+      when: "Wednesday 4 November 2026, 7:00–9:00pm",
       covers: "Units 1A–1F" },
-    { name: "Group assignment", weight: 25, when: null,
+    { name: "Group assignment", weight: 25,
+      when: "Tuesday 24 November 2026, 11:59am",
       covers: "EViews analysis, groups of 3" },
-    { name: "Final examination", weight: 50, when: null,
+    { name: "Final examination", weight: 50,
+      when: "To be confirmed",
       covers: "Units 2 and 3" }
   ],
 

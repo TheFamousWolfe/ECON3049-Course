@@ -424,9 +424,14 @@ glossary and the formula sheet — are `ready`, and nothing is `planned`. An
 EViews guide was carried as a planned page for a while and has been dropped;
 the software is taught where it comes up in the units instead.
 
-The teaching period runs **9 September to 20 November 2026**, set in
-`teachingPeriod`. What is still `null` is every `when` in `assessment`, so the
-midterm, group assignment and final examination show em dashes in the calendar
-table. Filling them in is one edit to `assets/course.js` — no page changes.
-Per-unit week numbers were removed in favour of `covered`, which records where
-the class actually got to rather than where a timetable said it would.
+The calendar is set. Teaching runs **9 September to 20 November 2026**; the
+midterm is 7:00–9:00pm on Wednesday 4 November, the group assignment is due
+11:59am on Tuesday 24 November, and the final examination reads "To be
+confirmed" until the timetable lands. That last one is a `when` string, not a
+`null` — `null` renders an em dash, which says nothing about whether a date
+exists. Per-unit week numbers were removed in favour of `covered`, which
+records where the class actually got to rather than where a timetable said it
+would.
+
+Nothing about the calendar touches a page: it is all `teachingPeriod` and the
+`when` fields in `assessment`, and the home page renders itself from them.
