@@ -3,8 +3,10 @@
 The course notes for ECON 3049 (UWI Cave Hill), written out as a small static
 website. These pages replace the lecture slide decks: each unit page carries the
 theory in full, the algebra worked through, an interactive figure, a worked
-example in the reporting format used in the exam, tutorial questions with
-revealable solutions, and a short self-test.
+example in the reporting format used in the exam, tutorial questions, and a
+short self-test. From Unit 2A on the tutorial questions carry revealable
+solutions; the Unit 1 solutions are the lecturer's and live outside the
+repository — see "Tutorial solutions" below.
 
 ## Running it
 
@@ -29,7 +31,8 @@ cd dev && npm install jsdom && cd .. && node dev/check-site.mjs
 ```
 
 It verifies that the roadmap matches the manifest, that every figure actually
-renders (and contains no `NaN` geometry), that tutorial solutions ship closed,
+renders (and contains no `NaN` geometry), that a unit's tutorial solutions —
+where it carries them — sit on every question or on none and ship closed,
 that quiz options obey the equal-length rule and every `data-answer` is in range,
 that no navigation arrow points at an unwritten unit, and that Wooldridge's β₀
 has not leaked in outside the notation warning.
@@ -274,6 +277,25 @@ Reference pages are listed in the manifest's `reference` array with the same
 `status` field the units use, so one that has not been written yet is named on the
 home page but not linked.
 
+## Tutorial solutions
+
+Units 1A–1F ship their tutorial questions **without solutions**. The
+`.tq` blocks carry a `.qtext` and nothing else, and the answers are in the
+lecturer's file at `../Econ3049/Tutorials/tutorial-solutions-unit1.tex`,
+outside this repository. Students attempt the questions cold and bring their
+working to the tutorial, which is what the `.ask-teacher` note at the foot of
+each unit asks for.
+
+Units 2A onward still carry revealable solutions in a `<details>` beneath each
+question. The two arrangements coexist, and `check-site.mjs` enforces the one
+rule that keeps them honest: within a unit, solutions sit on **every** question
+or on **none**. Half-answered tutorials fail the suite.
+
+When adding a question to a Unit 1 tutorial, add the `.tq` to the page and the
+worked answer to the `.tex`, and recompile the latter. When the Unit 2 and 3
+tutorials are given the same treatment, extend the same file and mirror the
+Unit 1 pattern rather than inventing a second one.
+
 ## Asset caching
 
 GitHub Pages serves assets with `cache-control: max-age=600`. For ten
@@ -435,3 +457,9 @@ would.
 
 Nothing about the calendar touches a page: it is all `teachingPeriod` and the
 `when` fields in `assessment`, and the home page renders itself from them.
+
+Assessment material — the midterm paper and its marking scheme, and the Unit 1
+tutorial solutions — lives in `../Econ3049/`, a sibling folder that is not a
+repository and has no remote. That is deliberate and not to be tidied: this
+repository is public and deploys on every push, so nothing that must not reach a
+student before its time can be committed here, even briefly.

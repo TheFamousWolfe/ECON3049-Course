@@ -9,14 +9,14 @@ try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
 z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
 if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
 <title>Unit 1B — Simple Linear Regression · ECON 3049</title>
-<link rel="stylesheet" href="../assets/lesson.css?v=51bdc0aa">
-<link rel="stylesheet" href="../assets/course.css?v=51bdc0aa">
-<script src="../assets/course.js?v=51bdc0aa"></script>
-<script src="../assets/nav.js?v=51bdc0aa" defer></script>
-<script src="../assets/export.js?v=51bdc0aa" defer></script>
-<script src="../assets/reader.js?v=51bdc0aa" defer></script>
-<script src="../assets/quiz.js?v=51bdc0aa" defer></script>
-<script src="../assets/viz.js?v=51bdc0aa" defer></script>
+<link rel="stylesheet" href="../assets/lesson.css?v=75201143">
+<link rel="stylesheet" href="../assets/course.css?v=75201143">
+<script src="../assets/course.js?v=75201143"></script>
+<script src="../assets/nav.js?v=75201143" defer></script>
+<script src="../assets/export.js?v=75201143" defer></script>
+<script src="../assets/reader.js?v=75201143" defer></script>
+<script src="../assets/quiz.js?v=75201143" defer></script>
+<script src="../assets/viz.js?v=75201143" defer></script>
 </head>
 <body>
 <div class="masthead" data-unit="1B"></div>
@@ -421,49 +421,24 @@ estimator, all centred somewhere relative to the true β:</p>
 
 <h2>9 · Tutorial</h2>
 
-<p style="font-size:0.85rem; color:var(--ink-soft); font-style:italic;">
-Draft questions, to be replaced by the tutorial sheet issued in class.</p>
-
 <div class="tutorial">
 
   <div class="tq">
-    <span class="qtext">Explain the difference between the disturbance u<sub>i</sub> and the
-    residual ê<sub>i</sub>. Which one can you compute, and why does the distinction matter
-    for the second half of this course?</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p>u<sub>i</sub> is the vertical distance from an observation to the
-        <em>population</em> regression line, E(Y | X) = β<sub>1</sub> + β<sub>2</sub>X. It
-        is unobservable, because β<sub>1</sub> and β<sub>2</sub> are unknown.
-        ê<sub>i</sub> = Y<sub>i</sub> − Ŷ<sub>i</sub> is the distance to the
-        <em>estimated</em> line, and it is fully computable once β̂<sub>1</sub> and
-        β̂<sub>2</sub> are in hand.</p>
-        <p>The distinction matters because every assumption in section 7 is a statement
-        about <em>u</em> — that its mean is zero, its variance constant, its values
-        uncorrelated — while the only evidence available is <em>ê</em>. Every diagnostic
-        test in Unit 2 therefore examines residuals in order to draw a conclusion about
-        disturbances, which is why those tests are indirect and can mislead.</p>
-      </div>
-    </details>
+    <span class="qtext">The figure in section 4 draws a fresh sample each time and fits a new line.
+    Explain why the sample regression function is a random variable while the population
+    regression function is not. The average of β̂<sub>2</sub> across many draws settles at
+    the true value: name that property, and explain why it does not make any single
+    estimate trustworthy on its own.</span>
   </div>
 
   <div class="tq">
-    <span class="qtext">Starting from Σ(Y<sub>i</sub> − β̂<sub>1</sub> − β̂<sub>2</sub>X<sub>i</sub>) = 0,
-    show that the OLS line necessarily passes through the point of means (X̄, Ȳ).</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p>Expanding the summation gives ΣY<sub>i</sub> − nβ̂<sub>1</sub> −
-        β̂<sub>2</sub>ΣX<sub>i</sub> = 0. Divide every term by n. Since ΣY<sub>i</sub>/n = Ȳ
-        and ΣX<sub>i</sub>/n = X̄, this becomes Ȳ − β̂<sub>1</sub> − β̂<sub>2</sub>X̄ = 0,
-        or Ȳ = β̂<sub>1</sub> + β̂<sub>2</sub>X̄.</p>
-        <p>That is precisely the statement that the point (X̄, Ȳ) satisfies the equation of
-        the fitted line, so the line passes through it. It also rearranges directly to
-        β̂<sub>1</sub> = Ȳ − β̂<sub>2</sub>X̄, which is the formula for the estimated
-        intercept — the two results are the same fact written two ways.</p>
-      </div>
-    </details>
+    <span class="qtext">Show that Σ(X<sub>i</sub> − X̄)(Y<sub>i</sub> − Ȳ) = ΣX<sub>i</sub>Y<sub>i</sub> − nX̄Ȳ
+    and that Σ(X<sub>i</sub> − X̄)<sup>2</sup> = ΣX<sub>i</sub><sup>2</sup> − nX̄<sup>2</sup>.
+    Hence show that the deviation-form estimator β̂<sub>2</sub> = Σx<sub>i</sub>y<sub>i</sub> /
+    Σx<sub>i</sub><sup>2</sup> is the same number as the raw-sums form
+    (nΣX<sub>i</sub>Y<sub>i</sub> − ΣX<sub>i</sub>ΣY<sub>i</sub>) /
+    (nΣX<sub>i</sub><sup>2</sup> − (ΣX<sub>i</sub>)<sup>2</sup>) reached by Method 1.
+    When is each form the convenient one to use?</span>
   </div>
 
   <div class="tq">
@@ -472,47 +447,15 @@ Draft questions, to be replaced by the tutorial sheet issued in class.</p>
     (b) Y = β<sub>1</sub> + β<sub>2</sub><sup>2</sup>X + u;
     (c) Y = β<sub>1</sub> + β<sub>2</sub>ln(X) + u;
     (d) Y = e<sup>β₁</sup>X<sup>β₂</sup>e<sup>u</sup>. Justify each answer.</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p>(a) <strong>Yes.</strong> The assumption is linearity in the <em><a class="gt" href="../reference/glossary.html#parameter">parameters</a></em>,
-        not in the variables. X<sup>3</sup> is just a regressor; define Z = X<sup>3</sup>
-        and it is an ordinary simple regression.</p>
-        <p>(b) <strong>No.</strong> β<sub>2</sub> enters squared, so the equation is
-        non-linear in a parameter.</p>
-        <p>(c) <strong>Yes.</strong> Again a transformation of the variable, not of the
-        parameter — and one you will use often, since it turns the slope into an
-        elasticity-style interpretation (Unit 2A Part 2).</p>
-        <p>(d) <strong>Not as written</strong> — the parameters enter multiplicatively and
-        through an exponent, and the error is multiplicative rather than additive. Taking
-        logs of both sides gives ln Y = β<sub>1</sub> + β<sub>2</sub>ln X + u, which
-        <em>does</em> satisfy the assumption. This is exactly why logging is such a common
-        first move in applied work.</p>
-      </div>
-    </details>
   </div>
 
   <div class="tq">
-    <span class="qtext">A colleague reports a regression with a large, highly significant
-    β̂<sub>2</sub>, and concludes that X causes Y. Separately, they claim their estimator
-    must be reliable "because Gauss–Markov proves OLS is best". Identify what is wrong with
-    each claim.</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p><strong>On causation:</strong> regression in its most basic form cannot prove
-        causality. A large coefficient establishes association, which is equally <a class="gt" href="../reference/glossary.html#consistency">consistent</a>
-        with reverse causation, a common cause sitting in <em>u</em>, or coincidence. The
-        labels "dependent" and "independent" describe positions in an equation, not a causal
-        direction.</p>
-        <p><strong>On <a class="gt" href="../reference/glossary.html#gauss-markov">Gauss–Markov</a>:</strong> the theorem is conditional. It says that
-        <em>if</em> the four core assumptions hold, OLS is BLUE — it makes no claim when they
-        fail, and a colleague who has not tested them has not earned the conclusion. "Best"
-        is also restricted to the class of <em>linear unbiased</em> estimators, so it does
-        not mean no estimator can ever do better. And BLUE concerns the sampling properties
-        of the estimator, not whether the model is <a class="gt" href="../reference/glossary.html#specification-bias">correctly specified</a> in the first place.</p>
-      </div>
-    </details>
+    <span class="qtext">Section 8 describes three sampling distributions of an estimator: A, unbiased
+    with a large variance; B, unbiased with a small variance; C, biased with a medium
+    variance. (i) Which of the three does the Gauss–Markov theorem promise, and on what
+    condition? (ii) Explain why C is described as the most dangerous of the three.
+    (iii) A colleague insists that an unbiased estimator must always be preferred to a
+    biased one. Using A and C, explain why that is not automatically true.</span>
   </div>
 
 </div>

@@ -9,14 +9,14 @@ try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
 z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
 if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
 <title>Unit 1F — Statistical Inference and Hypothesis Testing · ECON 3049</title>
-<link rel="stylesheet" href="../assets/lesson.css?v=51bdc0aa">
-<link rel="stylesheet" href="../assets/course.css?v=51bdc0aa">
-<script src="../assets/course.js?v=51bdc0aa"></script>
-<script src="../assets/nav.js?v=51bdc0aa" defer></script>
-<script src="../assets/export.js?v=51bdc0aa" defer></script>
-<script src="../assets/reader.js?v=51bdc0aa" defer></script>
-<script src="../assets/quiz.js?v=51bdc0aa" defer></script>
-<script src="../assets/viz.js?v=51bdc0aa" defer></script>
+<link rel="stylesheet" href="../assets/lesson.css?v=75201143">
+<link rel="stylesheet" href="../assets/course.css?v=75201143">
+<script src="../assets/course.js?v=75201143"></script>
+<script src="../assets/nav.js?v=75201143" defer></script>
+<script src="../assets/export.js?v=75201143" defer></script>
+<script src="../assets/reader.js?v=75201143" defer></script>
+<script src="../assets/quiz.js?v=75201143" defer></script>
+<script src="../assets/viz.js?v=75201143" defer></script>
 </head>
 <body>
 <div class="masthead" data-unit="1F"></div>
@@ -614,140 +614,57 @@ deal else. Two habits are worth forming now:</p>
 
 <h2>14 · Tutorial</h2>
 
-<p style="font-size:0.85rem; color:var(--ink-soft); font-style:italic;">
-Draft questions, to be replaced by the tutorial sheet issued in class.</p>
-
 <div class="tutorial">
 
   <div class="tq">
-    <span class="qtext">Explain why the test statistic follows a t-distribution rather than a
-    standard normal. What exactly changes, and why does the difference shrink as n grows?</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p>Under normality, (β̂<sub>j</sub> − β<sub>j</sub>)/σ<sub>β̂j</sub> ~ N(0, 1) — but
-        that uses the <em>true</em> standard deviation, which contains the unobservable
-        σ<sup>2</sup>. In practice σ<sup>2</sup> is replaced by σ̂<sup>2</sup> =
-        Σû<sub>i</sub><sup>2</sup>/(n − k), giving se(β̂<sub>j</sub>) in the denominator
-        instead.</p>
-        <p><strong>What changes:</strong> the denominator is now itself a random variable
-        rather than a constant. A normal numerator divided by the square root of an independent
-        chi-square divided by its degrees of freedom is, by definition, a t. This is where the
-        result from Unit 1E — that β̂ is distributed independently of σ̂<sup>2</sup>, and that
-        (n − 2)σ̂<sup>2</sup>/σ<sup>2</sup> is chi-square — earns its place.</p>
-        <p><strong>Why it shrinks:</strong> the extra variability comes entirely from
-        estimating σ. As n grows, σ̂<sup>2</sup> becomes an ever more precise estimate of
-        σ<sup>2</sup>, the denominator behaves more like a constant, and the t converges on the
-        normal — t → Z as n → ∞. In practice the two are close by about df = 30 and nearly
-        indistinguishable by df = 120, which is why large-sample work quotes 1.96 without
-        apology.</p>
-      </div>
-    </details>
+    <span class="qtext">A regression package reports, for the coefficient on X<sub>2</sub>, an estimate of
+    0.42, a standard error of 0.20 and a p-value of 0.041. (i) State precisely what the
+    p-value is the probability of. (ii) What decision does it imply at the 5% level, and
+    at the 1% level? (iii) Your null is actually H<sub>0</sub>: β<sub>2</sub> = 0.50,
+    two-tailed. Explain why the printed p-value is useless for this test, and compute the
+    statistic you would need instead. (iv) If your alternative were one-sided, in the
+    direction of the estimate, what would the p-value for that test be?</span>
   </div>
 
   <div class="tq">
-    <span class="qtext">Using the consumption model Ĉ = 100 + 0.891Y with se(β̂<sub>2</sub>) =
-    0.214 and n = 31, construct a 99% confidence interval for β<sub>2</sub>. Compare it with the
-    95% interval (0.453, 1.329) and say what you can and cannot conclude at each level.</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p>With n − k = 29 degrees of freedom, the two-tailed critical value at α = 0.01 is
-        t<sub>0.005, 29</sub> = 2.756. So</p>
-        <p class="math">0.891 ± 2.756 (0.214) = 0.891 ± 0.590 = <strong>(0.301, 1.481)</strong></p>
-        <p><strong>Comparison.</strong> The 99% interval is wider — it must be, since buying
-        more confidence means saying less. Both intervals exclude zero, so β<sub>2</sub> = 0 is
-        rejected at both the 5% and the 1% level. Both contain 1, so the hypothesis of a
-        one-to-one relationship between income and consumption cannot be rejected at either
-        level.</p>
-        <p><strong>What cannot be concluded:</strong> that the <a class="gt" href="../reference/glossary.html#mpc">marginal propensity to consume</a>
-        <em>is</em> 1. Failing to reject a null is not evidence for it — this interval is
-        <a class="gt" href="../reference/glossary.html#consistency">consistent</a> with an MPC anywhere from 0.30 to 1.48, which is almost the whole
-        economically plausible range. The honest reading is that with n = 31 and this much
-        residual variation, the data simply cannot pin the MPC down.</p>
-      </div>
-    </details>
+    <span class="qtext">An estimated labour-supply equation gives a coefficient on Age of 0.001 with
+    standard error 0.005, and on Education of 0.161 with standard error 0.025, on
+    n = 1,438 observations. A student writes: "Age has a small positive effect on hours
+    worked, though it is insignificant; education has a large effect." Identify two things
+    wrong with this sentence and rewrite it as a correct conclusion. Then, using the wage
+    example of section 8 — a coefficient of 0.002 dollars per year of education with
+    t = 2.0 — explain the difference between statistical significance and economic
+    importance.</span>
   </div>
 
   <div class="tq">
-    <span class="qtext">A model of house prices is estimated with 5 regressors on 45
-    observations, giving R<sup>2</sup> = 0.62. Dropping three of them gives R<sup>2</sup> =
-    0.55. Test whether the three belong in the model at the 5% level, stating H<sub>0</sub>,
-    H<sub>1</sub>, q, both degrees of freedom, and your conclusion.</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p><strong>Hypotheses.</strong> Numbering the dropped coefficients β<sub>4</sub>,
-        β<sub>5</sub>, β<sub>6</sub>: H<sub>0</sub>: β<sub>4</sub> = β<sub>5</sub> =
-        β<sub>6</sub> = 0 against H<sub>1</sub>: at least one of them is non-zero.</p>
-        <p><strong>Degrees of freedom.</strong> q = 3 restrictions. The unrestricted model has
-        5 slopes plus an intercept, so k = 6 and n − k = 45 − 6 = 39.</p>
-        <p><strong>Test statistic</strong>, by the R<sup>2</sup> formula:</p>
-        <p class="math">F = [ (0.62 − 0.55) / 3 ] / [ (1 − 0.62) / 39 ] = 0.02333 / 0.009744 = <strong>2.394</strong></p>
-        <p><strong>Decision.</strong> The critical value F<sup>3</sup><sub>39</sub> at α = 0.05
-        is approximately 2.85. Since 2.394 &lt; 2.85, we do not reject the null: the three
-        variables are jointly insignificant at the 5% level, and there is no strong evidence
-        that they belong in the model.</p>
-        <p>Two remarks. The decision is fairly close, and at α = 0.10 (critical value about
-        2.23) it would reverse — which is worth saying rather than hiding. And joint
-        insignificance is not the same as each being individually insignificant; the reverse
-        situation, where each t is small but the F is large, is the classic symptom of
-        <a class="gt" href="../reference/glossary.html#multicollinearity">multicollinearity</a> in Unit 2B.</p>
-      </div>
-    </details>
+    <span class="qtext">In the model wage = β<sub>1</sub> + β<sub>2</sub>EDUC + β<sub>3</sub>EXPER +
+    β<sub>4</sub>FATHEDUC + β<sub>5</sub>MOTHEDUC + u, you want to test
+    H<sub>0</sub>: β<sub>4</sub> = β<sub>5</sub> — that a year of a father's education
+    and a year of a mother's education carry the same effect. (i) Explain why this is
+    one restriction, and why the F-test formula needs the RSS from a restricted model.
+    (ii) Show how to obtain the restricted model by defining a new variable, and write it
+    down. (iii) State q, both degrees of freedom, and the F statistic. (iv) Explain why
+    the R<sup>2</sup> form of the F-test could not be used if the restricted model had a
+    different dependent variable.</span>
   </div>
 
   <div class="tq">
-    <span class="qtext">A researcher runs a regression, sees that β̂<sub>2</sub> is positive,
-    and then decides to test H<sub>0</sub>: β<sub>2</sub> = 0 against H<sub>1</sub>:
-    β<sub>2</sub> &gt; 0 at the 5% level "because a one-tailed test is more powerful". Explain
-    what is wrong, and what the true size of their test is.</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p><strong>What is wrong.</strong> The alternative was chosen <em>after</em> looking at
-        the estimate. A one-tailed test at 5% is only a 5% test if the direction was fixed in
-        advance; here the researcher would have tested the left tail had the sign come out
-        negative, so their procedure rejects whenever |t| exceeds the one-tailed critical value
-        in <em>either</em> direction.</p>
-        <p><strong>The true size.</strong> That procedure has 5% in each tail, so its actual
-        significance level is <strong>10%</strong>, not 5% — twice the stated risk of a false
-        rejection. This is exactly the practice Wooldridge's argument for defaulting to
-        two-tailed tests is designed to prevent, and it is why this course requires an explicit
-        instruction before a one-tailed test may be used.</p>
-        <p><strong>What they should do:</strong> either fix the direction from theory before
-        estimating and say so, or use the two-tailed test — where the same t would be compared
-        against the larger critical value, which is the honest price of not having committed in
-        advance.</p>
-      </div>
-    </details>
+    <span class="qtext">A student writes H<sub>0</sub>: β̂<sub>2</sub> = 0 against H<sub>1</sub>:
+    β̂<sub>2</sub> ≠ 0, computes t = 1.20 on 25 degrees of freedom, and concludes: "we
+    accept the null hypothesis, so X has no effect on Y." There are three separate errors
+    here. Identify each one and explain why it matters.</span>
   </div>
 
   <div class="tq">
-    <span class="qtext">In the model Y = β<sub>1</sub> + β<sub>2</sub>X<sub>2</sub> +
-    β<sub>3</sub>X<sub>3</sub> + u you are told var(β̂<sub>2</sub>) = 0.0100,
-    var(β̂<sub>3</sub>) = 0.0064 and cov(β̂<sub>2</sub>, β̂<sub>3</sub>) = −0.0048. Test
-    H<sub>0</sub>: β<sub>2</sub> = β<sub>3</sub> given β̂<sub>2</sub> = 0.42 and β̂<sub>3</sub> =
-    0.18, with n = 60. Explain why ignoring the covariance would mislead you.</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p>Rewrite the null as H<sub>0</sub>: β<sub>2</sub> − β<sub>3</sub> = 0. Then</p>
-        <p class="math">var(β̂<sub>2</sub> − β̂<sub>3</sub>) = 0.0100 + 0.0064 − 2(−0.0048) = 0.0260</p>
-        <p class="math">se(β̂<sub>2</sub> − β̂<sub>3</sub>) = √0.0260 = 0.1612</p>
-        <p class="math">t = (0.42 − 0.18 − 0) / 0.1612 = 0.24 / 0.1612 = <strong>1.489</strong></p>
-        <p>With n − k = 57, the two-tailed 5% critical value is about 2.002. Since
-        |1.489| &lt; 2.002 we do not reject: the two <a class="gt" href="../reference/glossary.html#partial-coefficient">partial effects</a> are not significantly
-        different from each other.</p>
-        <p><strong>Why the covariance matters.</strong> It is negative here, and it enters with
-        a minus sign, so −2(−0.0048) = +0.0096 <em>adds</em> to the variance — over a third of
-        the total. Ignoring it would give var = 0.0164, se = 0.128, and t = 1.875, which is
-        still short of 2.002 but much closer, and at the 10% level the two approaches would
-        disagree. A negative covariance between two estimates means they tend to move in
-        opposite directions across samples, which makes their <em>difference</em> more variable,
-        not less — precisely the case where dropping the term flatters you.</p>
-      </div>
-    </details>
+    <span class="qtext">The figure in section 10 draws a 95% confidence interval from each of forty
+    independent samples. (i) Roughly how many of the forty should fail to cover the true
+    β<sub>2</sub>, and why is "β<sub>2</sub> lies in my interval with probability 0.95"
+    the wrong way to read a single computed interval? (ii) The width of an interval
+    depends on four things; list them and say which way each moves the width. (iii) Two
+    researchers analyse the same data and report intervals for β<sub>2</sub> of
+    (0.25, 0.75) and (0.17, 0.83). One used 95% confidence and the other 99%. Which is
+    which, and what is β̂<sub>2</sub>?</span>
   </div>
 
 </div>

@@ -9,14 +9,14 @@ try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
 z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
 if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
 <title>Unit 1A — Introducing Econometrics · ECON 3049</title>
-<link rel="stylesheet" href="../assets/lesson.css?v=51bdc0aa">
-<link rel="stylesheet" href="../assets/course.css?v=51bdc0aa">
-<script src="../assets/course.js?v=51bdc0aa"></script>
-<script src="../assets/nav.js?v=51bdc0aa" defer></script>
-<script src="../assets/export.js?v=51bdc0aa" defer></script>
-<script src="../assets/reader.js?v=51bdc0aa" defer></script>
-<script src="../assets/quiz.js?v=51bdc0aa" defer></script>
-<script src="../assets/viz.js?v=51bdc0aa" defer></script>
+<link rel="stylesheet" href="../assets/lesson.css?v=75201143">
+<link rel="stylesheet" href="../assets/course.css?v=75201143">
+<script src="../assets/course.js?v=75201143"></script>
+<script src="../assets/nav.js?v=75201143" defer></script>
+<script src="../assets/export.js?v=75201143" defer></script>
+<script src="../assets/reader.js?v=75201143" defer></script>
+<script src="../assets/quiz.js?v=75201143" defer></script>
+<script src="../assets/viz.js?v=75201143" defer></script>
 </head>
 <body>
 <div class="masthead" data-unit="1A"></div>
@@ -317,50 +317,17 @@ into economic theory, which is how a discipline learns.</p>
 
 <h2>6 · Tutorial</h2>
 
-<p style="font-size:0.85rem; color:var(--ink-soft); font-style:italic;">
-Draft questions, to be replaced by the tutorial sheet issued in class.</p>
-
 <div class="tutorial">
 
   <div class="tq">
     <span class="qtext">Explain, in your own words, why the mathematical model
     Y = β<sub>1</sub> + β<sub>2</sub>X cannot be used to test Keynes' conjecture, while
     Y<sub>i</sub> = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub> + u<sub>i</sub> can.</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p>The mathematical model is deterministic: it asserts that every household with a
-        given income consumes exactly β<sub>1</sub> + β<sub>2</sub>X. Real data will
-        contradict it at essentially every observation, so any test of it fails
-        immediately, and fails for a reason that has nothing to do with whether Keynes was
-        right.</p>
-        <p>Adding u<sub>i</sub> changes the claim being made. The econometric model says
-        that the line is the <em>average</em> relationship, E(Y | X) = β<sub>1</sub> +
-        β<sub>2</sub>X, and that individual households depart from it for reasons the model
-        does not capture. That is a claim data can be <a class="gt" href="../reference/glossary.html#consistency">consistent</a> with, and it makes
-        β<sub>2</sub> a quantity that can be estimated and tested against Keynes' prediction
-        that 0 &lt; β<sub>2</sub> &lt; 1.</p>
-      </div>
-    </details>
   </div>
 
   <div class="tq">
     <span class="qtext">List four distinct things the disturbance term may represent, and
     for each give an example in the context of a consumption function.</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p><strong><a class="gt" href="../reference/glossary.html#omitted-variable">Omitted variables</a></strong> — household wealth affects consumption but
-        does not appear in the model. <strong>Incorrect functional form</strong> — the true
-        consumption function may curve, so that fitting a straight line leaves a systematic
-        remainder. <strong>Errors of measurement</strong> — survey respondents misreport
-        their income, and the mismatch between reported and true income lands in
-        <em>u</em>. <strong><a class="gt" href="../reference/glossary.html#intrinsic-randomness">Intrinsic randomness</a></strong> — two identical households simply
-        make different choices in a given month.</p>
-        <p>The first two are the dangerous ones, because they are systematic rather than
-        random. Both are taken up in Unit 2A.</p>
-      </div>
-    </details>
   </div>
 
   <div class="tq">
@@ -369,19 +336,6 @@ Draft questions, to be replaced by the tutorial sheet issued in class.</p>
     for each quarter from 2000 to 2020; (b) the wages of 500 workers surveyed in
     Bridgetown in June; (c) GDP and inflation for 15 CARICOM members in each year from 2010
     to 2020.</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p>(a) <a class="gt" href="../reference/glossary.html#time-series">Time series</a> — one unit, many periods: <em>Y<sub>t</sub></em>, t = 2000Q1, …,
-        2020Q4.</p>
-        <p>(b) <a class="gt" href="../reference/glossary.html#cross-sectional">Cross-sectional</a> — many units, one point in time: <em>Y<sub>i</sub></em>,
-        i = 1, 2, …, 500.</p>
-        <p>(c) Panel (longitudinal) — the same 15 countries followed over 11 years:
-        <em>Y<sub>it</sub></em>, i = 1, …, 15 and t = 2010, …, 2020. Note that if a
-        <em>different</em> sample of countries were drawn each year, it would be pooled
-        cross sections rather than a panel.</p>
-      </div>
-    </details>
   </div>
 
   <div class="tq">
@@ -389,20 +343,6 @@ Draft questions, to be replaced by the tutorial sheet issued in class.</p>
     sales and drowning deaths across months, using observational data. Explain what is
     wrong with concluding that ice cream causes drowning, and relate your answer to the
     contents of <em>u</em>.</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p>The data are observational, not experimental: nobody assigned ice cream
-        consumption to months. With <a class="gt" href="../reference/glossary.html#observational">observational data</a>, cause and effect are very hard to
-        establish — associations can be investigated, but a coefficient is not an effect
-        merely because it is significant.</p>
-        <p>In the language of this unit, temperature is an <strong>omitted variable</strong>.
-        It drives both ice cream sales and swimming, so it sits inside <em>u</em> while also
-        being related to the regressor. That is precisely the condition under which the
-        disturbance stops being harmless — the case taken up formally in Unit 2A Part 1 as
-        omitted-variable bias, and in Unit 3B as <a class="gt" href="../reference/glossary.html#endogeneity">endogeneity</a>.</p>
-      </div>
-    </details>
   </div>
 
 </div>

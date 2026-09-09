@@ -9,14 +9,14 @@ try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
 z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
 if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
 <title>Unit 1C — OLS Assumptions and Goodness of Fit · ECON 3049</title>
-<link rel="stylesheet" href="../assets/lesson.css?v=51bdc0aa">
-<link rel="stylesheet" href="../assets/course.css?v=51bdc0aa">
-<script src="../assets/course.js?v=51bdc0aa"></script>
-<script src="../assets/nav.js?v=51bdc0aa" defer></script>
-<script src="../assets/export.js?v=51bdc0aa" defer></script>
-<script src="../assets/reader.js?v=51bdc0aa" defer></script>
-<script src="../assets/quiz.js?v=51bdc0aa" defer></script>
-<script src="../assets/viz.js?v=51bdc0aa" defer></script>
+<link rel="stylesheet" href="../assets/lesson.css?v=75201143">
+<link rel="stylesheet" href="../assets/course.css?v=75201143">
+<script src="../assets/course.js?v=75201143"></script>
+<script src="../assets/nav.js?v=75201143" defer></script>
+<script src="../assets/export.js?v=75201143" defer></script>
+<script src="../assets/reader.js?v=75201143" defer></script>
+<script src="../assets/quiz.js?v=75201143" defer></script>
+<script src="../assets/viz.js?v=75201143" defer></script>
 </head>
 <body>
 <div class="masthead" data-unit="1C"></div>
@@ -685,63 +685,24 @@ the two series; they simply both trended downwards over the same decade.</p>
 
 <h2>12 · Tutorial</h2>
 
-<p style="font-size:0.85rem; color:var(--ink-soft); font-style:italic;">
-Draft questions, to be replaced by the tutorial sheet issued in class.</p>
-
 <div class="tutorial">
 
   <div class="tq">
-    <span class="qtext">Prove the three properties of the weights: Σk<sub>i</sub> = 0,
-    Σk<sub>i</sub>X<sub>i</sub> = 1 and Σk<sub>i</sub><sup>2</sup> =
-    1/Σx<sub>i</sub><sup>2</sup>. For each one, state where in the unit it is used.</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p><strong>Σk<sub>i</sub> = 0.</strong> k<sub>i</sub> = x<sub>i</sub> /
-        Σx<sub>i</sub><sup>2</sup>, so Σk<sub>i</sub> = Σx<sub>i</sub> /
-        Σx<sub>i</sub><sup>2</sup>, and Σx<sub>i</sub> = Σ(X<sub>i</sub> − X̄) = 0.
-        <em>Used</em> in section 5 to kill the β<sub>1</sub>Σk<sub>i</sub> term, and again in
-        the covariance derivation.</p>
-        <p><strong>Σk<sub>i</sub>X<sub>i</sub> = 1.</strong> Write X<sub>i</sub> =
-        x<sub>i</sub> + X̄. Then Σk<sub>i</sub>X<sub>i</sub> = Σk<sub>i</sub>x<sub>i</sub> +
-        X̄Σk<sub>i</sub> = Σx<sub>i</sub><sup>2</sup>/Σx<sub>i</sub><sup>2</sup> + 0 = 1.
-        <em>Used</em> in section 5 to reduce β<sub>2</sub>Σk<sub>i</sub>X<sub>i</sub> to
-        β<sub>2</sub>, which is the step that delivers unbiasedness.</p>
-        <p><strong>Σk<sub>i</sub><sup>2</sup> = 1/Σx<sub>i</sub><sup>2</sup>.</strong>
-        Σk<sub>i</sub><sup>2</sup> = Σx<sub>i</sub><sup>2</sup> /
-        (Σx<sub>i</sub><sup>2</sup>)<sup>2</sup> = 1/Σx<sub>i</sub><sup>2</sup>.
-        <em>Used</em> in section 6 to turn σ<sup>2</sup>Σk<sub>i</sub><sup>2</sup> into
-        σ<sup>2</sup>/Σx<sub>i</sub><sup>2</sup>, and again in section 8 to cancel the cross
-        term.</p>
-      </div>
-    </details>
+    <span class="qtext">Section 6 shows that cov(β̂<sub>1</sub>, β̂<sub>2</sub>) = −X̄ · var(β̂<sub>2</sub>).
+    (i) Using the fact that the fitted line passes through (X̄, Ȳ), explain in words why
+    a sample that produces a steeper slope must produce a lower intercept when X̄ &gt; 0.
+    (ii) What is the covariance if the regressor is measured in deviations from its mean,
+    so that X̄ = 0, and what does the intercept estimate in that case? (iii) What sign does
+    the covariance take when X̄ &lt; 0, and why?</span>
   </div>
 
   <div class="tq">
-    <span class="qtext">Show that β̂<sub>2</sub> = β<sub>2</sub> +
-    Σk<sub>i</sub>u<sub>i</sub>, and use it to explain in words why β̂<sub>2</sub> is a random
-    variable, why it is unbiased, and which assumption you relied on for each of the two
-    claims.</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p>Substituting the PRF into β̂<sub>2</sub> = Σk<sub>i</sub>Y<sub>i</sub> gives
-        β<sub>1</sub>Σk<sub>i</sub> + β<sub>2</sub>Σk<sub>i</sub>X<sub>i</sub> +
-        Σk<sub>i</sub>u<sub>i</sub>. The first term is zero and the second is β<sub>2</sub>,
-        leaving β̂<sub>2</sub> = β<sub>2</sub> + Σk<sub>i</sub>u<sub>i</sub>.</p>
-        <p><strong>Random.</strong> β<sub>2</sub> is a fixed population constant; the
-        estimator differs from it by Σk<sub>i</sub>u<sub>i</sub>, a weighted sum of the
-        disturbances. Because the disturbances are random and differ from sample to sample,
-        so does β̂<sub>2</sub>. This relies on <em>assumption 2</em> — the k<sub>i</sub> are
-        constants, so all the randomness sits in u.</p>
-        <p><strong>Unbiased.</strong> E(β̂<sub>2</sub>) = β<sub>2</sub> +
-        Σk<sub>i</sub>E(u<sub>i</sub>) = β<sub>2</sub>, which needs
-        <em>assumption 4</em>, E(u<sub>i</sub>) = 0. Note that neither <a class="gt" href="../reference/glossary.html#homoscedasticity">homoscedasticity</a> nor
-        the absence of <a class="gt" href="../reference/glossary.html#autocorrelation">autocorrelation</a> is needed for unbiasedness — those are spent on the
-        variance in section 6, which is exactly why heteroscedastic errors leave OLS unbiased
-        but inefficient.</p>
-      </div>
-    </details>
+    <span class="qtext">Using ΣX<sub>i</sub><sup>2</sup> = Σx<sub>i</sub><sup>2</sup> + nX̄<sup>2</sup>, show
+    that var(β̂<sub>1</sub>) = σ<sup>2</sup>ΣX<sub>i</sub><sup>2</sup> / (nΣx<sub>i</sub><sup>2</sup>)
+    can be written as σ<sup>2</sup>/n + X̄<sup>2</sup> var(β̂<sub>2</sub>). Hence show that
+    var(β̂<sub>1</sub>) ≥ σ<sup>2</sup>/n, with equality only when X̄ = 0, and explain why
+    the intercept is estimated less precisely the further the sample's X values sit from
+    zero.</span>
   </div>
 
   <div class="tq">
@@ -749,45 +710,15 @@ Draft questions, to be replaced by the tutorial sheet issued in class.</p>
     to collect more data. Using var(β̂<sub>2</sub>) = σ<sup>2</sup>/Σx<sub>i</sub><sup>2</sup>,
     advise them on how to choose the new observations, and say what they cannot fix by
     sampling.</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p>Precision improves as Σx<sub>i</sub><sup>2</sup> = Σ(X<sub>i</sub> − X̄)<sup>2</sup>
-        rises. More observations help, but <em>where</em> they are taken matters as much as
-        how many: observations at values of X far from X̄ add large terms to the sum, while
-        observations bunched near X̄ add almost nothing. The advice is to deliberately sample
-        across a wide range of X — for a consumption function, to include both low- and
-        high-income households rather than concentrating on the middle.</p>
-        <p>What sampling cannot fix is σ<sup>2</sup>, the variance of the disturbance. That is
-        a feature of the population relationship — how much of Y is driven by things outside
-        the model — not of the sample. Reducing it means improving the <em>model</em>: better
-        measurement, or explanatory variables that are currently sitting in u. That is the
-        subject of Unit 2A.</p>
-      </div>
-    </details>
   </div>
 
   <div class="tq">
-    <span class="qtext">Explain why σ̂<sup>2</sup> divides by n − 2. What would go wrong if
-    Σû<sub>i</sub><sup>2</sup>/n were used instead, and in which direction would the reported
-    standard errors be wrong?</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p>Section 7 shows E(Σû<sub>i</sub><sup>2</sup>) = (n − 2)σ<sup>2</sup>. Dividing by
-        n − 2 therefore produces an estimator whose expected value is exactly σ<sup>2</sup>.
-        The intuition is <a class="gt" href="../reference/glossary.html#degrees-of-freedom">degrees of freedom</a>: the residuals must satisfy Σû<sub>i</sub> = 0 and
-        Σû<sub>i</sub>X<sub>i</sub> = 0, two restrictions imposed by the <a class="gt" href="../reference/glossary.html#normal-equations">normal equations</a>, so
-        only n − 2 of them are free to vary. Two were spent estimating β̂<sub>1</sub> and
-        β̂<sub>2</sub>.</p>
-        <p>Using n instead gives E(Σû<sub>i</sub><sup>2</sup>/n) = (n − 2)σ<sup>2</sup>/n,
-        which is smaller than σ<sup>2</sup> — the estimator is biased
-        <strong>downwards</strong>. Standard errors would therefore be reported too small,
-        <a class="gt" href="../reference/glossary.html#t-statistic">t-statistics</a> too large, and coefficients would look more significant than the evidence
-        warrants. The bias shrinks as n grows, which is why the correction matters most in
-        exactly the small samples where it is most tempting to ignore it.</p>
-      </div>
-    </details>
+    <span class="qtext">Suppose that instead of regressing Y on X you regress X on Y, obtaining the fitted
+    line X̂<sub>i</sub> = α̂<sub>1</sub> + α̂<sub>2</sub>Y<sub>i</sub>. (i) Write α̂<sub>2</sub>
+    in deviation form. (ii) Show that β̂<sub>2</sub> · α̂<sub>2</sub> = r<sup>2</sup>.
+    (iii) Hence explain why the two fitted lines coincide only when r<sup>2</sup> = 1, and
+    why "the regression line" is not a symmetric description of the relationship between
+    two variables.</span>
   </div>
 
   <div class="tq">
@@ -795,26 +726,6 @@ Draft questions, to be replaced by the tutorial sheet issued in class.</p>
     has r<sup>2</sup> = 0.94 and a slope coefficient with a t-statistic of 0.6. Model B has
     r<sup>2</sup> = 0.31 and a slope with a t-statistic of 5.2. Which would you rather have,
     and what else would you want to know?</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p><strong>Model B, on this evidence.</strong> r<sup>2</sup> reports how tightly the
-        observations cluster around the line; it says nothing about whether the estimated
-        relationship is reliable. Model A's slope is indistinguishable from zero — its high
-        r<sup>2</sup> is being produced by something other than a dependable link between X
-        and Y, very often a shared trend, which is precisely the margarine-and-divorce case in
-        section 11. Model B has a low fit but a slope estimated precisely enough to build on;
-        a low r<sup>2</sup> is common and unalarming in cross-section data, where individual
-        behaviour is genuinely noisy.</p>
-        <p><strong>What else to ask.</strong> What each model says theoretically — a
-        coefficient worth having must correspond to a mechanism you can name. Whether the
-        assumptions of section 2 survive testing, since a significant t-statistic computed
-        from a wrong variance formula is not evidence of anything (Units 2C and 2D). Whether
-        either regression is in levels of trending series. What the units are, so that "0.75"
-        can be judged economically and not just statistically. And the sample size, without
-        which neither t-statistic can be placed against a <a class="gt" href="../reference/glossary.html#critical-value">critical value</a>.</p>
-      </div>
-    </details>
   </div>
 
 </div>

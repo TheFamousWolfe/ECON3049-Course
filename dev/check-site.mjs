@@ -168,13 +168,20 @@ for (const u of live) {
     ok(!/NaN|Infinity/.test(f.innerHTML), at(`figure "${name}" has no NaN in its geometry`));
   });
 
-  /* tutorial */
+  /* tutorial. Solutions are all-or-nothing within a unit: Units 1A–1F ship
+     questions only (their solutions are the lecturer's, kept outside the
+     repository), later units reveal theirs. A unit that answers some
+     questions and not others is a mistake whichever way it was meant. */
   const tqs = [...p.querySelectorAll(".tq")];
   ok(tqs.length >= 3, at("at least 3 tutorial questions"), String(tqs.length));
-  tqs.forEach((t, i) => {
-    const d = t.querySelector("details");
-    ok(d && d.querySelector(".solution"), at(`tutorial Q${i + 1} has a solution`));
-    ok(d && !d.hasAttribute("open"), at(`tutorial Q${i + 1} ships closed`));
+  const answered = tqs.filter(t => t.querySelector("details"));
+  ok(answered.length === 0 || answered.length === tqs.length,
+     at("tutorial solutions on every question or on none"),
+     `${answered.length} of ${tqs.length}`);
+  answered.forEach(t => {
+    const n = tqs.indexOf(t) + 1, d = t.querySelector("details");
+    ok(!!d.querySelector(".solution"), at(`tutorial Q${n} solution has a body`));
+    ok(!d.hasAttribute("open"), at(`tutorial Q${n} ships closed`));
   });
 
   /* quizzes — the house rules from assets/quiz.js */

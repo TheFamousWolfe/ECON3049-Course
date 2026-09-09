@@ -9,14 +9,14 @@ try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
 z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
 if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
 <title>Unit 1E — The Normality Assumption and Maximum Likelihood · ECON 3049</title>
-<link rel="stylesheet" href="../assets/lesson.css?v=51bdc0aa">
-<link rel="stylesheet" href="../assets/course.css?v=51bdc0aa">
-<script src="../assets/course.js?v=51bdc0aa"></script>
-<script src="../assets/nav.js?v=51bdc0aa" defer></script>
-<script src="../assets/export.js?v=51bdc0aa" defer></script>
-<script src="../assets/reader.js?v=51bdc0aa" defer></script>
-<script src="../assets/quiz.js?v=51bdc0aa" defer></script>
-<script src="../assets/viz.js?v=51bdc0aa" defer></script>
+<link rel="stylesheet" href="../assets/lesson.css?v=75201143">
+<link rel="stylesheet" href="../assets/course.css?v=75201143">
+<script src="../assets/course.js?v=75201143"></script>
+<script src="../assets/nav.js?v=75201143" defer></script>
+<script src="../assets/export.js?v=75201143" defer></script>
+<script src="../assets/reader.js?v=75201143" defer></script>
+<script src="../assets/quiz.js?v=75201143" defer></script>
+<script src="../assets/viz.js?v=75201143" defer></script>
 </head>
 <body>
 <div class="masthead" data-unit="1E"></div>
@@ -337,101 +337,30 @@ u<sub>i</sub>, where the Y<sub>i</sub> are normally and independently distribute
 
 <h2>6 · Tutorial</h2>
 
-<p style="font-size:0.85rem; color:var(--ink-soft); font-style:italic;">
-Draft questions, to be replaced by the tutorial sheet issued in class.</p>
-
 <div class="tutorial">
 
   <div class="tq">
     <span class="qtext">Explain why assuming a distribution for u<sub>i</sub> is enough to
     determine the distribution of β̂<sub>2</sub>. Which earlier assumption does the argument
     rely on, and what would go wrong without it?</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p>From Unit 1C, β̂<sub>2</sub> = β<sub>2</sub> + Σk<sub>i</sub>u<sub>i</sub>. The
-        term β<sub>2</sub> is a fixed population constant and the k<sub>i</sub> are constants
-        too, so the only random object on the right-hand side is u. β̂<sub>2</sub> is
-        therefore a <em>linear function of the disturbances</em>, and a linear function of
-        normal variables is itself normal — with mean β<sub>2</sub> by <a class="gt" href="../reference/glossary.html#unbiasedness">unbiasedness</a> and
-        variance σ<sup>2</sup>/Σx<sub>i</sub><sup>2</sup>.</p>
-        <p><strong>The assumption relied on is assumption 2</strong>, that the Xs are fixed or
-        non-stochastic. Without it the k<sub>i</sub> = x<sub>i</sub>/Σx<sub>i</sub><sup>2</sup>
-        are themselves random, β̂<sub>2</sub> becomes a ratio of random quantities rather than
-        a weighted sum with fixed weights, and no amount of knowledge about the distribution
-        of u alone determines its distribution.</p>
-      </div>
-    </details>
   </div>
 
   <div class="tq">
     <span class="qtext">A student writes: "cov(u<sub>i</sub>, u<sub>j</sub>) = 0 means the
     disturbances are independent." Under the CLRM of Unit 1C, is this correct? Under the
     CNLRM? Explain the difference.</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p><strong>Under the CLRM, no.</strong> Zero covariance rules out a <em>linear</em>
-        association between u<sub>i</sub> and u<sub>j</sub> and nothing more. Two variables can
-        be uncorrelated and still strongly dependent — for example if u<sub>j</sub> is a
-        <a class="gt" href="../reference/glossary.html#deterministic">deterministic</a> function of u<sub>i</sub><sup>2</sup>.</p>
-        <p><strong>Under the <a class="gt" href="../reference/glossary.html#cnlrm">CNLRM</a>, yes.</strong> For variables that are <em>jointly
-        normally distributed</em>, zero covariance does imply independence; this is a special
-        property of the normal distribution, not a general fact. So the statement becomes true
-        only once normality has been assumed, and the disturbances can then be described as
-        normally and independently distributed, NID(0, σ<sup>2</sup>).</p>
-        <p>The general lesson is worth carrying into Unit 2: an assumption often does more work
-        than the line it appears on, and it is worth asking which results would survive
-        without it. Unbiasedness would; independence would not.</p>
-      </div>
-    </details>
   </div>
 
   <div class="tq">
     <span class="qtext">Show that maximising the log-likelihood with respect to β<sub>1</sub>
     and β<sub>2</sub> is the same problem as minimising Σû<sub>i</sub><sup>2</sup>. Then explain
     why the two methods nonetheless produce different estimators of σ<sup>2</sup>.</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p>The <a class="gt" href="../reference/glossary.html#likelihood-function">log-likelihood</a> is ln LF = −(n/2)ln σ<sup>2</sup> − (n/2)ln(2π) −
-        ½Σ(Y<sub>i</sub> − β<sub>1</sub> − β<sub>2</sub>X<sub>i</sub>)<sup>2</sup>/σ<sup>2</sup>.
-        For fixed σ<sup>2</sup>, the first two terms do not involve β<sub>1</sub> or
-        β<sub>2</sub> at all. The third is the sum of squared deviations multiplied by the
-        negative constant −1/2σ<sup>2</sup>. Maximising a negative constant times a quantity is
-        minimising the quantity — so the β that maximises ln LF is exactly the β that minimises
-        Σ(Y<sub>i</sub> − β<sub>1</sub> − β<sub>2</sub>X<sub>i</sub>)<sup>2</sup>. Setting the
-        derivatives to zero produces the least-squares <a class="gt" href="../reference/glossary.html#normal-equations">normal equations</a>, as in section 5.</p>
-        <p><strong>Why σ<sup>2</sup> differs.</strong> The two methods answer different
-        questions about it. ML treats σ<sup>2</sup> as one more <a class="gt" href="../reference/glossary.html#parameter">parameter</a> to be chosen to
-        maximise the likelihood, and the answer to that optimisation is Σû<sub>i</sub><sup>2</sup>/n
-        — it makes no correction for the fact that two parameters have already been estimated
-        from the same data. OLS chooses the divisor n − 2 <em>specifically</em> so that
-        E(σ̂<sup>2</sup>) = σ<sup>2</sup>. Unbiasedness is a property ML never promised: what
-        ML guarantees is <a class="gt" href="../reference/glossary.html#consistency">consistency</a> and asymptotic <a class="gt" href="../reference/glossary.html#efficiency">efficiency</a>, which σ̃<sup>2</sup> does have.</p>
-      </div>
-    </details>
   </div>
 
   <div class="tq">
     <span class="qtext">With n = 12, by what percentage does the ML estimator of σ<sup>2</sup>
     understate the true value on average? What happens to a t-statistic computed with it, and
     at what sample size does the discrepancy fall below 2%?</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p>E(σ̃<sup>2</sup>) = ((n − 2)/n)σ<sup>2</sup> = (10/12)σ<sup>2</sup> = 0.833σ<sup>2</sup>,
-        so it understates σ<sup>2</sup> by <strong>16.7%</strong> on average.</p>
-        <p><strong>Effect on a <a class="gt" href="../reference/glossary.html#t-statistic">t-statistic</a>.</strong> The <a class="gt" href="../reference/glossary.html#standard-error">standard error</a> is the square root of a
-        variance built from σ̃<sup>2</sup>, so it is understated by a factor √0.833 = 0.913 —
-        about 8.7% too small. Since t = β̂/se, the t-statistic is inflated by roughly
-        1/0.913 = 1.095, about 9.5% too large. A coefficient with a true t of 1.90 would be
-        reported at about 2.08 and declared significant at 5% when it should not be.</p>
-        <p><strong>Below 2%:</strong> the bias factor is 2/n, so 2/n &lt; 0.02 requires
-        <strong>n &gt; 100</strong>. This is the arithmetic behind the deck's remark that
-        normality and these small-sample corrections matter most below about 100 observations.</p>
-      </div>
-    </details>
   </div>
 
 </div>

@@ -9,14 +9,14 @@ try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
 z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
 if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
 <title>Unit 1D — Multiple Regression · ECON 3049</title>
-<link rel="stylesheet" href="../assets/lesson.css?v=51bdc0aa">
-<link rel="stylesheet" href="../assets/course.css?v=51bdc0aa">
-<script src="../assets/course.js?v=51bdc0aa"></script>
-<script src="../assets/nav.js?v=51bdc0aa" defer></script>
-<script src="../assets/export.js?v=51bdc0aa" defer></script>
-<script src="../assets/reader.js?v=51bdc0aa" defer></script>
-<script src="../assets/quiz.js?v=51bdc0aa" defer></script>
-<script src="../assets/viz.js?v=51bdc0aa" defer></script>
+<link rel="stylesheet" href="../assets/lesson.css?v=75201143">
+<link rel="stylesheet" href="../assets/course.css?v=75201143">
+<script src="../assets/course.js?v=75201143"></script>
+<script src="../assets/nav.js?v=75201143" defer></script>
+<script src="../assets/export.js?v=75201143" defer></script>
+<script src="../assets/reader.js?v=75201143" defer></script>
+<script src="../assets/quiz.js?v=75201143" defer></script>
+<script src="../assets/viz.js?v=75201143" defer></script>
 </head>
 <body>
 <div class="masthead" data-unit="1D"></div>
@@ -427,9 +427,6 @@ first — that is, when the variable earns its place.</p>
 
 <h2>10 · Tutorial</h2>
 
-<p style="font-size:0.85rem; color:var(--ink-soft); font-style:italic;">
-Draft questions, to be replaced by the tutorial sheet issued in class.</p>
-
 <div class="tutorial">
 
   <div class="tq">
@@ -437,45 +434,14 @@ Draft questions, to be replaced by the tutorial sheet issued in class.</p>
     regression estimator β̂<sub>2</sub> reduces exactly to the simple regression estimator of
     Unit 1C. Explain in words what this tells you about when a simple regression is
     trustworthy.</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p>Setting Σx<sub>2i</sub>x<sub>3i</sub> = 0 in the numerator kills the second term,
-        leaving (Σx<sub>2i</sub>y<sub>i</sub>)(Σx<sub>3i</sub><sup>2</sup>); the denominator
-        becomes (Σx<sub>2i</sub><sup>2</sup>)(Σx<sub>3i</sub><sup>2</sup>). The
-        Σx<sub>3i</sub><sup>2</sup> cancels and β̂<sub>2</sub> =
-        Σx<sub>2i</sub>y<sub>i</sub>/Σx<sub>2i</sub><sup>2</sup>, which is the Unit 1C
-        formula.</p>
-        <p><strong>In words:</strong> when the regressors are uncorrelated in the sample,
-        including X<sub>3</sub> or omitting it makes no difference at all to the estimated
-        effect of X<sub>2</sub>. A simple regression is therefore trustworthy precisely when
-        the <a class="gt" href="../reference/glossary.html#omitted-variable">omitted variables</a> are uncorrelated with the included one — which is exactly the
-        condition the figure in section 2 dials up and down, and exactly the condition that
-        fails in the school-spending example.</p>
-      </div>
-    </details>
   </div>
 
   <div class="tq">
-    <span class="qtext">A colleague fits a model with 4 regressors to 12 observations and
-    reports R<sup>2</sup> = 0.91. Compute the adjusted R<sup>2</sup> and comment. What would
-    happen to each measure if they added three more regressors of random numbers?</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p>With 4 regressors plus an intercept, k = 5, n = 12, so n − k = 7 and n − 1 = 11:</p>
-        <p class="math">R̄<sup>2</sup> = 1 − (1 − 0.91)(11/7) = 1 − 0.09 × 1.571 = 0.859</p>
-        <p>The gap between 0.91 and 0.859 is already substantial, and it is a warning: with
-        only 7 degrees of freedom left, a good deal of that fit is being bought with
-        parameters rather than with explanation.</p>
-        <p><strong>Adding three columns of random numbers:</strong> R<sup>2</sup> would
-        <em>rise</em>, or at worst stay the same — it cannot fall, because the RSS cannot rise
-        when a regressor is added. R̄<sup>2</sup> would almost certainly fall, because n − k
-        drops from 7 to 4 and the multiplier (n − 1)/(n − k) jumps from 1.571 to 2.75, while
-        random columns add essentially nothing to R<sup>2</sup>. This is the whole argument for
-        never comparing models on R<sup>2</sup> alone.</p>
-      </div>
-    </details>
+    <span class="qtext">Show that R̄<sup>2</sup> = 1 − (1 − R<sup>2</sup>)(n − 1)/(n − k) can be written as
+    R̄<sup>2</sup> = 1 − [RSS/(n − k)] / [TSS/(n − 1)] — one minus the ratio of two
+    unbiased variance estimators. Use this form to explain (i) why R̄<sup>2</sup> can be
+    negative, and what a negative value says about the model, and (ii) the one case in
+    which R̄<sup>2</sup> equals R<sup>2</sup>.</span>
   </div>
 
   <div class="tq">
@@ -484,23 +450,6 @@ Draft questions, to be replaced by the tutorial sheet issued in class.</p>
     (Σx<sub>2i</sub>x<sub>3i</sub>)<sup>2</sup>, explain what happens to the precision of
     β̂<sub>2</sub> as X<sub>2</sub> and X<sub>3</sub> become more strongly correlated. What
     happens in the limit?</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p>As the correlation between the regressors rises, the cross-product
-        Σx<sub>2i</sub>x<sub>3i</sub> grows in absolute value, so
-        (Σx<sub>2i</sub>x<sub>3i</sub>)<sup>2</sup> grows and D — the difference — falls. D is
-        the denominator, so var(β̂<sub>2</sub>) rises: the estimate becomes less precise, its
-        standard error larger, and its t-statistic smaller.</p>
-        <p><strong>In the limit</strong> of perfect correlation, X<sub>3</sub> is an exact
-        linear function of X<sub>2</sub>, the Cauchy–Schwarz inequality holds with equality,
-        D = 0, and neither β̂<sub>2</sub> nor its variance is defined. That is assumption 8
-        failing. The intuition is that the data contains no observation in which X<sub>2</sub>
-        moves while X<sub>3</sub> stays put, so there is simply no evidence about what
-        X<sub>2</sub> does on its own. The intermediate, everyday case — high but not perfect
-        correlation, large standard errors, unstable coefficients — is Unit 2B.</p>
-      </div>
-    </details>
   </div>
 
   <div class="tq">
@@ -509,26 +458,6 @@ Draft questions, to be replaced by the tutorial sheet issued in class.</p>
     education falls to 0.55. Explain what has happened, state which assumption the first
     regression violated, and say which of the two numbers answers the question "what would an
     extra year of school do for me?"</span>
-    <details>
-      <summary>Show solution</summary>
-      <div class="solution">
-        <p><strong>What happened.</strong> Ability affects wages and is positively correlated
-        with education. Omitted from the first regression, it sits in the <a class="gt" href="../reference/glossary.html#disturbance">disturbance</a>, so
-        cov(education, u) ≠ 0 and <em>assumption 3</em> fails — equivalently, assumption 9, no
-        <a class="gt" href="../reference/glossary.html#specification-bias">specification bias</a>. The estimated coefficient on education then picks up both the
-        direct effect of schooling and the effect of the ability that tends to accompany it.
-        Adding ability to the model holds it constant, and the 0.35 difference is the part
-        that was never education's to begin with.</p>
-        <p><strong>Which number answers the question.</strong> The 0.55 — it is the partial
-        effect of education holding ability constant, which is what an individual with fixed
-        ability considering another year of school wants to know. The 0.90 is the average
-        difference in wages between people with more and less education, ability and all,
-        which is a description of the population rather than a statement about a decision.</p>
-        <p>Two cautions worth stating. This assumes ability has been measured well; a poor
-        <a class="gt" href="../reference/glossary.html#proxy">proxy</a> only partly closes the gap. And it assumes no <em>further</em> omitted variable
-        correlated with education — which is why Unit 3B exists.</p>
-      </div>
-    </details>
   </div>
 
 </div>
