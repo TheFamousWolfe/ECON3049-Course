@@ -1,0 +1,170 @@
+/* ============================================================
+   ECON 3049 — lecture-deck layout
+
+   Loaded after lesson.css and course.css by a deck page (see
+   slides.js for the markup). It rescales the site's typography for a
+   16:9 projector and lays one slide over the viewport at a time. The
+   site's components — .box, .assumption-grid, p.math, ol.stages, the
+   .viz figures — keep their own styles and are only resized here.
+
+   Every colour comes from the tokens on :root in lesson.css. Nothing
+   here introduces a new colour.
+   ============================================================ */
+
+/* ---------- Type ----------
+   Root size follows the viewport: 2.3vw, capped by 4.1vh so a tall
+   window cannot overflow vertically (2.3 : 4.1 is 16 : 9, so on a
+   16:9 screen the two agree — 44px at 1080p, 29px at 720p). The
+   html[data-text] selector matches the reader-size rules in lesson.css
+   at equal specificity and loads later, so a saved text size applies to
+   unit pages and not to decks. */
+html, html[data-text] { font-size: clamp(18px, min(2.3vw, 4.1vh), 48px); }
+
+body { margin: 0; padding: 0; overflow: hidden; }
+
+/* ---------- Slides ----------
+   Decks never use .wrap, so nothing here inherits its justification or
+   hyphenation. */
+main.deck { position: relative; }
+.slide { display: none; }
+.slide.current {
+  display: flex; flex-direction: column;
+  box-sizing: border-box; width: 100vw; height: 100vh;
+  padding: 5vh 6vw; overflow: hidden;
+}
+.slide.title { justify-content: center; text-align: center; }
+.slide.centre { justify-content: center; align-items: center; }
+.slide.centre > * { width: 100%; }
+
+.slide h1 { font-size: 2.4rem; margin: 0 0 0.3em; line-height: 1.15; }
+.slide h2 { font-size: 1.5rem; margin: 0 0 0.5em; color: var(--accent); line-height: 1.2; }
+.slide h3 { font-size: 1.05rem; margin: 0.4em 0 0.3em; }
+.slide p  { margin: 0.35em 0; line-height: 1.45; }
+.slide ul, .slide ol { margin: 0.3em 0; }
+.slide li { margin: 0.25em 0; }
+
+.slide .deck-course {
+  font-family: -apple-system, system-ui, sans-serif; font-size: 0.7rem;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft);
+}
+.slide .deck-meta { font-size: 0.8rem; color: var(--ink-soft); margin-top: 1.2em; }
+.slide .subtitle { font-size: 1.1rem; font-style: italic; color: var(--ink-soft); text-align: inherit; }
+
+/* ---------- Steps ----------
+   visibility, not display, so revealing a step never reflows the slide. */
+.fragment { visibility: hidden; }
+.fragment.visible { visibility: visible; }
+
+/* ---------- The site's components, resized ---------- */
+.slide .box { font-size: 0.9rem; margin: 0.6rem 0; padding: 0.7rem 1rem; }
+.slide .box .box-label { font-size: 0.6rem; }
+.slide .assumption-grid { margin: 0.4rem 0; }
+.slide .assumption-grid .ag-item { padding: 0.35rem 0; font-size: 0.95rem; gap: 0.7rem; }
+.slide .assumption-grid .ag-n { font-size: 0.6rem; height: 1.15rem; }
+.slide p.math { font-size: 1.4rem; margin: 0.8rem 0; }
+
+/* The eight stacked stage boxes of Unit 1A do not fit a projector on
+   top of each other. Two columns, counters kept, arrows dropped. */
+.slide ol.stages {
+  max-width: none; margin: 0.4rem 0;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 2rem;
+  font-size: 0.78rem;
+}
+.slide ol.stages li { margin: 0; padding: 0.4rem 0.7rem 0.4rem 2rem; }
+.slide ol.stages li::after { content: none; }
+.slide ol.stages li::before { top: 0.45rem; left: 0.6rem; }
+.slide ol.stages .aside, .slide ol.stages .loop { font-size: 0.68rem; }
+
+/* ---------- Figures ----------
+   Sized by height with the width following the viewBox ratio, so a
+   640 × 380 figure fills its box with no letterbox. A slide can set
+   --fig-h on itself for a taller figure. */
+.slide .viz { margin: 0; padding: 0.5rem 0.8rem; }
+.slide .viz svg {
+  height: var(--fig-h, 56vh); width: auto; max-width: 100%;
+  margin: 0 auto;
+}
+.slide .viz-controls { font-size: 0.7rem; gap: 0.6rem 1.4rem; padding-top: 0.5rem; }
+.slide .viz-controls input[type="range"] {
+  width: 14rem; transform: scale(1.35); transform-origin: left center; margin-right: 3rem;
+}
+.slide .viz-readout { font-size: 0.75rem; }
+/* The site's captions are paragraph-length and change with the slider;
+   on a slide the readout carries the state and the lecturer says the
+   rest. Opt back in with class="show-caption" on the slide. */
+.slide .viz-caption { display: none; }
+.slide.show-caption .viz-caption { display: block; font-size: 0.7rem; }
+
+/* ---------- Notes ---------- */
+aside.notes { display: none; }
+
+/* ---------- HUD ---------- */
+.deck-progress {
+  position: fixed; left: 0; bottom: 0; height: 0.3vh; width: 0;
+  background: var(--accent); transition: width 0.2s;
+}
+.deck-hud {
+  position: fixed; right: 1vw; bottom: 0.8vh;
+  font-family: -apple-system, system-ui, sans-serif; font-size: 0.6rem;
+  color: var(--ink-faint);
+}
+.deck-help {
+  position: fixed; top: 8vh; left: 50%; transform: translateX(-50%);
+  width: min(36rem, 88vw); box-sizing: border-box; padding: 1rem 1.4rem;
+  background: var(--card); border: 1px solid var(--rule); border-radius: 8px;
+  font-size: 0.75rem; line-height: 1.5; z-index: 10;
+}
+.deck-help-title { font-weight: 700; margin: 0 0 0.5em; }
+.deck-help dl { display: grid; grid-template-columns: max-content 1fr; gap: 0.25em 1.2em; margin: 0; }
+.deck-help dt { font-family: ui-monospace, Menlo, monospace; color: var(--accent-2); white-space: nowrap; }
+.deck-help dd { margin: 0; }
+.deck-help-foot { margin: 0.8em 0 0; color: var(--ink-soft); font-size: 0.65rem; }
+
+/* ---------- Presenter window ----------
+   The live current slide, scaled into the top-left; the next slide,
+   static, top-right; the notes across the bottom. */
+html[data-mode="presenter"] main.deck {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  transform: scale(0.6); transform-origin: 0 0;
+}
+html[data-mode="presenter"] .pres-next {
+  position: fixed; top: 0; left: 62vw; width: 100vw; height: 100vh;
+  transform: scale(0.36); transform-origin: 0 0;
+  pointer-events: none; opacity: 0.9;
+}
+html[data-mode="presenter"] .pres-next .slide { outline: 1px solid var(--rule); }
+html[data-mode="presenter"] .pres-end { color: var(--ink-faint); font-size: 2rem; padding: 4vh 4vw; }
+html[data-mode="presenter"] .pres-notes {
+  position: fixed; top: 62vh; left: 0; right: 0; bottom: 0;
+  box-sizing: border-box; padding: 1.5vh 3vw 3vh; overflow: auto;
+  background: var(--card); border-top: 1px solid var(--rule);
+  font-size: 0.7rem; line-height: 1.5;
+}
+html[data-mode="presenter"] .pres-notes p { margin: 0.3em 0; }
+html[data-mode="presenter"] .pres-clock {
+  position: fixed; top: 1.5vh; right: 1.5vw;
+  font-family: ui-monospace, Menlo, monospace; font-size: 0.8rem; color: var(--ink-soft);
+}
+html[data-mode="presenter"] .deck-hud { bottom: auto; top: 61.5vh; right: 1.5vw; transform: translateY(-100%); }
+
+/* ---------- Print: one slide per page, a handout ---------- */
+@media print {
+  @page { size: landscape; margin: 1cm; }
+  html, html[data-text] { font-size: 15pt; }
+  body { overflow: visible; }
+  main.deck, html[data-mode="presenter"] main.deck { position: static; transform: none; width: auto; height: auto; }
+  .slide {
+    display: flex !important; flex-direction: column;
+    height: auto; min-height: 0; width: auto;
+    padding: 0.5cm 1cm; break-after: page; break-inside: avoid;
+  }
+  .slide:last-child { break-after: auto; }
+  .fragment { visibility: visible; }
+  .slide .viz svg { height: 11cm; }
+  .viz-controls, .deck-progress, .deck-hud, .deck-help,
+  .pres-next, .pres-notes, .pres-clock, aside.notes { display: none; }
+  html[data-print-notes] aside.notes {
+    display: block; margin-top: auto; padding-top: 0.4cm;
+    border-top: 1px solid var(--rule); font-size: 0.75rem; color: var(--ink-soft);
+  }
+}

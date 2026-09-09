@@ -57,12 +57,16 @@ assets/reader.js      text size, theme and the download menu
 assets/export.js      Word / Markdown / LaTeX converters
 assets/lesson.css     base typography and palette
 assets/course.css     course-site components (.eqn-report, .tutorial, .viz …)
+assets/slides.js      the lecture-deck engine — the decks themselves are private
+assets/slides.css     projector scaling and print layout for the decks
 units/                one page per unit, 1A through 3C
 reference/            glossary and formula sheet
 dev/covered.mjs       mark units as covered in class
 dev/check-site.mjs    the regression suite
 dev/link-glossary.mjs unit -> glossary back-links
 dev/stamp-assets.mjs  cache-busting stamps
+dev/check-decks.mjs   regression for the private lecture decks
+dev/fixtures/         a content-free deck the engine is tested against
 ```
 
 ## Writing a new unit — the actual sequence
@@ -297,6 +301,58 @@ worked answer to the `.tex`, and recompile the latter. When the Unit 2 and 3
 tutorials are given the same treatment, extend the same file and mirror the
 Unit 1 pattern rather than inventing a second one.
 
+## Lecture decks
+
+Each unit can have a lecture deck: the unit page condensed to slides, with
+the same interactive figures live on the slide and speaker notes in the file.
+The decks are the lecturer's. They live in `../Econ3049/Slides/`, beside the
+midterm, and are **never committed here** — this repository is public and
+deploys on every push, and the decks carry speaker notes. Only the engine is
+public: `assets/slides.js` and `assets/slides.css`, generic code with no
+course content, versioned and stamped like every other asset.
+
+A deck loads the site's assets by relative path
+(`../../ECON3049-Course/assets/…`, no `?v=` stamps — a local file has no
+cache to bust) and works over `file://` by double-click, or served from the
+parent folder:
+
+```sh
+cd .. && python3 -m http.server 8000
+# http://localhost:8000/Econ3049/Slides/1a-introducing-econometrics.html
+```
+
+Keys: arrows/space to step, `t` theme, `f` fullscreen, `p` presenter window,
+`n` print with notes, `?` for the list. Presenter mode opens the deck again
+in a popup and keeps the two in step with `postMessage`, which — unlike
+`BroadcastChannel` — works over `file://`. The audience window is the source
+of truth; drive figures from it. `t` rebuilds every figure through
+`VIZ.redraw()` and resets any slider, so pick the theme before starting.
+Cmd-P gives one slide per page in landscape with the controls hidden; the
+light palette is forced for the print run so dark-theme figures do not print
+pale.
+
+**Writing the next deck.** Copy the pilot's `<head>` verbatim. One
+`section.slide` per idea, sixteen to twenty per unit, lifted from the unit
+page's `.box`, `.assumption-grid`, `p.math` and `ol.stages` blocks with the
+glossary links and citation superscripts stripped (they point at
+`../reference/` and would dangle). The unit's figure goes on its own
+`.slide.centre` with its `.viz-fallback`; `class="fragment"` on list items
+that should appear one at a time; an `aside.notes` on every slide; close
+with "Next: Unit …". Then:
+
+```sh
+node dev/check-decks.mjs                # every deck in ../Econ3049/Slides
+node dev/check-decks.mjs dev/fixtures   # the engine alone, in-repo
+```
+
+The checker loads each deck in jsdom and verifies the figures render without
+`NaN`, every slide has a heading and notes, the keys and hash work, `t`
+survives a figure rebuild, `p` neither throws nor moves without a popup, and
+— on every run — that no public page points at the private folder. What it
+cannot see is layout, so walk the deck once at 1280×720 and once at 1920×1080
+before lecturing from it, open the presenter window and navigate from both
+sides, and print it.
+
 ## Asset caching
 
 GitHub Pages serves assets with `cache-control: max-age=600`. For ten
@@ -459,8 +515,9 @@ would.
 Nothing about the calendar touches a page: it is all `teachingPeriod` and the
 `when` fields in `assessment`, and the home page renders itself from them.
 
-Assessment material — the midterm paper and its marking scheme, and the Unit 1
-tutorial solutions — lives in `../Econ3049/`, a sibling folder that is not a
+Assessment material — the midterm paper and its marking scheme, the Unit 1
+tutorial solutions, and the lecture decks with their speaker notes — lives in
+`../Econ3049/`, a sibling folder that is not a
 repository and has no remote. That is deliberate and not to be tidied: this
 repository is public and deploys on every push, so nothing that must not reach a
 student before its time can be committed here, even briefly.
