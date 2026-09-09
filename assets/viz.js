@@ -284,11 +284,17 @@
     prf.setAttribute("x1", c.x(0));  prf.setAttribute("y1", c.y(B1));
     prf.setAttribute("x2", c.x(100)); prf.setAttribute("y2", c.y(B1 + B2 * 100));
 
+    /* Anchored at its END, above the line's upper right. Anchoring it at
+       the start put the text on the line: over the ~130px the label runs,
+       a slope of 0.6 lifts the line about 40px, far more than any gap you
+       could open at the anchor. Ending it here, the line falls away to the
+       left the whole width of the text, and it clears the highest dot the
+       slider can produce (x = 80 at full spread) by about 14px. */
     var label = s("text", {
-      x: c.x(72), y: c.y(B1 + B2 * 72) - 10,
+      x: c.x(99), y: c.y(B1 + B2 * 99) - 14, "text-anchor": "end",
       "font-size": 13, "font-style": "italic", fill: P.accent2
     });
-    label.textContent = "E(Y | X) = β1 + β2X";
+    label.textContent = "E(Y | X) = β₁ + β₂X";
     c.plot.appendChild(label);
 
     XS.forEach(function () {
@@ -521,7 +527,7 @@
       g.appendChild(t);
       c.plot.appendChild(g);
     }
-    legend("PRF  E(Y | X) = β1 + β2X   (never observed)", P.accent2, 22, null);
+    legend("PRF  E(Y | X) = β₁ + β₂X   (never observed)", P.accent2, 22, null);
     legend("SRF  Ŷ = β̂1 + β̂2X   (what you estimate)", P.accent, 40, "7 4");
 
     /* box–muller, so the scatter is genuinely normal rather than uniform */
@@ -552,7 +558,7 @@
       draws++; sumB2 += r.b2;
       readout.textContent =
         "β̂1 = " + r.b1.toFixed(2) + "   β̂2 = " + r.b2.toFixed(3) +
-        "   (true β2 = 0.600)";
+        "   (true β₂ = 0.600)";
       average.textContent =
         "Mean of β̂2 over " + draws + " sample" + (draws === 1 ? "" : "s") +
         " = " + (sumB2 / draws).toFixed(3);
@@ -608,7 +614,7 @@
     c.plot.appendChild(g);
 
     var lg = s("text", { x: c.x(4), y: 24, "font-size": 11.5, fill: P.accent2 });
-    lg.textContent = "PRF  E(Y | X) = β1 + β2X";
+    lg.textContent = "PRF  E(Y | X) = β₁ + β₂X";
     c.plot.appendChild(lg);
 
     /* the spread at a given income: constant, or fanning out with X */
@@ -951,8 +957,8 @@
       g.appendChild(t);
       c.plot.appendChild(g);
     }
-    legend("true partial slope β2 = 0.600", P.accent2, 22, null);
-    legend("Y regressed on X2 alone", P.accent, 40, "7 4");
+    legend("true partial slope β₂ = 0.600", P.accent2, 22, null);
+    legend("Y regressed on X₂ alone", P.accent, 40, "7 4");
 
     function draw() {
       var pts = [], x2 = [], x3 = [], y = [], k;
@@ -1302,7 +1308,7 @@
     /* --- bottom panel: RSS and ln L over the same β2 axis --- */
     var g2 = chart({ w: 640, h: 230, pad: { t: 20, r: 16, b: 42, l: 44 },
                      xd: [LO, HI], yd: [0, 1] });
-    g2.axes("candidate value of β2", "");
+    g2.axes("candidate value of β₂", "");
     var pRSS = s("polyline", { fill: "none", stroke: P.accent2, "stroke-width": 2.5 });
     var pLL = s("polyline", { fill: "none", stroke: P.accent, "stroke-width": 2.5,
                               "stroke-dasharray": "7 4" });
@@ -1377,7 +1383,7 @@
       markL.setAttribute("cx", g2.x(b2)); markL.setAttribute("cy", g2.y(nL(l)));
 
       readout.textContent =
-        "β2 = " + b2.toFixed(3) + "    Σû² = " + r.toFixed(1) + "    ln L = " + l.toFixed(2);
+        "β₂ = " + b2.toFixed(3) + "    Σû² = " + r.toFixed(1) + "    ln L = " + l.toFixed(2);
       best.textContent =
         Math.abs(b2 - fit.b2) < 0.008
           ? "at the OLS estimate β̂2 = " + fit.b2.toFixed(3) + " — both are at their turning point"
@@ -1387,7 +1393,7 @@
     }
 
     var controls = h("div", "viz-controls");
-    var lab = h("label", null, "β2");
+    var lab = h("label", null, "β₂");
     var rng = document.createElement("input");
     rng.type = "range"; rng.min = String(LO); rng.max = String(HI);
     rng.step = "0.005"; rng.value = String(LO);
@@ -1406,7 +1412,7 @@
     host.appendChild(g2.svg);
     host.appendChild(controls);
     host.appendChild(h("p", "viz-caption",
-      "Drag β2 and watch both curves. Σû² is the quantity least squares makes as small as it "
+      "Drag β₂ and watch both curves. Σû² is the quantity least squares makes as small as it "
       + "can; ln L is the quantity maximum likelihood makes as large as it can. They are not "
       + "two coincidentally aligned criteria — substituting σ̃² = Σû²/n back into the "
       + "log-likelihood leaves ln L a strictly decreasing function of Σû², so the trough of "
@@ -1629,7 +1635,7 @@
     c.plot.appendChild(truth);
     c.plot.appendChild(bars);
     var lg = s("text", { x: c.x(B2) + 6, y: c.y(RUNS + 0.6), "font-size": 11.5, fill: P.accent2 });
-    lg.textContent = "true β2 = 0.600";
+    lg.textContent = "true β₂ = 0.600";
     c.plot.appendChild(lg);
 
     function draw() {
@@ -1652,7 +1658,7 @@
       readout.textContent =
         Math.round(level * 100) + "% intervals    critical value " + crit.toFixed(3);
       hitout.textContent =
-        hit + " of " + RUNS + " contain β2 — " + (100 * hit / RUNS).toFixed(0) + "%";
+        hit + " of " + RUNS + " contain β₂ — " + (100 * hit / RUNS).toFixed(0) + "%";
       c.svg.setAttribute("aria-label",
         RUNS + " confidence intervals from " + RUNS + " samples; " + hit + " contain the true value.");
     }
@@ -1681,7 +1687,7 @@
     host.appendChild(c.svg);
     host.appendChild(controls);
     host.appendChild(h("p", "viz-caption",
-      "Forty samples from the same population, forty intervals. The true β2 = 0.600 is fixed "
+      "Forty samples from the same population, forty intervals. The true β₂ = 0.600 is fixed "
       + "and does not move; the intervals do, because each is built from a different sample. "
       + "Roughly 95% of them cover the truth, and the ones drawn in red do not — that is the "
       + "entire content of “95% confident”. It is a claim about how often the PROCEDURE works, "
@@ -1756,7 +1762,7 @@
                                 stroke: P.accent2, "stroke-width": 2.5 });
     var truthLab = s("text", { x: c.x(B2), y: c.y(0.86), "font-size": 11.5, fill: P.accent2,
                                "text-anchor": "middle" });
-    truthLab.textContent = "true β2 = 0.600";
+    truthLab.textContent = "true β₂ = 0.600";
     var arrow = s("line", { stroke: P.accent, "stroke-width": 3 });
     var estMark = s("circle", { r: 6, fill: P.accent });
     var estLab = s("text", { "font-size": 11.5, fill: P.accent, "text-anchor": "middle" });
@@ -1915,7 +1921,7 @@
     c.plot.appendChild(truth);
     var tl = s("text", { x: c.x(B2), y: c.y(0.99), "font-size": 11.5, fill: P.ink,
                          "text-anchor": "middle" });
-    tl.textContent = "true β2 = 0.600";
+    tl.textContent = "true β₂ = 0.600";
     c.plot.appendChild(tl);
 
     function legend(text, colour, dy) {
@@ -1986,7 +1992,7 @@
         "ratio " + (b.sd / a.sd).toFixed(2) +
         "    theory √(1/(1 − R₂₃²)) = " + Math.sqrt(1 / (1 - rho * rho)).toFixed(2);
       c.svg.setAttribute("aria-label",
-        "Two sampling distributions of the slope on X2, both centred on 0.600; the overfitted "
+        "Two sampling distributions of the slope on X₂, both centred on 0.600; the overfitted "
         + "one is wider by a factor of " + (b.sd / a.sd).toFixed(2) + ".");
     }
 
@@ -2083,7 +2089,7 @@
         : "no pattern left to find";
       note.style.color = omit ? P.accent : P.good;
       c.svg.setAttribute("aria-label",
-        "Residuals plotted against the omitted variable, with X3 "
+        "Residuals plotted against the omitted variable, with X₃ "
         + (omit ? "omitted" : "included") + "; the fitted slope is " + t.b2.toFixed(3) + ".");
     }
 
@@ -2255,7 +2261,7 @@
     var FORMS = {
       linear: {
         label: "linear",
-        eqn: "Y = β1 + β2X + u",
+        eqn: "Y = β₁ + β₂X + u",
         fit: function () {
           var p = [], k;
           for (k = 0; k < N; k++) p.push({ x: xs[k], y: ys[k] });
@@ -2268,7 +2274,7 @@
       },
       doublelog: {
         label: "double-log",
-        eqn: "ln Y = β1 + β2 ln X + u",
+        eqn: "ln Y = β₁ + β₂ ln X + u",
         fit: function () {
           var p = [], k;
           for (k = 0; k < N; k++) p.push({ x: Math.log(xs[k]), y: Math.log(ys[k]) });
@@ -2282,7 +2288,7 @@
       },
       loglin: {
         label: "semi-log 1  (log–lin)",
-        eqn: "ln Y = β1 + β2X + u",
+        eqn: "ln Y = β₁ + β₂X + u",
         fit: function () {
           var p = [], k;
           for (k = 0; k < N; k++) p.push({ x: xs[k], y: Math.log(ys[k]) });
@@ -2297,7 +2303,7 @@
       },
       linlog: {
         label: "semi-log 2  (lin–log)",
-        eqn: "Y = β1 + β2 ln X + u",
+        eqn: "Y = β₁ + β₂ ln X + u",
         fit: function () {
           var p = [], k;
           for (k = 0; k < N; k++) p.push({ x: Math.log(xs[k]), y: ys[k] });
@@ -2462,7 +2468,7 @@
       + "experience that rise and then flatten off; flip β̂2 negative with β̂3 positive and you "
       + "get the U. Slide β̂3 through zero and the curvature "
       + "vanishes: at exactly zero the quadratic term is doing nothing and the specification "
-      + "collapses to the linear one, which is why testing H₀: β3 = 0 is a test of whether the "
+      + "collapses to the linear one, which is why testing H₀: β₃ = 0 is a test of whether the "
       + "curvature belongs. Always check X* falls inside the range of your data — a turning "
       + "point at 90 years of experience is arithmetic, not economics."));
 
@@ -2916,7 +2922,7 @@
           ? "F rejects overwhelmingly, yet neither X₂ nor X₃ is individually significant"
           : "F rejects, but one of the two collinear regressors has lost its significance";
       c.svg.setAttribute("aria-label",
-        "Three t-ratio curves against the correlation of X2 and X3: the two collinear ones "
+        "Three t-ratio curves against the correlation of X₂ and X₃: the two collinear ones "
         + "fall below the critical value while the third stays flat.");
     }
 

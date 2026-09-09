@@ -9,14 +9,14 @@ try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
 z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
 if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
 <title>Unit 2A Part 2 — Misspecification: Functional Form · ECON 3049</title>
-<link rel="stylesheet" href="../assets/lesson.css?v=a928392a">
-<link rel="stylesheet" href="../assets/course.css?v=a928392a">
-<script src="../assets/course.js?v=a928392a"></script>
-<script src="../assets/nav.js?v=a928392a" defer></script>
-<script src="../assets/export.js?v=a928392a" defer></script>
-<script src="../assets/reader.js?v=a928392a" defer></script>
-<script src="../assets/quiz.js?v=a928392a" defer></script>
-<script src="../assets/viz.js?v=a928392a" defer></script>
+<link rel="stylesheet" href="../assets/lesson.css?v=51bdc0aa">
+<link rel="stylesheet" href="../assets/course.css?v=51bdc0aa">
+<script src="../assets/course.js?v=51bdc0aa"></script>
+<script src="../assets/nav.js?v=51bdc0aa" defer></script>
+<script src="../assets/export.js?v=51bdc0aa" defer></script>
+<script src="../assets/reader.js?v=51bdc0aa" defer></script>
+<script src="../assets/quiz.js?v=51bdc0aa" defer></script>
+<script src="../assets/viz.js?v=51bdc0aa" defer></script>
 </head>
 <body>
 <div class="masthead" data-unit="2A Part 2"></div>
@@ -189,7 +189,7 @@ the model is non-linear in the <em>parameters</em>, which it does not?</p>
 
 <p>Take one of the most famous functions in economics, the <a class="gt" href="../reference/glossary.html#intrinsically-linear">Cobb–Douglas</a> production function:</p>
 
-<p class="math">Q = F(L, K, u) = β<sub>1</sub> L<sup>β2</sup> K<sup>β3</sup> e<sup>u</sup></p>
+<p class="math">Q = F(L, K, u) = β<sub>1</sub> L<sup>β₂</sup> K<sup>β₃</sup> e<sup>u</sup></p>
 
 <p>This violates the linearity-in-parameters assumption outright: β<sub>2</sub> and
 β<sub>3</sub> appear as exponents. What would happen if we simply estimated
@@ -241,7 +241,7 @@ percentage change in Y when X changes by one unit is approximately 100β<sub>2</
   <span class="box-label">The approximation, and the exact figure</span>
   100β<sub>2</sub> works best for <strong>small</strong> values of β<sub>2</sub>. The exact
   percentage change is
-  <p class="math" style="margin:0.4rem 0;">%ΔY / ΔX = 100 [ e<sup>β2</sup> − 1 ]</p>
+  <p class="math" style="margin:0.4rem 0;">%ΔY / ΔX = 100 [ e<sup>β₂</sup> − 1 ]</p>
   For β<sub>2</sub> = 0.05 the approximation gives 5% and the exact value 5.13% — negligible.
   For β<sub>2</sub> = 0.40 the approximation gives 40% and the exact value 49.2%, which is not.
   Quote the exact form whenever the coefficient is large.
@@ -582,12 +582,12 @@ Draft questions, to be replaced by the tutorial sheet issued in class.</p>
   <div class="tq">
     <span class="qtext">Explain why a Cobb–Douglas production function cannot be estimated by
     OLS as written, why taking logs fixes it, and what the log transformation implies about the
-    error term. Would the same trick work for Q = β<sub>1</sub> + β<sub>2</sub>L<sup>β3</sup> +
+    error term. Would the same trick work for Q = β<sub>1</sub> + β<sub>2</sub>L<sup>β₃</sup> +
     u?</span>
     <details>
       <summary>Show solution</summary>
       <div class="solution">
-        <p><strong>Why not as written.</strong> Q = β<sub>1</sub>L<sup>β2</sup>K<sup>β3</sup>e<sup>u</sup>
+        <p><strong>Why not as written.</strong> Q = β<sub>1</sub>L<sup>β₂</sup>K<sup>β₃</sup>e<sup>u</sup>
         has parameters appearing as exponents, violating assumption 1 — linearity in the
         parameters. OLS minimises a sum of squares whose first-order conditions are linear in
         the parameters; here they would not be.</p>
@@ -599,11 +599,11 @@ Draft questions, to be replaced by the tutorial sheet issued in class.</p>
         <p><strong>What it implies about the error.</strong> The multiplicative e<sup>u</sup>
         becomes an additive u, which is what the classical assumptions require. This is why the
         function is conventionally written with a multiplicative disturbance rather than an
-        additive one — with Q = β<sub>1</sub>L<sup>β2</sup>K<sup>β3</sup> + u the log
+        additive one — with Q = β<sub>1</sub>L<sup>β₂</sup>K<sup>β₃</sup> + u the log
         transformation would not separate, and no such trick exists.</p>
-        <p><strong>The second model.</strong> No. Q = β<sub>1</sub> + β<sub>2</sub>L<sup>β3</sup> + u
+        <p><strong>The second model.</strong> No. Q = β<sub>1</sub> + β<sub>2</sub>L<sup>β₃</sup> + u
         has an additive structure, so logging both sides does not distribute over the sum:
-        ln(β<sub>1</sub> + β<sub>2</sub>L<sup>β3</sup> + u) cannot be separated into terms
+        ln(β<sub>1</sub> + β<sub>2</sub>L<sup>β₃</sup> + u) cannot be separated into terms
         linear in the parameters. This is <em>intrinsically non-linear</em> and requires
         non-linear least squares, which is beyond this course.</p>
       </div>
