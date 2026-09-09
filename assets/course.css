@@ -16,12 +16,19 @@
 .hero { text-align: center; padding: 2.5rem 0 1rem; border-bottom: 1px solid var(--rule);
         -webkit-hyphens: manual; hyphens: manual; }
 
-/* The home page's opening paragraph is centred on purpose. Centred text
-   must not hyphenate: a broken word on a line with no fixed edge reads
-   as damage rather than as typesetting. */
+/* The home page's opening paragraph is prose, so it is justified like
+   the rest of the prose on the site — and it declares no alignment of
+   its own, so it inherits `.wrap`'s justification on a desktop and
+   `.wrap`'s ragged right below 600px, where the measure is too short.
+   Declaring `justify` here would beat that inherited left and hand a
+   phone the rivers the media query exists to prevent.
+
+   It takes the full column for the same reason. Justified edges are
+   sharp, and a narrower centred block would sit visibly out of line
+   with the calendar table and the roadmap directly beneath it. */
 .page-intro {
-  text-align: center; max-width: 34rem; margin: 0 auto 2.5rem;
-  color: var(--ink-soft); -webkit-hyphens: manual; hyphens: manual;
+  margin: 0 0 2.5rem;
+  color: var(--ink-soft);
 }
 .hero h1 { font-size: 2.6rem; margin-bottom: 0.2rem; }
 /* The subtitle is left-aligned everywhere else — it sits against body
