@@ -94,13 +94,13 @@
     }
   }
 
-  /* ---------- slide provenance ---------- */
+  /* ---------- slide provenance ----------
+     Only a download link, and only when deckBaseUrl is set. The paragraph
+     stays empty otherwise, and course.css hides an empty .deck-link so its
+     rule and spacing do not appear on a page with nothing to say. */
   function renderDeckLink(node) {
     var u = C.units[findUnit(node.getAttribute("data-unit"))];
     if (!u) return;
-    node.appendChild(document.createTextNode(
-      "This page replaces the Unit " + u.unit + " lecture slides (" + u.slides + " slides). "
-    ));
     if (C.deckBaseUrl) {
       node.appendChild(link(C.deckBaseUrl + encodeURIComponent(u.deck),
                             "Download the original deck"));

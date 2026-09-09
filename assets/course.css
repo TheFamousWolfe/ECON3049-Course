@@ -252,6 +252,9 @@ ol.units li.todo .u-title { color: var(--ink-soft); }
   font-size: 0.8rem; color: var(--ink-soft);
   border-top: 1px solid var(--rule); padding-top: 0.8rem; margin-top: 2rem;
 }
+/* nav.js fills it only when deckBaseUrl is set; otherwise nothing, and an
+   empty paragraph must not draw its rule. */
+.deck-link:empty { display: none; }
 
 /* ---------- Assumption / procedure grids ---------- */
 .assumption-grid { margin: 1.2rem 0; }

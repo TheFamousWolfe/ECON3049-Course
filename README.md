@@ -83,7 +83,9 @@ loudly rather than silently:
 1. **Write `units/<slug>.html`.** Copy the shape of an existing unit: learning
    objectives in a `.box.key`, numbered sections, `.eqn-report` for every set of
    results, a `.tutorial` block, a "Check yourself" block, an `.ask-teacher`
-   note, an `<ol class="sources">`, and the `.lesson-nav` footer. Every
+   note where there is study advice worth giving (what is examinable, what
+   usually costs marks — not an invitation to office hours, which was removed),
+   an `<ol class="sources">`, and the `.lesson-nav` footer. Every
    `data-unit` attribute must carry the manifest's unit code exactly —
    `"2A Part 1"`, not `"2A"`.
 2. **Add the figures to `assets/viz.js`.** One `VIZ.register(name, fn)` per
@@ -283,8 +285,7 @@ Units 1A–1F ship their tutorial questions **without solutions**. The
 `.tq` blocks carry a `.qtext` and nothing else, and the answers are in the
 lecturer's file at `../Econ3049/Tutorials/tutorial-solutions-unit1.tex`,
 outside this repository. Students attempt the questions cold and bring their
-working to the tutorial, which is what the `.ask-teacher` note at the foot of
-each unit asks for.
+working to the tutorial.
 
 Units 2A onward still carry revealable solutions in a `<details>` beneath each
 question. The two arrangements coexist, and `check-site.mjs` enforces the one
