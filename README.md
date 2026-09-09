@@ -426,7 +426,7 @@ the software is taught where it comes up in the units instead.
 
 The calendar is set. Teaching runs **9 September to 20 November 2026**; the
 midterm is 7:00–9:00pm on Wednesday 4 November, the group assignment is due
-11:59am on Tuesday 24 November, and the final examination reads "To be
+11:59am (midday) on Tuesday 24 November, and the final examination reads "To be
 confirmed" until the timetable lands. That last one is a `when` string, not a
 `null` — `null` renders an em dash, which says nothing about whether a date
 exists. Per-unit week numbers were removed in favour of `covered`, which
