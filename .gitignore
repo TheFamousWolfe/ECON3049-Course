@@ -10,4 +10,10 @@ preview.html
 dev/node_modules/
 dev/package*.json
 
+# Local tool settings. Claude Code writes granted permissions here, and those
+# records name the private decks folder by absolute path — which this public
+# repository must not carry. check-decks.mjs's privacy guard reads the served
+# pages only, so it would not catch a leak from here.
+.claude/
+
 .DS_Store

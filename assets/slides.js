@@ -23,7 +23,8 @@
    Keys:  → ↓ space PgDn enter   next step or slide
           ← ↑ PgUp backspace     previous
           home / end             first / last slide
-          t   toggle light/dark (rebuilds every figure — slider state resets)
+          t   toggle light/dark for this window (rebuilds every figure —
+              slider state resets; not remembered, every deck opens light)
           f   fullscreen
           p   presenter window (notes, next slide, clock)
           n   include notes when printing
@@ -156,17 +157,24 @@
   /* ---------- theme, fullscreen, print ---------- */
   function redraw() { if (window.VIZ && window.VIZ.redraw) window.VIZ.redraw(); }
 
+  /* A deck opens in the light palette: its <html> carries
+     data-theme="light", so neither the laptop's dark mode nor the site's
+     saved reader preference reaches the projector. t flips this window
+     only and remembers nothing — the next deck opens light again. */
   function isDark() {
     var t = root.getAttribute("data-theme");
     if (t) return t === "dark";
     return typeof window.matchMedia === "function" &&
            window.matchMedia("(prefers-color-scheme: dark)").matches;
   }
-  function toggleTheme() {
-    var next = isDark() ? "light" : "dark";
-    root.setAttribute("data-theme", next);
-    try { localStorage.setItem("econ3049-theme", next); } catch (e) { /* private mode */ }
+  function setTheme(theme) {
+    if (root.getAttribute("data-theme") === theme) return;
+    root.setAttribute("data-theme", theme);
     redraw();
+  }
+  function toggleTheme() {
+    setTheme(isDark() ? "light" : "dark");
+    broadcast();
   }
 
   function toggleFullscreen() {
@@ -183,14 +191,11 @@
      whatever the lecturer had afterwards. */
   var themeBeforePrint = null;
   window.addEventListener("beforeprint", function () {
-    themeBeforePrint = root.getAttribute("data-theme");
-    root.setAttribute("data-theme", "light");
-    redraw();
+    themeBeforePrint = isDark() ? "dark" : "light";
+    setTheme("light");
   });
   window.addEventListener("afterprint", function () {
-    if (themeBeforePrint) root.setAttribute("data-theme", themeBeforePrint);
-    else root.removeAttribute("data-theme");
-    redraw();
+    setTheme(themeBeforePrint || "light");
   });
 
   /* ---------- help ---------- */
@@ -200,7 +205,7 @@
     ["→  ↓  space  enter", "next step, then next slide"],
     ["←  ↑  backspace", "previous step or slide"],
     ["home  /  end", "first / last slide"],
-    ["t", "light / dark — rebuilds every figure, so a slider goes back to its start"],
+    ["t", "light / dark for this window — rebuilds every figure, so a slider goes back to its start"],
     ["f", "fullscreen"],
     ["p", "presenter window: notes, next slide, clock"],
     ["n", "include the notes when printing (Cmd/Ctrl-P, landscape)"],
@@ -231,7 +236,8 @@
 
   function stateMessage() {
     return { econ3049: "deck", type: "state", index: cur + 1,
-             fragment: visibleCount(slides[cur]), total: n };
+             fragment: visibleCount(slides[cur]), total: n,
+             theme: isDark() ? "dark" : "light" };
   }
   function broadcast() {
     if (win && !win.closed) win.postMessage(stateMessage(), "*");
@@ -271,6 +277,7 @@
   }
 
   function applyState(m) {
+    if (m.theme === "dark" || m.theme === "light") setTheme(m.theme);
     show(m.index - 1, "first");
     var fs = frags(slides[cur]);
     for (var k = 0; k < Math.min(m.fragment, fs.length); k++) fs[k].classList.add("visible");

@@ -66,6 +66,7 @@ dev/check-site.mjs    the regression suite
 dev/link-glossary.mjs unit -> glossary back-links
 dev/stamp-assets.mjs  cache-busting stamps
 dev/check-decks.mjs   regression for the private lecture decks
+dev/check-fit.mjs     do the decks' slides fit a projector? (headless Chrome)
 dev/fixtures/         a content-free deck the engine is tested against
 ```
 
@@ -325,20 +326,40 @@ Keys: arrows/space to step, `t` theme, `f` fullscreen, `p` presenter window,
 `n` print with notes, `?` for the list. Presenter mode opens the deck again
 in a popup and keeps the two in step with `postMessage`, which — unlike
 `BroadcastChannel` — works over `file://`. The audience window is the source
-of truth; drive figures from it. `t` rebuilds every figure through
-`VIZ.redraw()` and resets any slider, so pick the theme before starting.
-Cmd-P gives one slide per page in landscape with the controls hidden; the
-light palette is forced for the print run so dark-theme figures do not print
-pale.
+of truth; drive figures from it.
+
+A deck always opens in the **light palette**: its `<html>` carries
+`data-theme="light"`, which in `lesson.css` beats both the laptop's
+`prefers-color-scheme` and the site's saved reader preference, so a
+projector never inherits a dark screen. `t` flips the current window only —
+it rebuilds every figure through `VIZ.redraw()` and resets any slider, so
+pick the theme before starting — and is not remembered; the presenter window
+follows the audience window's theme. Cmd-P gives one slide per page in
+landscape with the controls hidden; the light palette is forced for the
+print run so dark-theme figures do not print pale.
 
 **Writing the next deck.** Copy the pilot's `<head>` verbatim. One
-`section.slide` per idea, sixteen to twenty per unit, lifted from the unit
+`section.slide` per idea, sixteen to twenty-four per unit, lifted from the unit
 page's `.box`, `.assumption-grid`, `p.math` and `ol.stages` blocks with the
 glossary links and citation superscripts stripped (they point at
 `../reference/` and would dangle). The unit's figure goes on its own
 `.slide.centre` with its `.viz-fallback`; `class="fragment"` on list items
 that should appear one at a time; an `aside.notes` on every slide; close
-with "Next: Unit …". Then:
+with "Next: Unit …".
+
+Keep a slide to about six bullets or grid rows, roughly 120 words of body
+text, or one `p.math` display plus a sentence or two — the pilot's densest
+slide is 123 words. Two or three display equations on one slide will not fit;
+split them. A table will not fit either: make it an `.assumption-grid`.
+
+**`--fig-h` is per panel, not per figure.** A slide's figure defaults to 56vh
+and the pilot's one-panel figure takes `--fig-h: 62vh`, but three figures in
+the course draw **two stacked SVG panels** — `r2-decomposition` (1C),
+`ml-equals-ols` (1E) and `bias-direction` (2A Part 1) — and the height applies
+to each, so 62vh asks for about 124vh of figure and pushes the heading off the
+top of the screen. Those want roughly `28vh`. A figure slide whose heading
+wraps to two lines wants 52–56vh rather than 62vh. Always measure rather than
+guess: `node dev/check-fit.mjs` (below) is what tells you. Then:
 
 ```sh
 node dev/check-decks.mjs                # every deck in ../Econ3049/Slides
@@ -346,12 +367,36 @@ node dev/check-decks.mjs dev/fixtures   # the engine alone, in-repo
 ```
 
 The checker loads each deck in jsdom and verifies the figures render without
-`NaN`, every slide has a heading and notes, the keys and hash work, `t`
-survives a figure rebuild, `p` neither throws nor moves without a popup, and
-— on every run — that no public page points at the private folder. What it
-cannot see is layout, so walk the deck once at 1280×720 and once at 1920×1080
-before lecturing from it, open the presenter window and navigate from both
-sides, and print it.
+`NaN`, every slide has a heading and notes, the keys and hash work, the deck
+opens light and `t` survives a figure rebuild without touching the site's
+reader preference, `p` neither throws nor moves without a popup, and
+— on every run — that no public page points at the private folder.
+
+What jsdom cannot see is **layout**: it has no layout engine, so it will
+happily pass a slide that is half a screen too tall, with its heading pushed
+off the top. That is the failure you discover in front of the room, so it has
+its own checker, in headless Chrome:
+
+```sh
+node dev/check-fit.mjs                  # every deck in ../Econ3049/Slides
+node dev/check-fit.mjs dev/fixtures     # the engine alone, in-repo
+```
+
+It loads each deck at 1280×720 and 1920×1080, makes every slide current in
+turn with all of its steps revealed, and compares each slide's content height
+with the frame. Anything more than 24px over is reported with the pixels lost;
+24px is invisible on a projector and the pilot deck sits inside it. Horizontal
+overflow is not reported — every figure slide, the pilot's included, measures a
+constant ~34px that nothing on screen corresponds to. Chrome is taken from
+`$CHROME` or the macOS default; with no browser the script says so and exits 0
+rather than failing the suite.
+
+A slide that fails wants its detail moved into `aside.notes`, its prose
+tightened, or the slide split in two — never a smaller font, which is why the
+engine's type scale is not overridable per slide.
+
+Still worth doing by hand before lecturing: open the presenter window and
+navigate from both sides, and print it.
 
 ## Asset caching
 

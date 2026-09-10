@@ -60,8 +60,12 @@ if (!existsSync(target)) {
   console.log(`\n${count - fail}/${count} checks passed`);
   process.exit(fail ? 1 : 0);
 }
+/* Dotfiles are skipped: check-fit.mjs measures a deck by writing a
+   throwaway `.fit-…html` copy beside the original, and a crashed run can
+   leave one behind. Checking it would report a phantom deck. */
 const decks = statSync(target).isDirectory()
-  ? readdirSync(target).filter(f => f.endsWith(".html")).sort().map(f => join(target, f))
+  ? readdirSync(target).filter(f => f.endsWith(".html") && !f.startsWith("."))
+      .sort().map(f => join(target, f))
   : [target];
 
 for (const file of decks) {
@@ -70,9 +74,9 @@ for (const file of decks) {
   const src = readFileSync(file, "utf8");
 
   /* source */
-  ok(/<html lang="en">/.test(src), at("lang=en"));
+  ok(/<html lang="en" data-theme="light">/.test(src), at("lang=en, and opens in the light palette"));
   ok(/<meta charset="utf-8">/.test(src), at("charset"));
-  ok(/econ3049-theme/.test(src), at("carries the no-flash preference script"));
+  ok(!/econ3049-theme/.test(src), at("does not read the site's saved reader theme"));
   for (const a of ["slides.css", "slides.js", "viz.js", "course.js"]) {
     ok(new RegExp(`assets/${a.replace(".", "\\.")}"`).test(src), at(`loads ${a}`));
   }
@@ -150,11 +154,17 @@ for (const file of decks) {
     ok(current() === before, at("arrow keys inside a slider stay in the slider"));
   }
 
-  /* theme toggle rebuilds the figures */
+  /* opens light; t flips to dark for this window and rebuilds the figures */
+  ok(d.documentElement.getAttribute("data-theme") === "light", at("opens in the light palette"));
   key("t");
-  ok(d.documentElement.hasAttribute("data-theme"), at("t sets a theme"));
+  ok(d.documentElement.getAttribute("data-theme") === "dark", at("t switches to dark"));
   ok(figs.every(f => !!f.querySelector("svg")), at("figures survive the theme rebuild"));
   ok(!figs.some(f => /NaN/.test(f.innerHTML)), at("no NaN after rebuild"));
+  let stored = null;
+  try { stored = w.localStorage.getItem("econ3049-theme"); } catch (e) { /* opaque origin */ }
+  ok(stored === null, at("t does not touch the site's reader preference"));
+  key("t");
+  ok(d.documentElement.getAttribute("data-theme") === "light", at("t again returns to light"));
 
   /* presenter key with no window.open available */
   let threw = false;

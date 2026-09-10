@@ -85,8 +85,13 @@ main.deck { position: relative; }
   margin: 0 auto;
 }
 .slide .viz-controls { font-size: 0.7rem; gap: 0.6rem 1.4rem; padding-top: 0.5rem; }
+/* The slider is scaled up so the thumb is visible from the back of the
+   room. transform does not affect layout, so a 14rem input still only
+   reserves 14rem while painting 18.9rem: the margin has to cover the
+   4.9rem of overhang, or the next control — on a two-slider figure, the
+   readout — is painted over. */
 .slide .viz-controls input[type="range"] {
-  width: 14rem; transform: scale(1.35); transform-origin: left center; margin-right: 3rem;
+  width: 14rem; transform: scale(1.35); transform-origin: left center; margin-right: 5.4rem;
 }
 .slide .viz-readout { font-size: 0.75rem; }
 /* The site's captions are paragraph-length and change with the slider;
