@@ -1775,12 +1775,18 @@
     /* --- the deck's Table 1, drawn --- */
     var TW = 640, TH = 150;
     var tbl = s("svg", { viewBox: "0 0 " + TW + " " + TH, preserveAspectRatio: "xMidYMid meet" });
-    var CX = [150, 330, 510], CY = [46, 86, 122];
+    /* Column centres and the cell width have to agree: a box is drawn
+       CW/2 either side of its centre, so the centres must be at least CW
+       apart and the right-hand box must end inside TW. At 290 wide on
+       centres 180 apart the second column painted over the first one's
+       label and ran 15 units past the viewBox, clipping both. */
+    var CW = 250;
+    var CX = [150, 225, 505], CY = [46, 86, 122];
     var cells = {};
     [["pp", 1, 1, "Upward (positive)"], ["pn", 2, 1, "Downward (negative)"],
      ["np", 1, 2, "Downward (negative)"], ["nn", 2, 2, "Upward (positive)"]].forEach(function (d) {
       var g = s("g");
-      var box = s("rect", { x: CX[d[1]] - 145, y: CY[d[2]] - 20, width: 290, height: 34,
+      var box = s("rect", { x: CX[d[1]] - CW / 2, y: CY[d[2]] - 20, width: CW, height: 34,
                             fill: P.paper, stroke: P.rule });
       var t = s("text", { x: CX[d[1]], y: CY[d[2]] + 3, "font-size": 12,
                           fill: P.ink, "text-anchor": "middle" });
