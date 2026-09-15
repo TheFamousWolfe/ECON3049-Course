@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>/* Apply saved reader preferences before first paint, so a reader who
+chose dark does not get a white flash on every navigation. */
+try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
+z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
+if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
+<title>Glossary · ECON 3049</title>
+<link rel="stylesheet" href="../assets/lesson.css?v=0b36dd01">
+<link rel="stylesheet" href="../assets/course.css?v=0b36dd01">
+<script src="../assets/course.js?v=0b36dd01"></script>
+<script src="../assets/nav.js?v=0b36dd01" defer></script>
+<script src="../assets/export.js?v=0b36dd01" defer></script>
+<script src="../assets/reader.js?v=0b36dd01" defer></script>
+<script src="../assets/glossary.js?v=0b36dd01" defer></script>
+</head>
+<body>
+<div class="masthead">
+  <span>
+    <a href="../index.html"><span data-course="code">ECON 3049</span></a> ·
+    <span class="course" data-course="title">Econometrics I</span>
+  </span>
+  <span>Reference · Glossary</span>
+</div>
+<div class="wrap">
+
+<div class="reader-bar"></div>
+
+<h1>Glossary</h1>
+<p class="subtitle">Every term defined in the units so far, with a link back to where it was defined.</p>
+
+<div class="box key">
+  <span class="box-label">How to use this</span>
+  Each entry ends with the unit that introduces the term — follow it to see the term in
+  context, with the derivation or the figure that goes with it. This page is a reminder of
+  what a word means, not a substitute for the unit that explains it. Terms are added as each
+  unit is written; this covers <strong>the whole of Units 1, 2 and 3</strong>.
+</div>
+
+<h2 id="notation">Notation</h2>
+
+<p>The symbols matter as much as the words, and this course follows
+<strong>Gujarati's</strong> numbering throughout. Wooldridge is a recommended text but numbers
+from zero; whenever you read a figure or formula from another source, check its subscripts
+before trusting them.</p>
+
+<dl class="notation">
+  <dt>β<sub>1</sub></dt><dd>The <strong>intercept</strong> of the population regression function. (Wooldridge would write this β<sub>0</sub>.)</dd>
+  <dt>β<sub>2</sub></dt><dd>The <strong>slope</strong>. In multiple regression the regressors continue β<sub>2</sub>X<sub>2i</sub> + β<sub>3</sub>X<sub>3i</sub> + …</dd>
+  <dt>β̂<sub>2</sub></dt><dd>A hat means <em>estimated from a sample</em>. β<sub>2</sub> is unknown and fixed; β̂<sub>2</sub> is computed and random.</dd>
+  <dt>u<sub>i</sub></dt><dd>The <strong>disturbance</strong> — distance from an observation to the <em>population</em> line. Unobservable.</dd>
+  <dt>û<sub>i</sub></dt><dd>The <strong>residual</strong> — distance to the <em>estimated</em> line. Computable, and the only evidence about u you ever have.</dd>
+  <dt>x<sub>i</sub>, y<sub>i</sub></dt><dd>Lower case means a <strong>deviation from the mean</strong>: x<sub>i</sub> = X<sub>i</sub> − X̄, y<sub>i</sub> = Y<sub>i</sub> − Ȳ.</dd>
+  <dt>X̄, Ȳ</dt><dd>Sample means. The fitted line always passes through (X̄, Ȳ).</dd>
+  <dt>k<sub>i</sub></dt><dd>The OLS weights, k<sub>i</sub> = x<sub>i</sub> / Σx<sub>i</sub><sup>2</sup>.</dd>
+  <dt>σ<sup>2</sup></dt><dd>The variance of the disturbance — a population quantity, unknown. σ̂<sup>2</sup> is its estimate.</dd>
+  <dt>n</dt><dd>Sample size. n − 2 is the degrees of freedom in the two-variable model.</dd>
+  <dt>Σ</dt><dd>Summation over the sample, i = 1 to n, unless stated otherwise.</dd>
+</dl>
+
+<div class="g-tools"></div>
+
+<p class="g-index">
+  <a href="#g-a">A</a> <a href="#g-b">B</a> <a href="#g-c">C</a> <a href="#g-d">D</a>
+  <a href="#g-e">E</a> <a href="#g-f">F</a> <a href="#g-g">G</a> <a href="#g-h">H</a>
+  <a href="#g-i">I</a> <span class="off">J</span> <a href="#g-k">K</a> <a href="#g-l">L</a>
+  <a href="#g-m">M</a> <a href="#g-n">N</a> <a href="#g-o">O</a> <a href="#g-p">P</a>
+  <a href="#g-q">Q</a> <a href="#g-r">R</a> <a href="#g-s">S</a> <a href="#g-t">T</a>
+  <a href="#g-u">U</a> <a href="#g-v">V</a> <a href="#g-w">W</a>
+</p>
+
+<section class="gloss">
+
+
+<h2 id="g-a">A</h2>
+
+<dl>
+
+<dt id="adjusted-r2" data-match="adjusted R2, adjusted R²">Adjusted R<sup>2</sup> <a class="g-unit" href="../units/1d-multiple-regression.html">Unit 1D</a></dt>
+<dd>R̄<sup>2</sup> = 1 − (1 − R<sup>2</sup>)(n − 1)/(n − k). <a href="#multiple-r2">R<sup>2</sup></a>
+charged for the degrees of freedom each regressor consumes. It can fall when a variable is
+added, and it can go negative — which says the model is worse than predicting Ȳ every time.
+The measure to quote when comparing models of different size.</dd>
+
+<dt id="aic" data-match="Akaike Information Criterion, AIC">AIC — Akaike Information Criterion <a class="g-unit" href="../units/2a-part1-specification.html">Unit 2A Part 1</a></dt>
+<dd>AIC = n·ln(RSS/n) + 2v. A model-selection criterion trading fit against the number of
+variables v; the first term falls as variables are added, the second rises. Smallest wins.
+Penalises extra variables less heavily than the <a href="#schwarz-criterion">Schwarz
+criterion</a>.</dd>
+
+<dt id="anova-ancova" data-match="ANOVA model, ANCOVA model, ANOVA, ANCOVA">ANOVA and ANCOVA models <a class="g-unit" href="../units/3a-qualitative-variables.html">Unit 3A</a></dt>
+<dd>Gujarati's names for two kinds of dummy variable regression. An <strong>ANOVA</strong> model has
+<em>only</em> dummies on the right-hand side, so its fitted values are group means and it
+reproduces the analysis of variance. An <strong>ANCOVA</strong> model — analysis of covariance —
+mixes dummies with quantitative regressors, which is the case that matters in practice. Nothing in
+the estimation depends on the distinction; it is vocabulary for reading the chapter.</dd>
+
+<dt id="ar1" data-match="AR(1), first-order autocorrelation">AR(1) — first-order autocorrelation <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></dt>
+<dd>u<sub>t</sub> = ρu<sub>t−1</sub> + ε<sub>t</sub>, where ε is well behaved and ρ is the
+coefficient of autocorrelation at lag 1. Requires |ρ| &lt; 1 for
+<a href="#stationarity">stationarity</a>, and then var(u<sub>t</sub>) =
+σ<sub>ε</sub><sup>2</sup>/(1 − ρ<sup>2</sup>) and corr(u<sub>t</sub>, u<sub>t−s</sub>) =
+ρ<sup>s</sup> — the memory decays geometrically but never quite ends. Higher orders add further
+lags.</dd>
+
+<dt id="autocorrelation">Autocorrelation <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></dt>
+<dd>Correlation between the disturbances of different observations:
+cov(u<sub>i</sub>, u<sub>j</sub>) ≠ 0 for i ≠ j. Assumption 6 rules it out; named in Unit 1C and
+derived here. Most common in time series, where a shock in one period persists into the next; the
+same thing between neighbouring units in a cross-section is called <em>spatial</em>
+autocorrelation. OLS stays unbiased but loses <a href="#blue">BLUE</a>, and the reported standard
+error understates the truth — badly, when the regressor is itself persistent. <em>Pure</em>
+autocorrelation is assumption 6 failing alone; <em>impure</em> is an omitted persistent variable
+or a wrong functional form showing through, which is why these tests double as misspecification
+tests.</dd>
+
+<dt id="auxiliary-regression" data-match="auxiliary regression">Auxiliary regression <a class="g-unit" href="../units/2a-part1-specification.html">Unit 2A Part 1</a></dt>
+<dd>A regression run not for its own sake but to obtain a quantity needed elsewhere. In
+omitted variable bias it is the regression of the <em>omitted</em> variable on the
+<em>included</em> one, whose slope δ̃<sub>1</sub> is half of the bias formula. Auxiliary
+regressions reappear throughout Unit 2 — in the RESET test, in the <a href="#vif">VIF</a>,
+and in the diagnostic tests for heteroscedasticity and autocorrelation.</dd>
+
+</dl>
+
+<h2 id="g-b">B</h2>
+
+<dl>
+
+<dt id="base-category" data-match="base category, reference category, benchmark category, omitted category">Base category <a class="g-unit" href="../units/3a-qualitative-variables.html">Unit 3A</a></dt>
+<dd>The category of a qualitative variable that is left <em>out</em> of the regression — coded 0 by
+every <a href="#dummy-variable">dummy</a> in the set. The intercept is its mean, and every dummy
+coefficient is a comparison with it, so a table of dummy coefficients cannot be read without
+knowing which category it is. Changing the base changes every coefficient and no fitted value:
+the same regression, differently written. It does change the tests, though, since each t-test
+compares one category with the base — which is the one real reason to prefer one base over
+another.</dd>
+
+<dt id="breusch-godfrey" data-match="Breusch–Godfrey test, Breusch-Godfrey test, Breusch–Godfrey, Breusch-Godfrey">Breusch–Godfrey test <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></dt>
+<dd>The general test for autocorrelation. Regress the OLS residuals on <em>all the original
+regressors</em> and q lags of the residual; the statistic is (n − q)R<sup>2</sup> ~
+χ<sup>2</sup>(q). Unlike <a href="#durbin-watson">Durbin–Watson</a> it handles higher-order
+autocorrelation, tolerates a lagged dependent variable, and has no inconclusive region — but it
+requires you to choose q.</dd>
+
+<dt id="breusch-pagan" data-match="Breusch–Pagan test, Breusch-Pagan test, Breusch–Pagan, Breusch-Pagan">Breusch–Pagan test <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></dt>
+<dd>A test for heteroscedasticity of any <em>linear</em> form. Regress the squared OLS residuals
+on the original regressors, take the R<sup>2</sup> of that
+<a href="#auxiliary-regression">auxiliary regression</a>, and compare LM = nR<sup>2</sup> with
+χ<sup>2</sup>(d) in the right tail, d being the number of regressors in the auxiliary. H<sub>0</sub>
+is homoscedasticity. Assumes normally distributed errors. Contrast the <a href="#white-test">White
+test</a>.</dd>
+
+<dt id="blue">BLUE <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
+<dd><strong>B</strong>est <strong>L</strong>inear <strong>U</strong>nbiased
+<strong>E</strong>stimator. "Best" means minimum variance <em>within the class of linear
+unbiased estimators</em> — not better than every estimator that exists. See
+<a href="#gauss-markov">Gauss–Markov theorem</a>.</dd>
+
+<dt id="bue" data-match="BUE, best unbiased estimator">BUE — best unbiased estimator <a class="g-unit" href="../units/1e-normality-maximum-likelihood.html">Unit 1E</a></dt>
+<dd>Minimum variance among <strong>all</strong> unbiased estimators, linear or not. Stronger
+than <a href="#blue">BLUE</a>, which only ranks OLS against linear rivals — but it costs the
+normality assumption, which Gauss–Markov does not need. Due to Rao.</dd>
+
+</dl>
+
+<h2 id="g-c">C</h2>
+
+<dl>
+
+<dt id="central-limit-theorem" data-match="central limit theorem, CLT">Central limit theorem <a class="g-unit" href="../units/1e-normality-maximum-likelihood.html">Unit 1E</a></dt>
+<dd>The sum of a large number of independent, identically distributed random variables tends
+to a normal distribution however the individual variables are shaped. It is the main
+justification for assuming normality of u: nobody claims any single omitted factor is normal,
+only that u is the sum of many small independent ones. The argument fails when one omitted
+factor dominates.</dd>
+
+<dt id="ceteris-paribus">Ceteris paribus <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
+<dd>"Other things equal." What a regression slope is meant to isolate: the movement in Y
+associated with X, holding everything else fixed. Whether it succeeds is the subject of
+Units 2A and 3B.</dd>
+
+<dt id="chow-test" data-match="Chow test, structural change, structural break, parameter stability">Chow test <a class="g-unit" href="../units/2a-part2-functional-form.html">Unit 2A Part 2</a></dt>
+<dd>An <a href="#f-test">F-test</a> of parameter stability across a structural break.
+F = [(RSS<sub>R</sub> − RSS<sub>UR</sub>)/k] / [RSS<sub>UR</sub>/(n₂ + n₃ − 2k)], where
+RSS<sub>R</sub> is from the pooled regression and RSS<sub>UR</sub> is the sum from the two
+sub-period regressions. Three limits: it assumes equal sub-period error variances (test them),
+it says the regressions differ but not which parameter, and the break date must be known in
+advance.</dd>
+
+<dt id="cnlrm" data-match="CNLRM, classical normal linear regression model, normality assumption">CNLRM — classical normal linear regression model <a class="g-unit" href="../units/1e-normality-maximum-likelihood.html">Unit 1E</a></dt>
+<dd>The classical linear regression model of Units 1C and 1D <em>plus</em> the assumption
+u<sub>i</sub> ~ N(0, σ²). Nothing already proved is lost, and the estimators gain known
+distributions — which is what makes hypothesis testing possible. Under normality, zero
+covariance between disturbances also becomes genuine independence, so
+u<sub>i</sub> ~ NID(0, σ²).</dd>
+
+<dt id="cochrane-orcutt" data-match="Cochrane–Orcutt, Cochrane-Orcutt, Prais–Winsten, Prais-Winsten">Cochrane–Orcutt and Prais–Winsten <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></dt>
+<dd>The two standard iterative implementations of <a href="#fgls">feasible GLS</a> under AR(1)
+errors: estimate ρ̂ from the residuals, ρ-difference, re-estimate, and repeat until ρ̂ settles.
+They differ only in the first observation, which cannot be differenced — Cochrane–Orcutt drops
+it, Prais–Winsten keeps it rescaled by √(1 − ρ<sup>2</sup>). Immaterial in a long sample,
+material in a short one.</dd>
+
+<dt id="coefficient-of-determination" data-match="coefficient of determination">Coefficient of determination (r<sup>2</sup>) <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>r<sup>2</sup> = ESS/TSS = 1 − RSS/TSS. The proportion of the total variation in Y
+explained by the regression, bounded 0 ≤ r<sup>2</sup> ≤ 1. Measures clustering about the
+line and nothing else — not specification, not causation. See
+<a href="#spurious-correlation">spurious correlation</a>.</dd>
+
+<dt id="conditional-mean" data-match="conditional population mean, conditional mean">Conditional population mean <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
+<dd>E(Y | X): the average value of Y among all population members having a given value of X.
+Regression predicts this average, never an individual's outcome.</dd>
+
+<dt id="confidence-interval" data-match="confidence interval">Confidence interval <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a></dt>
+<dd>β̂<sub>j</sub> ± C · se(β̂<sub>j</sub>), where C is the two-tailed critical value at α. A
+claim about the <em>procedure</em>, not about the one interval in front of you: across repeated
+samples, (1 − α) of the intervals built this way cover the true parameter. A value outside the
+interval is rejected as a null at that level, so the interval and the test are the same
+arithmetic.</dd>
+
+<dt id="consistency" data-match="consistency, consistent">Consistency <a class="g-unit" href="../units/1e-normality-maximum-likelihood.html">Unit 1E</a></dt>
+<dd>An estimator is consistent if it converges to the true population value as the sample size
+increases indefinitely. Distinct from <a href="#unbiasedness">unbiasedness</a>, which is about
+the average over samples of a <em>fixed</em> size: σ̃² is biased in every finite sample yet
+still consistent.</dd>
+
+<dt id="constant-term" data-match="constant term, suppressing the constant, intercept term">Constant term <a class="g-unit" href="../units/2a-part2-functional-form.html">Unit 2A Part 2</a></dt>
+<dd><strong>Always include it; never interpret it.</strong> Including it is what makes Σû = 0
+and so protects E(u) = 0; suppressing it forces the intercept's role onto the slopes, which
+tilt to compensate. But its own value is untrustworthy — it is an extrapolation to a point
+where every regressor is zero, and it acts as a garbage collector for the non-zero mean left by
+specification error.</dd>
+
+<dt id="correlation-coefficient" data-match="correlation coefficient">Correlation coefficient (r) <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>In the two-variable model, r = √(r<sup>2</sup>) carrying the sign of β̂<sub>2</sub>: an
+r<sup>2</sup> of 0.80 on a downward-sloping line gives r = −0.89. With more than one regressor
+there is no single r to recover.</dd>
+
+<dt id="critical-value" data-match="critical value">Critical value <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a></dt>
+<dd>The value from the t or F tables, at the relevant degrees of freedom and
+<a href="#significance-level">significance level</a>, that the test statistic must beat for the
+null to be rejected. A one-tailed test puts the whole of α in one tail, so its critical value
+is smaller — which is why the direction must be fixed before the estimates are seen.</dd>
+
+<dt id="cross-sectional" data-match="cross-sectional data, cross-sectional">Cross-sectional data <a class="g-unit" href="../units/1a-introducing-econometrics.html">Unit 1A</a></dt>
+<dd>Many units observed at one point in time — households in 2025, countries in a given year.
+Contrast <a href="#time-series">time series</a> and <a href="#panel">panel data</a>.</dd>
+
+</dl>
+
+<h2 id="g-d">D</h2>
+
+<dl>
+
+<dt id="degrees-of-freedom" data-match="degrees of freedom">Degrees of freedom <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>The number of residuals free to vary once the normal equations have imposed
+Σû<sub>i</sub> = 0 and Σû<sub>i</sub>X<sub>i</sub> = 0. In the two-variable model that is
+n − 2, which is why σ̂<sup>2</sup> = Σû<sub>i</sub><sup>2</sup>/(n − 2). With k parameters it
+is n − k.</dd>
+
+<dt id="dependent-variable">Dependent variable <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
+<dd>Y — also explained, response or predicted variable. The name describes which side of the
+equation it sits on, <em>not</em> that it is caused by X.</dd>
+
+<dt id="deterministic">Deterministic <a class="g-unit" href="../units/1a-introducing-econometrics.html">Unit 1A</a></dt>
+<dd>An exact relationship with no remainder: give it X and it returns Y. Y = β<sub>1</sub> +
+β<sub>2</sub>X is deterministic; adding u makes it stochastic, and no economic relationship
+has ever been the former.</dd>
+
+<dt id="differential-coefficients" data-match="differential intercept coefficient, differential slope coefficient, differential intercept, differential slope">Differential intercept and slope coefficients <a class="g-unit" href="../units/3a-qualitative-variables.html">Unit 3A</a></dt>
+<dd>Gujarati's names for what a <a href="#dummy-variable">dummy</a> does to a fitted line. The
+coefficient on the dummy itself is the <strong>differential intercept</strong>: it shifts the line
+up or down without tilting it. The coefficient on the dummy interacted with a quantitative
+regressor is the <strong>differential slope</strong>: it tilts the line. With both present the two
+groups have entirely separate lines, and the dummy coefficient is then the gap
+<em>where the interacted regressor is zero</em> — not the average gap.</dd>
+
+<dt id="disturbance">Disturbance <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
+<dd>u<sub>i</sub>, the vertical distance from an observation to the <em>population</em>
+regression line. Unobservable, because the population line is. Not the same as the
+<a href="#residual">residual</a>. Its four sources are omitted influences, measurement error,
+wrong functional form, and intrinsic randomness.</dd>
+
+<dt id="double-log" data-match="double-log, double log">Double-log form <a class="g-unit" href="../units/2a-part2-functional-form.html">Unit 2A Part 2</a></dt>
+<dd>ln Y = β<sub>1</sub> + β<sub>2</sub> ln X + u. Linearises a multiplicative model such as
+Cobb–Douglas, and delivers coefficients that read directly as
+<a href="#elasticity">elasticities</a>: a 1% rise in X gives a β<sub>2</sub>% change in Y.
+Contrast the <a href="#semi-log">semi-log</a> forms.</dd>
+
+
+<dt id="dummy-variable" data-match="dummy variable, binary variable, indicator variable">Dummy variable <a class="g-unit" href="../units/3a-qualitative-variables.html">Unit 3A</a></dt>
+<dd>A regressor taking the value 1 when an observation belongs to a category and 0 when it does
+not — the device that gets qualitative information into a regression. Regressed on its own with a
+constant, it returns the group means exactly: β̂<sub>1</sub> = Ȳ<sub>0</sub> and
+β̂<sub>2</sub> = Ȳ<sub>1</sub> − Ȳ<sub>0</sub>, so its t-test is a difference-of-means test. Never
+logged, since ln(0) does not exist, and when the dependent variable is logged its exact
+percentage effect is 100(e<sup>β̂</sup> − 1), not 100β̂.</dd>
+
+<dt id="dummy-variable-trap" data-match="dummy variable trap">Dummy variable trap <a class="g-unit" href="../units/3a-qualitative-variables.html">Unit 3A</a></dt>
+<dd>Including a dummy for <em>every</em> category alongside an intercept. The dummies then sum to
+the column of ones, which is <a href="#perfect-multicollinearity">perfect multicollinearity</a>:
+X′X is singular and no unique estimate exists. The rule is <strong>m − 1 dummies with a
+constant</strong>, or all m and no constant. The same failure arrives disguised as a full set of
+expenditure shares, or four quarterly dummies, entered alongside an intercept.</dd>
+
+<dt id="durbin-watson" data-match="Durbin–Watson test, Durbin-Watson test, Durbin–Watson, Durbin-Watson">Durbin–Watson test <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></dt>
+<dd>DW = Σ(û<sub>t</sub> − û<sub>t−1</sub>)<sup>2</sup>/Σû<sub>t</sub><sup>2</sup> ≈ 2(1 − ρ̂),
+so it runs 0 to 4: near 2 is no autocorrelation, near 0 positive, near 4 negative. Compared
+against <em>two</em> bounds d<sub>L</sub> and d<sub>U</sub> rather than one critical value,
+because the exact distribution depends on the regressor matrix — hence the inconclusive regions.
+Four limitations: first order only, no lagged dependent variable, an intercept required, and
+normal errors assumed.</dd>
+
+</dl>
+
+<h2 id="g-e">E</h2>
+
+<dl>
+
+<dt id="econometrics">Econometrics <a class="g-unit" href="../units/1a-introducing-econometrics.html">Unit 1A</a></dt>
+<dd>The application of mathematical and statistical methods to economic data, to give
+empirical content to economic theory. It is used to describe economic reality, test theories,
+forecast, and evaluate policy.</dd>
+
+<dt id="efficiency" data-match="efficient estimator, efficiency">Efficiency <a class="g-unit" href="../units/1e-normality-maximum-likelihood.html">Unit 1E</a></dt>
+<dd>Unbiased and minimum variance together. Under normality the OLS estimators are efficient,
+and by Rao's result they are <a href="#bue">BUE</a> — best in the entire class of unbiased
+estimators, not just the linear ones.</dd>
+
+<dt id="elasticity" data-match="elasticity, elasticities, semi-elasticity">Elasticity <a class="g-unit" href="../units/2a-part2-functional-form.html">Unit 2A Part 2</a></dt>
+<dd>The percentage change in Y per one per cent change in X — obtained directly as the
+coefficient of a <a href="#double-log">double-log</a> regression. A
+<strong>semi-elasticity</strong> is the mixed case: in log–lin, 100β<sub>2</sub> is the
+percentage change in Y per one-<em>unit</em> change in X, exactly 100[e<sup>β₂</sup> − 1].</dd>
+
+<dt id="endogeneity" data-match="endogeneity, endogenous">Endogeneity <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>Failure of assumption 3: cov(X<sub>i</sub>, u<sub>i</sub>) ≠ 0, so a regressor moves with
+the disturbance. OLS is then <em>biased</em> and, worse,
+<a href="#inconsistency">inconsistent</a> — unlike heteroscedasticity or autocorrelation,
+which cost efficiency but not unbiasedness. The most serious failure in the list. It arises from
+omitted variables, from <a href="#errors-in-variables">measurement error</a> and from
+<a href="#simultaneity-bias">simultaneity</a>, and the repair is not a better specification but a
+different estimator: see <a href="#instrumental-variable">instrumental variables</a>. Named in
+Unit 1C, derived here.</dd>
+
+<dt id="errors-in-variables" data-match="errors in variables, errors-in-variables">Errors in variables <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>Endogeneity produced by <a href="#measurement-error">measurement error</a> in a regressor.
+What is recorded is X* = X + w, so the disturbance of the estimated equation absorbs
+−β<sub>2</sub>w while the recorded regressor contains the same w: the two move together by
+construction. Not examined this semester, but it belongs on the list of sources rather than in a
+topic of its own.</dd>
+
+<dt id="ess" data-match="explained sum of squares, ESS">ESS — explained sum of squares <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>Σŷ<sub>i</sub><sup>2</sup> = Σ(Ŷ<sub>i</sub> − Ȳ)<sup>2</sup> =
+β̂<sub>2</sub><sup>2</sup>Σx<sub>i</sub><sup>2</sup>. The variation in Y the regression
+accounts for. See <a href="#tss">TSS</a>.</dd>
+
+<dt id="estimate">Estimate <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
+<dd>The computed <em>value</em> a coefficient takes in a particular sample — a number.
+Contrast <a href="#estimator">estimator</a>.</dd>
+
+<dt id="estimator">Estimator <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
+<dd>The <em>technique</em> applied to a sample to produce an estimate — a recipe. OLS, method
+of moments and maximum likelihood are three of them. Because it is a function of random data,
+an estimator is itself a random variable, which is why it has a
+<a href="#sampling-distribution">sampling distribution</a>.</dd>
+
+<dt id="exogenous" data-match="exogenous">Exogenous variable <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>A variable uncorrelated with the disturbance, cov(X, u) = 0 — the condition OLS needs. In a
+<a href="#simultaneous-equations">simultaneous system</a> the word carries its stronger original
+meaning: <strong>determined outside the system</strong>, as against
+<a href="#endogeneity">endogenous</a>, determined within it. Exogenous variables remain
+uncorrelated with every structural disturbance, which is what makes them usable as
+<a href="#instrumental-variable">instruments</a>. Together with lagged endogenous variables they
+make up the <a href="#predetermined">predetermined</a> variables.</dd>
+
+</dl>
+
+<h2 id="g-f">F</h2>
+
+<dl>
+
+<dt id="f-test" data-match="F-test, joint significance, jointly significant">F-test <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a></dt>
+<dd>The test of a hypothesis about several parameters <em>simultaneously</em>, most often a set
+of exclusion restrictions. F = [(RSS<sub>R</sub> − RSS<sub>UR</sub>)/q] / [RSS<sub>UR</sub>/(n − k)],
+with q restrictions and k from the unrestricted model. Reject if F exceeds the critical value.
+With one restriction F = t², so the two tests coincide; with more, they can disagree — small
+t-statistics alongside a large F is the signature of multicollinearity.</dd>
+
+<dt id="fgls" data-match="feasible generalised least squares, FGLS, EGLS">FGLS — feasible generalised least squares <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></dt>
+<dd><a href="#wls">Weighted least squares</a> with the weights <em>estimated</em> rather than
+known. Regress ln(û<sup>2</sup>) on the regressors, exponentiate the fitted values to get
+ĥ<sub>i</sub> — the log-and-exponentiate round trip is what keeps the fitted variances positive —
+and re-estimate with those as weights. Not BLUE, because the weights were estimated; consistent
+and asymptotically efficient, so its justification is a large-sample one.</dd>
+
+<dt id="fixed-in-repeated-sampling">Fixed in repeated sampling <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>The working form of assumption 2. If the sample could be drawn again, the same set of X
+values would be held and only the disturbances allowed to change. This is what licenses
+treating X — and therefore k<sub>i</sub> — as constant inside every expectation in the
+derivations.</dd>
+
+<dt id="functional-form" data-match="functional form">Functional form <a class="g-unit" href="../units/2a-part2-functional-form.html">Unit 2A Part 2</a></dt>
+<dd>The shape imposed on the relationship — linear, quadratic, logarithmic, with or without
+interactions. The second of the three specification choices, and one theory should dictate: pick
+the shape the economics implies, then the mathematical form that produces it. Getting it wrong
+is a <a href="#specification-bias">specification error</a>, detectable by
+<a href="#reset-test">RESET</a>.</dd>
+
+</dl>
+
+<h2 id="g-g">G</h2>
+
+<dl>
+
+<dt id="gauss-markov" data-match="Gauss–Markov theorem, Gauss–Markov">Gauss–Markov theorem <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>If the OLS assumptions hold, the OLS estimators are <a href="#blue">BLUE</a>. Stated in
+Unit 1B and proved in Unit 1C, in three parts: linearity, unbiasedness, and minimum variance.
+The theorem is conditional — it says nothing about what OLS is when the assumptions fail,
+which is the whole of Unit 2.</dd>
+
+<dt id="general-to-specific" data-match="general-to-specific, general unrestricted model, GUM, LSE methodology">General-to-specific modelling <a class="g-unit" href="../units/2a-part1-specification.html">Unit 2A Part 1</a></dt>
+<dd>Start from a general unrestricted model (GUM) and reduce it by testing restrictions,
+rather than starting small and adding. Associated with David Hendry and the LSE methodology.
+The argument for it: every test in a bottom-up search is conducted inside a model already known
+to be misspecified, whereas testing down keeps each restriction tested within an adequate
+model.</dd>
+
+<dt id="gls" data-match="generalised least squares, generalized least squares, GLS">GLS — generalised least squares <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></dt>
+<dd>Transforming an equation so that the transformed disturbance satisfies the classical
+assumptions, then applying OLS to it. Under AR(1) the transformation is ρ-differencing:
+Y<sub>t</sub> − ρY<sub>t−1</sub> = β<sub>1</sub>(1 − ρ) + β<sub>2</sub>(X<sub>t</sub> −
+ρX<sub>t−1</sub>) + ε<sub>t</sub>, whose error is ε and so is not serially correlated, and whose
+slope is the one originally wanted. <a href="#wls">WLS</a> is the version for heteroscedastic
+errors. Since ρ is never known, what is actually run is <a href="#fgls">feasible GLS</a>.</dd>
+
+<dt id="goodness-of-fit">Goodness of fit <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>How closely the sample regression line fits the observations. Measured by
+<a href="#coefficient-of-determination">r<sup>2</sup></a>.</dd>
+
+</dl>
+
+<h2 id="g-h">H</h2>
+
+<dl>
+
+<dt id="heteroscedasticity">Heteroscedasticity <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></dt>
+<dd>Failure of assumption 5: var(u<sub>i</sub>) = σ<sub>i</sub><sup>2</sup> rather than a
+constant, typically fanning out as X grows. Named in Unit 1C; derived here. OLS stays unbiased
+and consistent, but loses <a href="#blue">BLUE</a>, and
+var(β̂<sub>2</sub>) = Σx<sub>i</sub><sup>2</sup>σ<sub>i</sub><sup>2</sup>/(Σx<sub>i</sub><sup>2</sup>)<sup>2</sup>
+replaces σ<sup>2</sup>/Σx<sub>i</sub><sup>2</sup> — so every printed standard error is wrong.
+Spelled with the <strong>sc</strong> throughout this course; the k spelling is equally standard
+and common in the literature. See <a href="#pure-heteroscedasticity">pure and impure</a>.</dd>
+
+<dt id="hc-standard-errors" data-match="robust standard error, heteroscedasticity-robust standard error, heteroscedasticity-corrected standard error">Heteroscedasticity-corrected standard errors <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></dt>
+<dd>Standard errors computed without assuming a constant error variance, so that t-tests and
+confidence intervals remain usable. Also called robust, or after Huber and White. They change
+<strong>only the standard errors</strong>: the coefficients are untouched, since OLS was never
+biased, and OLS does not become efficient again. Large-sample justification, so the small-sample
+variants HC1 and HC3 exist.</dd>
+
+<dt id="homoscedasticity">Homoscedasticity <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
+<dd>Assumption 5 holding: var(u<sub>i</sub>) = E(u<sub>i</sub><sup>2</sup>) = σ<sup>2</sup>,
+the same at every value of X.</dd>
+
+<dt id="hypothesis-test" data-match="hypothesis testing, hypothesis test">Hypothesis testing <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a></dt>
+<dd>Deciding whether the relationships economic theory suggests are upheld by the data. A test
+finds enough evidence to reject a stated position or it does not; it can never prove a theory
+correct, which is why economists say "do not reject" rather than "accept" the
+<a href="#null-hypothesis">null</a>.</dd>
+
+</dl>
+
+<h2 id="g-i">I</h2>
+
+<dl>
+
+<dt id="identification" data-match="identification, underidentified, overidentified, just identified, unidentified">Identification <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></dt>
+<dd>Whether the structural parameters of a simultaneous system can be recovered from its
+<a href="#reduced-form">reduced form</a> coefficients. <strong>Underidentified</strong>: they
+cannot, and no estimation method will produce them. <strong>Just identified</strong>: there is
+exactly one way to recover each, and <a href="#indirect-least-squares">ILS</a>,
+<a href="#instrumental-variable">IV</a> and <a href="#two-stage-least-squares">2SLS</a> all
+return it. <strong>Overidentified</strong>: there is more than one way, the answers disagree, and
+2SLS combines them. Identification is a property of the model rather than of the sample, so more
+data cannot supply it. Tested by the <a href="#order-condition">order</a> and
+<a href="#rank-condition">rank</a> conditions.</dd>
+
+<dt id="impact-multiplier" data-match="impact multiplier">Impact multiplier <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>A <a href="#reduced-form">reduced form</a> coefficient, read as the change in an endogenous
+variable in the same period when a predetermined variable changes by one unit. In the Keynesian
+model π<sub>2</sub> = 1/(1 − β<sub>2</sub>) is the investment multiplier of a first-year
+macroeconomics course, arriving here as a regression coefficient.</dd>
+
+<dt id="imperfect-multicollinearity" data-match="imperfect multicollinearity, high multicollinearity">Imperfect multicollinearity <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></dt>
+<dd>X<sub>3</sub> = α<sub>1</sub> + α<sub>2</sub>X<sub>2</sub> + ε with ε ≠ 0: a linear
+relationship among regressors that is strong but not exact. Estimation is still possible —
+the denominator of β̂<sub>2</sub> reduces to (Σx<sub>2</sub><sup>2</sup>)(Σε<sup>2</sup>), so
+everything rests on the variation in X<sub>3</sub> that X<sub>2</sub> cannot explain. This is
+what econometricians mean by "the problem of multicollinearity"; contrast
+<a href="#perfect-multicollinearity">perfect multicollinearity</a>.</dd>
+
+<dt id="inconsistency" data-match="inconsistency, inconsistent, asymptotic bias">Inconsistency <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>Failure of <a href="#consistency">consistency</a>: plim(β̂) ≠ β, so the estimator converges on
+the wrong value and the gap — the <strong>asymptotic bias</strong> — does not shrink with the
+sample. For OLS with an endogenous regressor, plim(β̂<sub>2</sub>) = β<sub>2</sub> +
+cov(X, u)/var(X). The distinction from ordinary bias is the practical one:
+σ̃<sup>2</sup> is biased in every finite sample yet consistent, and therefore usable, whereas an
+inconsistent estimator answers a different question however much data it is given.</dd>
+
+<dt id="independent-variable">Independent variable <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
+<dd>X — also explanatory, control or predictor variable, or <em>regressor</em>. As with
+"dependent", the name is positional and carries no causal claim.</dd>
+
+<dt id="indirect-least-squares" data-match="indirect least squares, ILS">Indirect least squares (ILS) <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></dt>
+<dd>Estimate the <a href="#reduced-form">reduced form</a> by OLS, then solve the known
+relationships between the π's and the structural parameters backwards. Works only on a
+<a href="#identification">just identified</a> equation, where it agrees exactly with
+<a href="#two-stage-least-squares">2SLS</a>; on an overidentified one there are more solutions
+than parameters and nothing says which to keep, which is why 2SLS is the standard method.</dd>
+
+<dt id="instrumental-variable" data-match="instrumental variable, instrument, IV estimator">Instrumental variable (IV) <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></dt>
+<dd>A variable Z used to estimate an equation containing an <a href="#endogeneity">endogenous</a>
+regressor X. It must satisfy <strong>exogeneity</strong>, cov(Z, u) = 0, and
+<strong>relevance</strong>, cov(Z, X) ≠ 0. The estimator is
+β̂<sub>2</sub><sup>IV</sup> = Σ(Z − Z̄)(Y − Ȳ) / Σ(Z − Z̄)(X − X̄), which is consistent but
+biased in small samples, and reduces to OLS when Z = X. Relevance is testable in the first-stage
+regression; exogeneity is not, and has to be argued. Contrast a <a href="#proxy">proxy</a>, which
+goes <em>into</em> the equation and must be correlated with what it replaces.</dd>
+
+<dt id="interaction-term" data-match="interaction term, interaction">Interaction term <a class="g-unit" href="../units/2a-part2-functional-form.html">Unit 2A Part 2</a></dt>
+<dd>The product of two regressors, included so that the effect of one may depend on the level
+of the other. In ln wage = … + β<sub>5</sub>(exper·educ), ∂ln wage/∂exper = β<sub>3</sub> +
+2β<sub>4</sub>exper + β<sub>5</sub>educ. Once an interaction is present, the coefficient on a
+variable alone is its effect when the <em>other</em> variable is zero — often nobody in the
+sample — so report the derivative at a meaningful value instead.</dd>
+
+<dt id="intrinsic-randomness">Intrinsic randomness <a class="g-unit" href="../units/1a-introducing-econometrics.html">Unit 1A</a></dt>
+<dd>The part of the disturbance that no better model could remove: human behaviour is
+genuinely unpredictable. The one source of u that is not a defect in the specification.</dd>
+
+<dt id="intrinsically-linear" data-match="intrinsically linear, Cobb–Douglas, Cobb-Douglas">Intrinsically linear <a class="g-unit" href="../units/2a-part2-functional-form.html">Unit 2A Part 2</a></dt>
+<dd>A model that looks non-linear in the parameters but that a transformation makes linear.
+Cobb–Douglas, Q = β<sub>1</sub>L<sup>β₂</sup>K<sup>β₃</sup>e<sup>u</sup>, becomes
+ln Q = ln β<sub>1</sub> + β<sub>2</sub>ln L + β<sub>3</sub>ln K + u — which also turns the
+multiplicative disturbance into the additive one the classical assumptions need. A model with
+an <em>additive</em> error and a parameter in an exponent has no such trick and is
+intrinsically non-linear.</dd>
+
+</dl>
+
+<h2 id="g-k">K</h2>
+
+<dl>
+
+<dt id="k-weights" data-match="OLS weights">k<sub>i</sub> — the OLS weights <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>k<sub>i</sub> = x<sub>i</sub> / Σx<sub>i</sub><sup>2</sup>, so that β̂<sub>2</sub> =
+Σk<sub>i</sub>Y<sub>i</sub> — which is what makes OLS a <em>linear</em> estimator. Three
+properties do most of the algebraic work in Unit 1C: Σk<sub>i</sub> = 0,
+Σk<sub>i</sub>X<sub>i</sub> = 1, and Σk<sub>i</sub><sup>2</sup> = 1/Σx<sub>i</sub><sup>2</sup>.</dd>
+
+</dl>
+
+<h2 id="g-l">L</h2>
+
+<dl>
+
+<dt id="likelihood-function" data-match="likelihood function, log-likelihood">Likelihood function <a class="g-unit" href="../units/1e-normality-maximum-likelihood.html">Unit 1E</a></dt>
+<dd>The joint density of the sample, read as a function of the unknown parameters with the
+data held fixed — the same formula is a <em>density</em> when the parameters are known and a
+<em>likelihood</em> when the data is. Maximised in practice through its logarithm, since a log
+is monotonic and turns the product into a sum.</dd>
+
+<dt id="linear-in-parameters">Linear in parameters <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>Assumption 1: no β is raised to a power other than one. It restricts the
+<em>parameters</em> only — Y = β<sub>1</sub> + β<sub>2</sub>X<sup>2</sup> + u satisfies it,
+Y = β<sub>1</sub><sup>2</sup> + β<sub>2</sub>X + u does not. Transforming a variable is
+always allowed.</dd>
+
+</dl>
+
+<h2 id="g-m">M</h2>
+
+<dl>
+
+<dt id="mpc" data-match="marginal propensity to consume">Marginal propensity to consume <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>The slope of a consumption function: the extra consumption produced by one extra dollar
+of income. The recurring worked example in this course reports it as 0.75.</dd>
+
+<dt id="maximum-likelihood" data-match="maximum likelihood, ML">Maximum likelihood <a class="g-unit" href="../units/1e-normality-maximum-likelihood.html">Unit 1E</a></dt>
+<dd>An estimator that chooses the parameter values making the observed sample most probable —
+formally, the values maximising the <a href="#likelihood-function">likelihood function</a>.
+Under normality the ML estimators of the βs are <em>identical</em> to the OLS estimators,
+because the squared-deviation term enters the log-likelihood with a negative sign. The two
+part company over σ²: σ̃² = Σû²/n is biased downward by 2σ²/n, where σ̂² = Σû²/(n − 2) is
+not.</dd>
+
+<dt id="measurement-error">Measurement error <a class="g-unit" href="../units/1a-introducing-econometrics.html">Unit 1A</a></dt>
+<dd>The gap between the concept a variable is meant to capture and the number actually
+recorded. One of the four sources of the disturbance.</dd>
+
+<dt id="method-of-moments">Method of moments <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
+<dd>An estimator that sets sample moments equal to their population counterparts. Named in
+Unit 1B as one of the three estimators in this course.</dd>
+
+<dt id="micronumerosity">Micronumerosity <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></dt>
+<dd>Goldberger's term for the problem of small sample size, coined to mock the profession's
+preoccupation with multicollinearity. A sample whose size barely exceeds the number of
+parameters has the same symptoms and the same cause: too little information in the data to
+estimate the coefficients precisely. Both are shortages of information, not defects of the
+model — which is why enlarging the sample is a remedy for either.</dd>
+
+<dt id="multicollinearity">Multicollinearity <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></dt>
+<dd>Regressors that move together, so the data cannot say how much of the movement in Y
+belongs to each. Named in Unit 1C, where assumption 7 rules out the perfect case; derived here.
+It is a property of the <em>sample</em> rather than of the model, which is why its severity
+changes from sample to sample, why there is no true statistical test for it, and why the only
+real cure is different or better data. See
+<a href="#perfect-multicollinearity">perfect</a> and
+<a href="#imperfect-multicollinearity">imperfect</a> multicollinearity, and
+<a href="#vif">VIF</a>.</dd>
+
+<dt id="multiple-r2" data-match="multiple coefficient of determination">Multiple coefficient of determination (R<sup>2</sup>) <a class="g-unit" href="../units/1d-multiple-regression.html">Unit 1D</a></dt>
+<dd>The share of the variation in Y explained by all the regressors <em>jointly</em>:
+R<sup>2</sup> = ESS/TSS = (β̂<sub>2</sub>Σx<sub>2i</sub>y<sub>i</sub> +
+β̂<sub>3</sub>Σx<sub>3i</sub>y<sub>i</sub>)/Σy<sub>i</sub><sup>2</sup>. It cannot be split into
+one share per regressor unless they are uncorrelated, and it never falls when a variable is
+added — see <a href="#adjusted-r2">adjusted R<sup>2</sup></a>.</dd>
+
+</dl>
+
+<h2 id="g-n">N</h2>
+
+<dl>
+
+<dt id="newey-west" data-match="Newey–West, Newey-West, HAC standard error, HAC">Newey–West (HAC) standard errors <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></dt>
+<dd>Standard errors consistent under both heteroscedasticity <em>and</em> autocorrelation — the
+extension of <a href="#hc-standard-errors">White's correction</a> to serially correlated errors.
+Like that correction they change only the standard errors, leaving the coefficients and the
+inefficiency of OLS alone. They need a judgement about how many lags to allow for and perform
+poorly in small samples, which is a real limitation given how short time series samples usually
+are.</dd>
+
+<dt id="normal-equations">Normal equations <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
+<dd>The two first-order conditions from minimising Σê<sub>i</sub><sup>2</sup>, which solve to
+give β̂<sub>1</sub> and β̂<sub>2</sub>. They impose Σû<sub>i</sub> = 0 and
+Σû<sub>i</sub>X<sub>i</sub> = 0 on the residuals — the restrictions behind
+<a href="#degrees-of-freedom">degrees of freedom</a>.</dd>
+
+<dt id="null-hypothesis" data-match="null hypothesis, alternative hypothesis">Null hypothesis <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a></dt>
+<dd>H<sub>0</sub>, the position being tested; H<sub>1</sub> is the alternative. The null must
+always carry some form of <strong>equality</strong>, because it is the hypothesis you compute
+under and has to supply a number to subtract. Hypotheses are always about the population
+parameter β<sub>j</sub>, never about the estimate β̂<sub>j</sub>.</dd>
+
+</dl>
+
+<h2 id="g-o">O</h2>
+
+<dl>
+
+<dt id="observational" data-match="observational data">Observational data <a class="g-unit" href="../units/1a-introducing-econometrics.html">Unit 1A</a></dt>
+<dd>Data recorded from the world as it happened, with no control over who received what.
+Nearly all economic data is of this kind, and it is the root reason regression struggles with
+causation. Contrast experimental data.</dd>
+
+<dt id="omitted-variable-bias" data-match="omitted variable bias">Omitted variable bias <a class="g-unit" href="../units/2a-part1-specification.html">Unit 2A Part 1</a></dt>
+<dd>The bias from leaving out a variable that belongs in the model and is correlated with an
+included regressor. Bias(β̂<sub>2</sub>*) = β<sub>3</sub>δ̃<sub>1</sub>, the effect of the
+omitted variable times the slope of the
+<a href="#auxiliary-regression">auxiliary regression</a> of the omitted variable on the
+included one — so it vanishes only if one of those is zero, and its sign is the rule of signs.
+It does <em>not</em> shrink with n, which makes OLS inconsistent as well as biased. See
+<a href="#underfitting">underfitting</a>.</dd>
+
+<dt id="omitted-variable">Omitted variable <a class="g-unit" href="../units/1a-introducing-econometrics.html">Unit 1A</a></dt>
+<dd>An influence on Y left out of the equation, and therefore inside u. Harmless if unrelated
+to the included regressors; if related, it makes X endogenous and biases OLS. Unit 2A Part 1.</dd>
+
+<dt id="order-condition" data-match="order condition">Order condition <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></dt>
+<dd>A necessary but not sufficient counting rule for
+<a href="#identification">identification</a>. In a system of M equations, an equation must
+exclude at least <strong>M − 1</strong> of the model's variables: exactly M − 1 is just
+identified, more is overidentified, fewer is underidentified. Equivalently, the number of
+<a href="#predetermined">predetermined</a> variables in the system must be at least the number of
+slope coefficients in the equation being estimated. The two statements always agree; use both as
+a check on the counting. Being necessary only, it must be paired with the
+<a href="#rank-condition">rank condition</a>.</dd>
+
+<dt id="ols" data-match="ordinary least squares, OLS">Ordinary least squares (OLS) <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
+<dd>The estimator that chooses β̂<sub>1</sub> and β̂<sub>2</sub> to minimise the sum of
+<em>squared</em> residuals. Squared, so that positive and negative misses cannot cancel;
+<em>vertical</em> distances, because the model treats X as given.</dd>
+
+<dt id="overfitting" data-match="overfitting, overfit, irrelevant variable">Overfitting <a class="g-unit" href="../units/2a-part1-specification.html">Unit 2A Part 1</a></dt>
+<dd>Including variables that do not belong. Unlike <a href="#underfitting">underfitting</a> it
+costs no bias — the estimates stay unbiased and consistent whether or not the regressors are
+correlated — but it costs precision: var inflates by 1/(1 − R²<sub>23</sub>), so standard
+errors rise and real effects become harder to detect.</dd>
+
+</dl>
+
+<h2 id="g-p">P</h2>
+
+<dl>
+
+<dt id="p-value" data-match="p-value, p-values">p-value <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a></dt>
+<dd>The probability of observing a test statistic that size or more extreme if the null is
+true — equivalently, the smallest significance level at which the null would still be
+rejected. Reject if p &lt; α. The p-value a package prints is for a <em>two-tailed</em> test of
+β<sub>j</sub> = 0; any other null needs it recomputed.</dd>
+
+<dt id="panel" data-match="panel data, longitudinal data">Panel (longitudinal) data <a class="g-unit" href="../units/1a-introducing-econometrics.html">Unit 1A</a></dt>
+<dd>The same units followed over several periods — the same households in 2023, 2024 and
+2025. Distinct from a pooled cross section, which draws fresh units each period.</dd>
+
+<dt id="parameter">Parameter <a class="g-unit" href="../units/1a-introducing-econometrics.html">Unit 1A</a></dt>
+<dd>A fixed, unknown population quantity such as β<sub>1</sub> or β<sub>2</sub> — the thing
+being estimated, as opposed to the estimate of it.</dd>
+
+<dt id="partial-coefficient" data-match="partial coefficient, partial slope, partial effect">Partial coefficient <a class="g-unit" href="../units/1d-multiple-regression.html">Unit 1D</a></dt>
+<dd>A slope in a multiple regression: the change in the mean of Y per unit change in its own
+regressor, <em>holding the other regressors constant</em>. The qualifier is part of the
+meaning, so a partial coefficient can only be read alongside the list of what else was in the
+model. Contrast the simple-regression slope, which lets everything correlated with the
+regressor move too.</dd>
+
+<dt id="pure-heteroscedasticity" data-match="pure heteroscedasticity, impure heteroscedasticity">Pure and impure heteroscedasticity <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></dt>
+<dd><em>Pure</em>: the disturbance of a correctly specified equation simply has non-constant
+variance — assumption 5 failing on its own. <em>Impure</em>: caused by
+<a href="#specification-bias">specification error</a>, an omitted variable or the wrong functional
+form, so the real breach is E(u | X) = 0 and the pattern in the residuals is the missing piece of
+the model showing through. The distinction decides the remedy: impure heteroscedasticity is fixed
+by repairing the specification, and applying robust standard errors to it would tidy the
+inference on a still-biased model.</dd>
+
+<dt id="perfect-multicollinearity">Perfect multicollinearity <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></dt>
+<dd>One regressor an exact linear function of the others, as in X<sub>3</sub> = α<sub>1</sub> +
+α<sub>2</sub>X<sub>2</sub>. Assumption 7 fails outright: β̂<sub>2</sub> comes out 0/0 and its
+variance is infinite, because only the combination β̂<sub>2</sub> + α<sub>2</sub>β̂<sub>3</sub>
+is identified and nothing determines how to split it. Not a matter of imprecision — the
+estimates do not exist. Easy to avoid, since you have to build it yourself; the usual culprits
+are a variable entered twice in different units and the dummy variable trap.</dd>
+
+<dt id="predetermined" data-match="predetermined variable, predetermined">Predetermined variable <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>An <a href="#exogenous">exogenous</a> variable <em>or</em> a lagged endogenous one. A lagged
+endogenous variable was settled by an earlier period's system, so as far as this period is
+concerned its value is already fixed and it is uncorrelated with the current disturbance.
+Predetermined variables are what a <a href="#reduced-form">reduced form</a> is written in terms
+of, and every one of them in a system is a candidate
+<a href="#instrumental-variable">instrument</a>.</dd>
+
+<dt id="prf" data-match="population regression function, PRF">Population regression function (PRF) <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
+<dd>E(Y<sub>i</sub> | X<sub>i</sub>) = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub>. Fixed,
+unknown, and never observed. Contrast <a href="#srf">SRF</a>.</dd>
+
+<dt id="practical-significance" data-match="practical significance, statistically significant, statistical significance">Practical significance <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a></dt>
+<dd>Whether an effect is large enough to matter economically, as opposed to being merely
+distinguishable from zero. A large sample can make a trivial coefficient statistically
+significant. Report the magnitude alongside the test, always.</dd>
+
+<dt id="probability-limit" data-match="probability limit, plim">Probability limit (plim) <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>The value an estimator converges on as the sample size grows without bound. plim(β̂) = β is
+<a href="#consistency">consistency</a>; plim(β̂) ≠ β is
+<a href="#inconsistency">inconsistency</a>. Its convenience is that it passes through ratios —
+plim(A/B) = plim(A)/plim(B) — which an expectation does not, and that is what makes the
+asymptotic argument about endogeneity tractable where the finite-sample one is not.</dd>
+
+<dt id="proxy" data-match="proxy, proxies">Proxy <a class="g-unit" href="../units/1a-introducing-econometrics.html">Unit 1A</a></dt>
+<dd>An observable stand-in for a concept that cannot be measured directly — years of
+schooling for human capital, for instance. Buys a variable at the cost of measurement
+error.</dd>
+
+</dl>
+
+<h2 id="g-q">Q</h2>
+
+<dl>
+
+<dt id="qualitative-variable" data-match="qualitative variable, categorical variable, qualitative regressor">Qualitative variable <a class="g-unit" href="../units/3a-qualitative-variables.html">Unit 3A</a></dt>
+<dd>A variable recording which category an observation falls into rather than how much of
+something it has — sex, region, marital status, occupation, ownership. Also called categorical.
+Nothing about it is naturally a number, so it enters a regression through
+<a href="#dummy-variable">dummy variables</a>: m − 1 of them alongside a constant. This unit takes
+the dependent variable to be quantitative; a qualitative <em>dependent</em> variable needs logit or
+probit, which belongs to Econometrics II.</dd>
+
+</dl>
+
+<h2 id="g-r">R</h2>
+
+<dl>
+
+<dt id="reset-test" data-match="RESET test, RESET, Ramsey RESET">Ramsey RESET test <a class="g-unit" href="../units/2a-part1-specification.html">Unit 2A Part 1</a></dt>
+<dd>REgression Specification Error Test. Save the fitted values Ŷ, re-run the model with Ŷ²
+and Ŷ³ added, and <a href="#f-test">F-test</a> whether their coefficients are jointly zero.
+H<sub>0</sub> is that the model is correctly specified. Powers of Ŷ stand in for non-linear
+functions of all the regressors at once, so no data on the omitted variable is needed — but a
+rejection says only that something is wrong, not what.</dd>
+
+<dt id="rank-condition" data-match="rank condition">Rank condition <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></dt>
+<dd>The necessary <em>and sufficient</em> condition for
+<a href="#identification">identification</a>. For a two-equation system: at least one of the
+exogenous variables excluded from the first equation must have a non-zero coefficient in the
+second, and symmetrically. It is <a href="#instrumental-variable">instrument</a> relevance in
+another vocabulary — the excluded variables are the instruments, and the condition asks that one
+of them genuinely shifts the equation it was excluded from. An equation can satisfy the
+<a href="#order-condition">order condition</a> and fail this one, in which case the counting
+looks right and nothing is estimable.</dd>
+
+<dt id="reduced-form" data-match="reduced form, reduced-form">Reduced form <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>Each endogenous variable of a system written as a function of the
+<a href="#predetermined">predetermined</a> variables alone, plus a disturbance. Its coefficients
+are the π's, or <a href="#impact-multiplier">impact multipliers</a>. Because nothing endogenous
+survives on the right-hand side, every regressor is uncorrelated with the disturbance and OLS on
+a reduced form equation is consistent — which is exactly why it is the first stage of
+<a href="#two-stage-least-squares">2SLS</a>, and why
+<a href="#identification">identification</a> is asked as a question about recovering the
+<a href="#structural-equation">structural</a> parameters from it.</dd>
+
+<dt id="redundant-variable">Redundant variable <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></dt>
+<dd>Two or more regressors measuring essentially the same thing. Dropping one is the second
+remedy for multicollinearity, and the only deletion that is free: it is not creating a
+specification error but repairing one, since including two measures of a single concept is
+<a href="#overfitting">overfitting</a>. Whether a pair is redundant is a question of economics,
+not of correlation — two distinct forces can move together closely and still both belong.</dd>
+
+<dt id="regression" data-match="regression analysis">Regression analysis <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
+<dd>Explaining movements in a dependent variable as a function of movements in one or more
+others, ceteris paribus. More precisely: predicting the conditional population mean of Y at
+given values of X.</dd>
+
+<dt id="residual">Residual <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
+<dd>û<sub>i</sub> = Y<sub>i</sub> − Ŷ<sub>i</sub>, the distance from an observation to the
+<em>estimated</em> line. Computable. Every assumption is about the
+<a href="#disturbance">disturbance</a>, but every diagnostic test in Unit 2 has only the
+residual to work with — which is why those tests are indirect.</dd>
+
+<dt id="restricted-model" data-match="restricted model, unrestricted model, exclusion restrictions">Restricted and unrestricted models <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a></dt>
+<dd>The unrestricted model is the full one; the restricted model is re-estimated with the
+q restrictions imposed, which for exclusion restrictions means dropping those variables and
+running it again. Dropping variables cannot improve the fit, so RSS<sub>R</sub> ≥
+RSS<sub>UR</sub>; the <a href="#f-test">F-test</a> asks whether it got worse by enough to
+matter. k always comes from the unrestricted model.</dd>
+
+<dt id="rss" data-match="residual sum of squares, RSS">RSS — residual sum of squares <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>Σû<sub>i</sub><sup>2</sup>, the variation in Y left unexplained. What OLS minimises, and
+what σ̂<sup>2</sup> is built from.</dd>
+
+</dl>
+
+<h2 id="g-s">S</h2>
+
+<dl>
+
+<dt id="srf" data-match="sample regression function, SRF">Sample regression function (SRF) <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a></dt>
+<dd>Ŷ<sub>i</sub> = β̂<sub>1</sub> + β̂<sub>2</sub>X<sub>i</sub>, estimated from one sample.
+It approximates the <a href="#prf">PRF</a> and lands somewhere different with every sample
+drawn.</dd>
+
+<dt id="sampling-distribution">Sampling distribution <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>The distribution of the values an estimator takes across all possible samples of the same
+size from a given population. Unbiasedness locates its centre; the variance says how tightly
+it is packed around that centre.</dd>
+
+<dt id="sampling-error">Sampling error <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>The Σk<sub>i</sub>u<sub>i</sub> term in β̂<sub>2</sub> = β<sub>2</sub> +
+Σk<sub>i</sub>u<sub>i</sub>: the gap between the estimate and the truth in a particular
+sample. It averages to zero, which is unbiasedness, but is not zero in the sample you
+have.</dd>
+
+<dt id="schwarz-criterion" data-match="Schwarz criterion, SC">SC — Schwarz Criterion <a class="g-unit" href="../units/2a-part1-specification.html">Unit 2A Part 1</a></dt>
+<dd>SC = ln(RSS/n) + (v/n)·ln n. Like the <a href="#aic">AIC</a> but penalising extra variables
+more heavily, so it selects more parsimonious models. Smallest wins.</dd>
+
+<dt id="semi-log" data-match="semi-log, log–lin, log-lin, lin–log, lin-log">Semi-log forms <a class="g-unit" href="../units/2a-part2-functional-form.html">Unit 2A Part 2</a></dt>
+<dd>Only one side is logged. <strong>log–lin</strong> (ln Y = β<sub>1</sub> + β<sub>2</sub>X):
+a one-unit rise in X changes Y by about 100β<sub>2</sub>%, exactly 100[e<sup>β₂</sup> − 1] —
+the Mincer wage equation's form. <strong>lin–log</strong> (Y = β<sub>1</sub> + β<sub>2</sub>ln X):
+a 1% rise in X changes Y by β<sub>2</sub>/100 units. The pattern: a logged variable turns its
+own side of the sentence into a percentage.</dd>
+
+<dt id="significance-level" data-match="significance level, level of significance">Significance level (α) <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a></dt>
+<dd>The probability of rejecting the null when the null is true — the risk of a wrong rejection
+you agree to run before testing. If none is stated, default to 5%. Lowering α raises the
+<a href="#critical-value">critical value</a> and makes rejection harder.</dd>
+
+<dt id="simultaneity-bias" data-match="simultaneity bias, simultaneity">Simultaneity bias <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>The <a href="#endogeneity">endogeneity</a> that arises when a regressor is determined jointly
+with the dependent variable, so that a shock to Y feeds back into X. In the Keynesian model
+cov(Y<sub>t</sub>, u<sub>t</sub>) = σ<sup>2</sup>/(1 − β<sub>2</sub>) &gt; 0 and the marginal
+propensity to consume is overestimated, by
+(1 − β<sub>2</sub>)σ<sup>2</sup>/(σ<sup>2</sup> + σ<sub>I</sub><sup>2</sup>) in the limit. In a
+market, OLS on the equilibria estimates a variance-weighted average of the supply and demand
+slopes rather than either of them.</dd>
+
+<dt id="simultaneous-equations" data-match="simultaneous equation model, simultaneous equations, simultaneous system">Simultaneous equation model <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>A set of equations that jointly determine several variables at once, so that no one of them
+can be read as a one-way relationship. Consumption and income in the Keynesian model, price and
+quantity in a market. The equations that state the theory are the
+<a href="#structural-equation">structural</a> ones; solving them out gives the
+<a href="#reduced-form">reduced form</a>.</dd>
+
+<dt id="specification-bias" data-match="specification bias, specification error, correctly specified">Specification error <a class="g-unit" href="../units/2a-part1-specification.html">Unit 2A Part 1</a></dt>
+<dd>Choosing wrongly among the three things that specify an equation: the independent
+variables, the functional form, or the form of the error term. Assumption 9 failing. Detected
+informally through theory, wrong-signed significant coefficients and residual patterns, and
+formally by the <a href="#reset-test">RESET test</a>.</dd>
+
+<dt id="spurious-correlation">Spurious correlation <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>Two series moving together with nothing connecting them — usually because both trend.
+Margarine consumption and the divorce rate in Maine give r = 0.9926 and r<sup>2</sup> =
+0.9852. A high r<sup>2</sup> is therefore not evidence of a good model.</dd>
+
+<dt id="standard-error">Standard error <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>The standard deviation of the sampling distribution of an estimator — the measure of its
+precision. For the slope, se(β̂<sub>2</sub>) = σ̂ / √(Σx<sub>i</sub><sup>2</sup>), reported in
+parentheses beneath its coefficient in the house format.</dd>
+
+<dt id="stationarity" data-match="stationarity, stationary">Stationarity <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a></dt>
+<dd>A series whose mean, variance and covariances do not change over time. For an
+<a href="#ar1">AR(1)</a> error process this requires |ρ| &lt; 1, and it is what allows
+var(u<sub>t</sub>) and var(u<sub>t−1</sub>) to be set equal to a single σ<sup>2</sup> and solved
+for — without it the derivation relates two unknowns and goes nowhere, and at |ρ| = 1 the
+variance is not finite at all.</dd>
+
+<dt id="stochastic">Stochastic <a class="g-unit" href="../units/1a-introducing-econometrics.html">Unit 1A</a></dt>
+<dd>Random. The stochastic part of a regression is u<sub>i</sub>; the deterministic part is
+β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub>.</dd>
+
+<dt id="structural-equation" data-match="structural equation, structural parameter, structural form">Structural equation <a class="g-unit" href="../units/3b-endogeneity.html">Unit 3B</a></dt>
+<dd>An equation of a <a href="#simultaneous-equations">simultaneous system</a> as economic theory
+writes it, with endogenous variables on both sides. Its coefficients are the
+<strong>structural parameters</strong> — the marginal propensity to consume, the elasticity of
+supply — and they are the quantities of interest. Behavioural equations carry a disturbance;
+identities, such as Y = C + I, carry neither disturbance nor parameters. OLS on a structural
+equation is biased and <a href="#inconsistency">inconsistent</a>, which is why the
+<a href="#reduced-form">reduced form</a> is estimated instead.</dd>
+
+</dl>
+
+<h2 id="g-t">T</h2>
+
+<dl>
+
+<dt id="t-distribution" data-match="t-distribution">t-distribution <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a></dt>
+<dd>What the standardised coefficient follows once σ is replaced by its estimate:
+(β̂<sub>j</sub> − β<sub>j</sub>)/se(β̂<sub>j</sub>) ~ t<sub>n−k</sub>. The denominator is now
+itself random, which fattens the tails relative to the normal and raises critical values in
+small samples. t → Z as n → ∞. This course writes the degrees of freedom n − k with k counting
+the intercept; Wooldridge writes n − k − 1.</dd>
+
+<dt id="t-statistic" data-match="t-statistic, t-ratio, t-test">t-statistic <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a></dt>
+<dd>t = (β̂<sub>j</sub> − β<sub>j</sub>)/se(β̂<sub>j</sub>) — the gap between the estimate and
+the value the null asserts, measured in units of the estimate's own imprecision. Compared
+against a <a href="#critical-value">critical value</a> at n − k degrees of freedom. The
+t-ratio a package prints is always for a null of zero, which is often not the interesting
+null.</dd>
+
+<dt id="time-series" data-match="time series data, time series">Time series data <a class="g-unit" href="../units/1a-introducing-econometrics.html">Unit 1A</a></dt>
+<dd>One unit observed over many periods. The setting where
+<a href="#autocorrelation">autocorrelation</a> is most likely, since a shock in one period
+tends to persist.</dd>
+
+<dt id="tss" data-match="total sum of squares, TSS">TSS — total sum of squares <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>Σy<sub>i</sub><sup>2</sup> = Σ(Y<sub>i</sub> − Ȳ)<sup>2</sup>, the total variation of Y
+about its own mean. It splits exactly: <strong>TSS = ESS + RSS</strong>, because
+Σŷ<sub>i</sub>û<sub>i</sub> = 0.</dd>
+
+<dt id="turning-point" data-match="turning point, quadratic form, quadratic">Turning point <a class="g-unit" href="../units/2a-part2-functional-form.html">Unit 2A Part 2</a></dt>
+<dd>With Y = β<sub>1</sub> + β<sub>2</sub>X + β<sub>3</sub>X² + u the marginal effect is
+β<sub>2</sub> + 2β<sub>3</sub>X, not a single number. Setting it to zero gives
+X* = −β̂<sub>2</sub>/2β̂<sub>3</sub>: a <em>maximum</em> when β̂<sub>3</sub> &lt; 0 (inverted U)
+and a <em>minimum</em> when β̂<sub>3</sub> &gt; 0 (U-shaped). Always check X* falls inside the
+range of the data.</dd>
+
+<dt id="two-stage-least-squares" data-match="two-stage least squares, two stage least squares, 2SLS">Two-stage least squares (2SLS) <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></dt>
+<dd>The general form of <a href="#instrumental-variable">IV</a> estimation. <strong>Stage 1</strong>
+regresses the endogenous regressor on the instruments <em>and every exogenous variable in the
+equation</em>, and keeps the fitted values, which are purged of the correlation with u.
+<strong>Stage 2</strong> re-estimates the structural equation with those fitted values in place of
+the endogenous regressor. With one instrument it is identical to IV. Running the two stages by
+hand gives the right coefficients and <strong>wrong standard errors</strong>, because
+σ̂<sup>2</sup> must be computed against the actual regressor: use the package's own 2SLS
+command.</dd>
+
+</dl>
+
+<h2 id="g-u">U</h2>
+
+<dl>
+
+<dt id="unbiasedness">Unbiasedness <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>E(β̂<sub>2</sub>) = β<sub>2</sub>: across all possible samples the estimator averages to
+the true parameter. It says nothing about the sample in front of you — which is why the
+variance is derived next. Needs assumption 4 only; homoscedasticity and no-autocorrelation
+are not required for it.</dd>
+
+<dt id="underfitting" data-match="underfitting, underfit">Underfitting <a class="g-unit" href="../units/2a-part1-specification.html">Unit 2A Part 1</a></dt>
+<dd>Omitting relevant variables from the model. The omitted variable moves into the error term,
+so E(u | X) ≠ 0 whenever it is correlated with an included regressor — giving
+<a href="#omitted-variable-bias">omitted variable bias</a>, an incorrectly estimated σ², possibly
+heteroscedasticity, and understated standard errors. The coefficient is wrong <em>and</em>
+looks more precise than it is.</dd>
+
+</dl>
+
+<h2 id="g-v">V</h2>
+
+<dl>
+
+<dt id="vif" data-match="variance inflation factor, VIF">Variance inflation factor (VIF) <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a></dt>
+<dd>VIF(β̂<sub>j</sub>) = 1/(1 − R<sub>j</sub><sup>2</sup>), where R<sub>j</sub><sup>2</sup> is
+from the <a href="#auxiliary-regression">auxiliary regression</a> of X<sub>j</sub> on all the
+other regressors. It is the factor by which collinearity multiplies var(β̂<sub>j</sub>), since
+var(β̂<sub>j</sub>) = (σ<sup>2</sup>/Σx<sub>j</sub><sup>2</sup>) · VIF. Report
+<strong>√VIF</strong> alongside it: that is what multiplies the standard error and divides the
+t-ratio. Rule of thumb VIF &gt; 10, reached at R<sub>j</sub><sup>2</sup> = 0.9 — a convention,
+not a critical value.</dd>
+
+<dt id="variance-of-the-estimator" data-match="variance of the OLS estimator">Variance of the OLS estimator <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>var(β̂<sub>2</sub>) = σ<sup>2</sup>/Σx<sub>i</sub><sup>2</sup>. It falls when the
+disturbance variance is small, when X is spread widely about its mean, and when n is large —
+so variation in the regressor is what buys precision. The companions are
+var(β̂<sub>1</sub>) = σ<sup>2</sup>ΣX<sub>i</sub><sup>2</sup>/(nΣx<sub>i</sub><sup>2</sup>)
+and cov(β̂<sub>1</sub>, β̂<sub>2</sub>) = −X̄ var(β̂<sub>2</sub>), the negative sign following
+from the fitted line passing through (X̄, Ȳ).</dd>
+
+<dt id="variance-covariance-matrix" data-match="variance–covariance matrix, variance-covariance matrix">Variance–covariance matrix <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a></dt>
+<dd>The symmetric k × k matrix with the variances of the estimated coefficients on the diagonal
+and their covariances off it. Needed whenever a hypothesis involves more than one coefficient,
+since se(β̂<sub>2</sub> − β̂<sub>3</sub>) = √[var(β̂<sub>2</sub>) + var(β̂<sub>3</sub>) −
+2cov(β̂<sub>2</sub>, β̂<sub>3</sub>)] — <em>not</em> the difference of the standard errors. In
+EViews: View → Covariance Matrix.</dd>
+
+</dl>
+
+<h2 id="g-w">W</h2>
+
+<dl>
+
+<dt id="weak-instrument" data-match="weak instrument">Weak instrument <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a></dt>
+<dd>An <a href="#instrumental-variable">instrument</a> correlated with the endogenous regressor
+only slightly. Three failures at once: the variance inflates by 1/r<sup>2</sup><sub>X,Z</sub>, the
+finite-sample bias grows and points back towards the OLS estimate that IV was meant to replace,
+and the asymptotic standard error understates the true spread, so the reported t-ratios cannot be
+believed either. A first-stage F below about 10 is the conventional warning. An instrument with no
+correlation at all reproduces OLS exactly, having discarded all the precision on the way.</dd>
+
+<dt id="wls" data-match="weighted least squares, WLS">Weighted least squares (WLS) <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></dt>
+<dd>A special case of generalised least squares for heteroscedastic errors: divide the whole
+equation through by σ<sub>i</sub>, or by √h(X) when the variance is σ<sup>2</sup>h(X), so the
+transformed disturbance is homoscedastic. Observations with a higher variance receive a smaller
+weight. Usually BLUE when the weights are right — but misspecifying h(X) makes WLS
+<strong>biased and inconsistent</strong>, which is worse than the inefficiency it set out to cure.
+See <a href="#fgls">FGLS</a> for the case where h(X) must be estimated.</dd>
+
+<dt id="white-test" data-match="White test">White test <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a></dt>
+<dd>A test for heteroscedasticity of <em>any</em> form, linear or not. The
+<a href="#auxiliary-regression">auxiliary regression</a> of the squared residuals carries each
+regressor, its square, and every cross-product — 2k + k(k − 1)/2 terms — and LM = nR<sup>2</sup>
+is again compared with χ<sup>2</sup>. More powerful than <a href="#breusch-pagan">Breusch–Pagan</a>
+against non-linear h(X), but expensive: with five regressors it must clear 31.41 rather than 11.07.
+A degrees-of-freedom-saving variant regresses û<sup>2</sup> on Ŷ and Ŷ<sup>2</sup> alone.</dd>
+
+</dl>
+
+</section>
+
+<div class="ask-teacher">
+  <strong>A term you expected to find and did not?</strong>
+  It is probably in a unit that has not been written yet — this page covers
+  <span data-gloss-range>the units written so far</span>.
+</div>
+
+<p style="text-align:center; margin-top:2rem;"><a href="../index.html">← Course home</a></p>
+
+</div>
+</body>
+</html>

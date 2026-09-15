@@ -1,0 +1,568 @@
+# ECON 3049 — Econometrics I
+
+The course notes for ECON 3049 (UWI Cave Hill), written out as a small static
+website. These pages replace the lecture slide decks: each unit page carries the
+theory in full, the algebra worked through, an interactive figure, a worked
+example in the reporting format used in the exam, tutorial questions, and a
+short self-test. From Unit 2A on the tutorial questions carry revealable
+solutions; the Unit 1 solutions are the lecturer's and live outside the
+repository — see "Tutorial solutions" below.
+
+## Running it
+
+There is no build step, no npm, no dependencies. Open `index.html`.
+
+To check it the way GitHub Pages will serve it:
+
+```sh
+python3 -m http.server 8000     # then browse http://localhost:8000/
+```
+
+Do this before pushing — macOS is case-insensitive locally and Pages is not.
+
+## Checking it
+
+`dev/check-site.mjs` loads every written unit in a headless browser and checks it.
+It derives its expectations from the manifest, so it keeps working as units are
+added — no test to update when a unit flips to `ready`.
+
+```sh
+cd dev && npm install jsdom && cd .. && node dev/check-site.mjs
+```
+
+It verifies that the roadmap matches the manifest, that every figure actually
+renders (and contains no `NaN` geometry), that a unit's tutorial solutions —
+where it carries them — sit on every question or on none and ship closed,
+that quiz options obey the equal-length rule and every `data-answer` is in range,
+that no navigation arrow points at an unwritten unit, and that Wooldridge's β₀
+has not leaked in outside the notation warning.
+
+For `reference/` it also checks that every linked page exists, that every
+cross-link and in-page anchor resolves, and that the glossary cites every unit
+that has been written and none that has not. Run it before every push.
+
+**The site itself has no dependencies.** jsdom is a dev-only install and is
+gitignored; nothing in `assets/`, `units/` or `reference/` requires it.
+
+## Structure
+
+```
+index.html            roadmap, rendered from the manifest
+assets/course.js      THE MANIFEST — course structure, dates, unit list
+assets/nav.js         renders roadmap, breadcrumbs, prev/next from the manifest
+assets/viz.js         interactive SVG figures, one per unit
+assets/quiz.js        multiple-choice self-test widget
+assets/glossary.js    glossary filter (progressive enhancement only)
+assets/reader.js      text size, theme and the download menu
+assets/export.js      Word / Markdown / LaTeX converters
+assets/lesson.css     base typography and palette
+assets/course.css     course-site components (.eqn-report, .tutorial, .viz …)
+assets/slides.js      the lecture-deck engine — the decks themselves are private
+assets/slides.css     projector scaling and print layout for the decks
+units/                one page per unit, 1A through 3C
+reference/            glossary and formula sheet
+dev/covered.mjs       mark units as covered in class
+dev/check-site.mjs    the regression suite
+dev/link-glossary.mjs unit -> glossary back-links
+dev/stamp-assets.mjs  cache-busting stamps
+dev/check-decks.mjs   regression for the private lecture decks
+dev/check-fit.mjs     do the decks' slides fit a projector? (headless Chrome)
+dev/fixtures/         a content-free deck the engine is tested against
+```
+
+## Writing a new unit — the actual sequence
+
+Units are built from the lecture decks in `../Econ3049/LectureNotes/`. **The
+decks are the source of truth** for what is taught and in what order — check the
+deck filenames rather than the printed course outline, which differs from them in
+places (Unit 1's topics and ordering, and the fact that 2A is delivered in two
+parts). Where the two disagree, the decks win.
+
+```sh
+pdftotext -layout "../Econ3049/LectureNotes/UNIT 2B - Multicollinearity.pdf" -
+```
+
+Then, in this order — the checker enforces most of it, so a missed step fails
+loudly rather than silently:
+
+1. **Write `units/<slug>.html`.** Copy the shape of an existing unit: learning
+   objectives in a `.box.key`, numbered sections, `.eqn-report` for every set of
+   results, a `.tutorial` block, a "Check yourself" block, an `.ask-teacher`
+   note where there is study advice worth giving (what is examinable, what
+   usually costs marks — not an invitation to office hours, which was removed),
+   an `<ol class="sources">`, and the `.lesson-nav` footer. Every
+   `data-unit` attribute must carry the manifest's unit code exactly —
+   `"2A Part 1"`, not `"2A"`.
+2. **Add the figures to `assets/viz.js`.** One `VIZ.register(name, fn)` per
+   figure, with a `.viz-fallback` paragraph in the page so it degrades. Shared
+   helpers already there: `ols`, `ols3`, `olsk` (k-variable, Gauss–Jordan),
+   `tPdf` / `tCdf` / `tCrit`, `chart`, `pointAt`.
+3. **Flip `status` to `"ready"`** in `assets/course.js`.
+4. **Add the unit's new terms to the glossary**, each citing the new unit. If a
+   term is only *named* in an earlier unit but *derived* in this one, re-point
+   its `.g-unit` link here.
+5. **`node dev/link-glossary.mjs`** to back-link the prose.
+6. **`node dev/stamp-assets.mjs`** if you touched anything in `assets/`.
+7. **`node dev/check-site.mjs`** until it is clean.
+
+Step 7 catches, in practice: quiz options whose lengths give the answer away,
+a unit the glossary forgot, missing back-links, figures that render `NaN`, and
+`data-unit` codes that do not match the manifest.
+
+**Verify the figures against theory before trusting them.** Every figure so far
+has been checked by driving its controls from jsdom and comparing the readouts
+with the closed-form result — the omitted-variable figure against
+β₃δ̃₁, the variance-inflation figure against √(1/(1 − R²₂₃)), the t-distribution
+against printed tables, the Chow figure against F(2, 96) = 3.09, the 2B ridge
+against the invariance of RSS along β̂₂ + α₂β̂₃ = c, and the VIF curve against
+1/(1 − R²ⱼ) = 10 at R²ⱼ = 0.9. In Unit 3A the dummy figures are checked against
+identities rather than formulas, which is stronger: β̂₁ = Ȳ₀ and β̂₂ = Ȳ₁ − Ȳ₀ for a
+lone dummy, the dummy's standard error against the pooled two-sample one, and — for
+the fully interacted model — its two fitted lines against the two subsample
+regressions and RSS_UR against RSS₁ + RSS₂. Three figures were wrong in ways that
+only showed up that way; 3A's was a caption claiming an R² that changes when the
+constant is dropped, which the centred R² the figure printed does not.
+
+Units 3B and 3C are checked the same way, and every one of their six figures has a
+closed form to land on: the Keynesian plim against β₂ + (1 − β₂)σ²/(σ² + σ²I), the
+market scatter against the variance-weighted average (1 − w)b₂ + w a₂, the IV
+asymptotic variance against σ²/(Σx² r²ₓz), and the two-stage estimate against the
+ratio cov(Z,Y)/cov(Z,X) — the last to every digit, since they are one estimator.
+Three things that only came out of driving them: the Keynesian figure's fixed axes
+made the angle between the two lines invisible, so it now frames itself to the
+sample; the market figure's single sample of sixty was too noisy to check a closed
+form against, so it reports a Monte Carlo beside the fitted line; and the
+weak-instrument caption named the wrong threshold — the *spread* is unusable by a
+first-stage t of three, but the *median* holds until t falls below about one.
+
+**Report a median, not a mean, for anything IV.** A just-identified IV estimator is
+a ratio of two random quantities and has no finite expectation: a Monte Carlo
+average of it is decided by whichever replication came nearest to dividing by zero.
+The 3C figures quote medians and quartiles throughout, and say so.
+
+Figures that simulate should draw from a **seeded** generator rather than
+`Math.random`, so that every reader sees the same sample and a tutorial answer
+can quote it. `high-r2-low-t` uses MINSTD, whose products stay inside exact
+double arithmetic.
+
+**Do not use an LCG for anything you average over.** Unit 2C's `robust-se`
+compares a Monte Carlo standard deviation against a closed form, and MINSTD's
+lattice — consecutive pairs feeding Box–Muller — put the simulation about 4%
+below the theory it was meant to confirm. `rng2c` is mulberry32 and lands on
+it. A figure that quietly misses its own theory is worse than no figure.
+
+**Check a fixed draw against every setting the figure offers.** With 23
+observations per third, the first seed for `residual-plot-shapes` had a weak
+middle third, which cancelled the arch-shaped variance exactly. The figure was
+drawing the noise, not the form. Drive every control before believing any of
+it.
+
+**Where a deck's formula and the textbook's disagree, simulate before
+printing either.** Unit 2D's slide 9 gives a compressed expression for
+var(β̂₂) under AR(1) that a Monte Carlo does not reproduce; Gujarati's full
+form, with the bracket in ρˢ·Σxₜxₜ₋ₛ/Σxₜ², matches to three decimals at every
+ρ. The unit prints the form that the simulation confirms and flags the
+difference in a box, rather than reproducing a result it cannot verify.
+
+## Adding or changing a unit
+
+Edit `assets/course.js` and nothing else. The roadmap, the breadcrumb, the
+week labels and the prev/next arrows all read from it.
+
+```js
+{ unit: "2C", part: "2", slug: "2c-heteroscedasticity",
+  title: "Heteroscedasticity", blurb: "…",
+  wooldridge: "Ch. 8", gujarati: "Ch. 11", slides: 32,
+  deck: "UNIT 2C - Heteroscedasticity.pdf", status: "ready" }
+```
+
+- `status`: `"planned"` (listed, not linked) → `"draft"` (linked, amber pill)
+  → `"ready"` (linked, green pill). It describes **the page**, not the class.
+- `deckBaseUrl` at the top of the manifest: set it to your eLearning folder URL
+  and every unit page grows a link to the original slides.
+- There is no week or date field on a unit. The course is not taught to a fixed
+  calendar on this site, and a week number that drifts out of date is worse than
+  none; what the class has actually reached is `covered`, below.
+
+## Marking a unit as covered in class
+
+`status` says whether the page is written. **`covered` says whether the class
+has got there**, which is the thing a student cannot work out for themselves.
+It is one line in the manifest:
+
+```js
+covered: ["1A", "1B", "1C"],
+```
+
+A covered unit gets a green code, a `✓ covered` on the roadmap, a
+`✓ covered in class` under its own title, and a line above the roadmap saying
+how far the class has come. An empty list renders none of it.
+
+The list is edited by a tool rather than by hand, because it validates the
+codes against the manifest:
+
+```sh
+node dev/covered.mjs                 # what is marked
+node dev/covered.mjs 1A 1B           # mark, after the lecture
+node dev/covered.mjs --undo 1B       # unmark
+node dev/covered.mjs "2A Part 1"     # codes with spaces need quotes
+```
+
+Order does not matter — the list is rewritten in course order. A code that
+matches no unit is refused by the tool and, belt and braces, by
+`check-site.mjs`, so a mistyped code cannot quietly tick nothing. Marking a
+unit that is not written yet is allowed and prints a note: the class may run
+ahead of the site.
+
+**Nothing is visible to students until it is pushed.** The whole cycle after a
+lecture is one line:
+
+```sh
+node dev/covered.mjs 1C && node dev/check-site.mjs && git commit -am "Covered 1C" && git push
+```
+
+The tool restamps the pages for you, because `course.js` is an asset and
+editing it changes the hash every page carries.
+
+Editing `assets/course.js` on github.com and committing there works too — from
+a phone, with no laptop — at the cost of the code validation and the restamp.
+The tick still appears; a reader who loaded the site in the last ten minutes
+may see it late, since the stamp did not change to bust their cache.
+
+## The glossary
+
+`reference/glossary.html` is written **as each unit is written**, not at the end.
+It links in both directions: out to the unit that defines each term, and back
+from the units to the glossary.
+Every unit page introduces terms in bold; those terms belong in the glossary the
+same day, each with a `<dt id="...">` and a `.g-unit` link back to the unit that
+defines it.
+
+```html
+<dt id="autocorrelation">Autocorrelation <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a></dt>
+<dd>Correlation between the disturbances of different observations …</dd>
+```
+
+`check-site.mjs` fails if a written unit is never cited, or if an entry links to a
+unit that does not exist yet, so a forgotten unit shows up on the next run.
+
+### Linking the units back
+
+Do not hand-write the back-links. After writing a unit:
+
+```sh
+node dev/link-glossary.mjs --dry     # show what it would link
+node dev/link-glossary.mjs           # do it
+node dev/link-glossary.mjs --unlink  # strip them all out again
+```
+
+It links the **first** occurrence of each glossary term in each unit, and only in
+running prose — bare `<p>` blocks. Headings, `<p class="math">`, `.eqn-report`
+displays, tutorial question text and quiz options are left alone: a link inside a
+self-test is a distraction, and a link inside an equation is noise. Running it
+twice changes nothing, so it is safe in a loop; if you re-flow a unit's prose and
+want the links redistributed, `--unlink` first.
+
+Spellings come from the glossary itself. A `<dt>` is matched by its own text plus
+an optional plural; where that is not how the term reads in prose, give it a
+`data-match` list:
+
+```html
+<dt id="endogeneity" data-match="endogeneity, endogenous">
+<dt id="prf" data-match="population regression function, PRF">
+```
+
+ALL-CAPS phrases match case-sensitively, so the word "blue" is never mistaken for
+BLUE. `check-site.mjs` verifies every back-link resolves to a real entry, that no
+term is linked twice on a page, and that none landed somewhere it should not.
+
+Entries are grouped `<h2>` + `<dl>` inside `<section class="gloss">` — headings
+cannot sit inside a `<dl>`. `assets/glossary.js` adds the search box on top of that
+markup and nothing else: **the page must read completely with JavaScript off.**
+
+Reference pages are listed in the manifest's `reference` array with the same
+`status` field the units use, so one that has not been written yet is named on the
+home page but not linked.
+
+## Tutorial solutions
+
+Units 1A–1F ship their tutorial questions **without solutions**. The
+`.tq` blocks carry a `.qtext` and nothing else, and the answers are in the
+lecturer's file at `../Econ3049/Tutorials/tutorial-solutions-unit1.tex`,
+outside this repository. Students attempt the questions cold and bring their
+working to the tutorial.
+
+Units 2A onward still carry revealable solutions in a `<details>` beneath each
+question. The two arrangements coexist, and `check-site.mjs` enforces the one
+rule that keeps them honest: within a unit, solutions sit on **every** question
+or on **none**. Half-answered tutorials fail the suite.
+
+When adding a question to a Unit 1 tutorial, add the `.tq` to the page and the
+worked answer to the `.tex`, and recompile the latter. When the Unit 2 and 3
+tutorials are given the same treatment, extend the same file and mirror the
+Unit 1 pattern rather than inventing a second one.
+
+## Lecture decks
+
+Each unit can have a lecture deck: the unit page condensed to slides, with
+the same interactive figures live on the slide and speaker notes in the file.
+The decks are the lecturer's. They live in `../Econ3049/Slides/`, beside the
+midterm, and are **never committed here** — this repository is public and
+deploys on every push, and the decks carry speaker notes. Only the engine is
+public: `assets/slides.js` and `assets/slides.css`, generic code with no
+course content, versioned and stamped like every other asset.
+
+A deck loads the site's assets by relative path
+(`../../ECON3049-Course/assets/…`, no `?v=` stamps — a local file has no
+cache to bust) and works over `file://` by double-click, or served from the
+parent folder:
+
+```sh
+cd .. && python3 -m http.server 8000
+# http://localhost:8000/Econ3049/Slides/1a-introducing-econometrics.html
+```
+
+Keys: arrows/space to step, `t` theme, `f` fullscreen, `p` presenter window,
+`n` print with notes, `?` for the list. Presenter mode opens the deck again
+in a popup and keeps the two in step with `postMessage`, which — unlike
+`BroadcastChannel` — works over `file://`. The audience window is the source
+of truth; drive figures from it.
+
+A deck always opens in the **light palette**: its `<html>` carries
+`data-theme="light"`, which in `lesson.css` beats both the laptop's
+`prefers-color-scheme` and the site's saved reader preference, so a
+projector never inherits a dark screen. `t` flips the current window only —
+it rebuilds every figure through `VIZ.redraw()` and resets any slider, so
+pick the theme before starting — and is not remembered; the presenter window
+follows the audience window's theme. Cmd-P gives one slide per page in
+landscape with the controls hidden; the light palette is forced for the
+print run so dark-theme figures do not print pale.
+
+**Writing the next deck.** Copy the pilot's `<head>` verbatim. One
+`section.slide` per idea, sixteen to twenty-four per unit, lifted from the unit
+page's `.box`, `.assumption-grid`, `p.math` and `ol.stages` blocks with the
+glossary links and citation superscripts stripped (they point at
+`../reference/` and would dangle). The unit's figure goes on its own
+`.slide.centre` with its `.viz-fallback`; `class="fragment"` on list items
+that should appear one at a time; an `aside.notes` on every slide; close
+with "Next: Unit …".
+
+Keep a slide to about six bullets or grid rows, roughly 120 words of body
+text, or one `p.math` display plus a sentence or two — the pilot's densest
+slide is 123 words. Two or three display equations on one slide will not fit;
+split them. A table will not fit either: make it an `.assumption-grid`.
+
+**`--fig-h` is per panel, not per figure.** A slide's figure defaults to 56vh
+and the pilot's one-panel figure takes `--fig-h: 62vh`, but three figures in
+the course draw **two stacked SVG panels** — `r2-decomposition` (1C),
+`ml-equals-ols` (1E) and `bias-direction` (2A Part 1) — and the height applies
+to each, so 62vh asks for about 124vh of figure and pushes the heading off the
+top of the screen. Those want roughly `28vh`. A figure slide whose heading
+wraps to two lines wants 52–56vh rather than 62vh. Always measure rather than
+guess: `node dev/check-fit.mjs` (below) is what tells you. Then:
+
+```sh
+node dev/check-decks.mjs                # every deck in ../Econ3049/Slides
+node dev/check-decks.mjs dev/fixtures   # the engine alone, in-repo
+```
+
+The checker loads each deck in jsdom and verifies the figures render without
+`NaN`, every slide has a heading and notes, the keys and hash work, the deck
+opens light and `t` survives a figure rebuild without touching the site's
+reader preference, `p` neither throws nor moves without a popup, and
+— on every run — that no public page points at the private folder.
+
+What jsdom cannot see is **layout**: it has no layout engine, so it will
+happily pass a slide that is half a screen too tall, with its heading pushed
+off the top. That is the failure you discover in front of the room, so it has
+its own checker, in headless Chrome:
+
+```sh
+node dev/check-fit.mjs                  # every deck in ../Econ3049/Slides
+node dev/check-fit.mjs dev/fixtures     # the engine alone, in-repo
+```
+
+It loads each deck at 1280×720 and 1920×1080, makes every slide current in
+turn with all of its steps revealed, and compares each slide's content height
+with the frame. Anything more than 24px over is reported with the pixels lost;
+24px is invisible on a projector and the pilot deck sits inside it. Horizontal
+overflow is not reported — every figure slide, the pilot's included, measures a
+constant ~34px that nothing on screen corresponds to. Chrome is taken from
+`$CHROME` or the macOS default; with no browser the script says so and exits 0
+rather than failing the suite.
+
+A slide that fails wants its detail moved into `aside.notes`, its prose
+tightened, or the slide split in two — never a smaller font, which is why the
+engine's type scale is not overridable per slide.
+
+Still worth doing by hand before lecturing: open the presenter window and
+navigate from both sides, and print it.
+
+## Asset caching
+
+GitHub Pages serves assets with `cache-control: max-age=600`. For ten
+minutes after a push, a returning reader can get **new HTML against an old
+stylesheet** — which is exactly how the preferences bar first shipped
+completely unstyled, markup arriving without the CSS that lays it out.
+
+Every asset link therefore carries a stamp derived from a hash of the assets
+themselves:
+
+```html
+<link rel="stylesheet" href="../assets/course.css?v=5ed93599">
+```
+
+Change any asset and the hash changes, so the URL changes, so no browser can
+serve a stale copy. After editing anything in `assets/`:
+
+```sh
+node dev/stamp-assets.mjs           # rewrite the stamps
+node dev/stamp-assets.mjs --check   # verify without writing
+```
+
+`check-site.mjs` runs the same verification, so a forgotten stamp fails the
+suite rather than reaching a student.
+
+## Reader preferences and downloads
+
+Every page carries a small control bar: **text size**, **theme** and
+**Download**. Preferences are stored per reader in `localStorage` and apply
+across the site. With JavaScript off the bar does not appear, the page
+follows the reader's system theme through `prefers-color-scheme`, and
+printing still works from the browser's own menu.
+
+### Themes
+
+**Every colour in the site comes from a custom property on `:root`** — the
+SVG figures included. `assets/viz.js` reads the tokens through
+`getComputedStyle` at draw time, so adding or changing a theme means editing
+the token block in `lesson.css` and nothing else. Never hard-code a colour in
+a figure; there is a `P.accent` / `P.ink` / `P.paper` for it.
+
+A theme change calls `VIZ.redraw()`, which rebuilds every figure from
+scratch. That resets slider positions, which is a fair price for not
+threading a recolour path through nineteen closures.
+
+The no-flash behaviour is a tiny inline script in each page's `<head>` that
+stamps `data-theme` and `data-text` before first paint. It has to be inline
+and it has to be in the head — a deferred script would let a white flash
+through on every navigation.
+
+### Downloads
+
+| Format | How it works | Quality |
+| --- | --- | --- |
+| PDF | `window.print()`, using the print stylesheet | Best. Respects what the reader expanded on screen |
+| Word | HTML served as `application/msword` | Good. Not a real `.docx`; Word may warn about the extension |
+| Markdown | DOM walk, Unicode sub/superscripts | Clean |
+| LaTeX | DOM walk, real `\beta` / `_{}` / `\hat{}` | Compiles under pdfLaTeX; equations want a read-through |
+
+`check-site.mjs` verifies that every page exports, that Markdown retains at
+least 60% of the visible text, and that **no unconverted Greek, combining mark
+or maths operator survives into the LaTeX** — a `.tex` that will not compile is
+worse than no `.tex` at all. To check that claim properly, compile them:
+
+```sh
+node dev/check-site.mjs      # catches unconverted characters
+# then, if you have a TeX toolchain:
+pdflatex -interaction=nonstopmode <unit>.tex
+```
+
+All fourteen pages currently compile. Five of them did not on the first attempt,
+and the failures were only visible by actually running `pdflatex` — bare
+Greek inside `<sub>`, stacked accents (Y with *two* combining marks), and
+`\sqrt` emitted with no radicand. Unit 2B added a sixth: a `≫` that no range
+in the checker was watching. Compile after writing a unit even when the suite
+is green — the character class can only catch what someone has thought of.
+
+## House conventions
+
+These are not stylistic preferences — breaking them creates real confusion for
+students, so they are worth keeping.
+
+- **Notation is Gujarati's.** β₁ is the intercept, β₂ the slope, with β₂X₂ᵢ +
+  β₃X₃ᵢ in multiple regression and α's in auxiliary regressions. Wooldridge's
+  β₀/β₁ must never appear, even though Wooldridge is a recommended text.
+- **Results are reported as equations**, using `.eqn-report`: coefficients on
+  the first row, standard errors in parentheses beneath, t-statistics below
+  that. This is the form students must reproduce under exam conditions.
+- **Spelling:** *heteroscedasticity*, with the `sc`, matching the course
+  outline and the deck filenames.
+- **Quiz options must all be about the same length.** Option length is a tell,
+  and a widget that leaks the answer teaches nothing. The markup contract is
+  documented at the top of `assets/quiz.js`.
+- **Every figure degrades.** A unit page must still read correctly with
+  JavaScript off; figures are illustration, never the only place an idea
+  appears.
+- **Prose is justified, display lines are not.** `.wrap` sets
+  `text-align: justify` with hyphenation, and everything inherits it, so a new
+  element needs no rule to fit in. Anything that declares its own alignment
+  keeps it — the centred display equations, the quiz options, table cells. What
+  is deliberately left ragged is listed beside the rule in `lesson.css`:
+  subtitles and meta lines, callout labels, roadmap blurbs, the notation list,
+  and everything below 600px, where the measure is too short to justify. The
+  hyphenation limits are 8 characters minimum, 4 before the break and 5 after;
+  the 5 is what stops `homoscedastic-ity`.
+
+## What must not go in this repository
+
+- **The textbooks.** `*.pdf` is in `.gitignore` for that reason. Gujarati &
+  Porter and Wooldridge are copyrighted; students get them from eLearning.
+- **Anything that answers the graded group assignment.** Units may teach the
+  software the assignment is graded on; nothing here works the assignment.
+
+## Where things stand
+
+**Published at https://thefamouswolfe.github.io/ECON3049-Course/** from the
+`main` branch of a public GitHub repository. Pushing to `main` rebuilds the
+live site in about half a minute, so the checker has to pass *before* the
+push, not after — a broken push is publicly broken. The repository is public
+because GitHub Pages on a free plan requires it, and because this site has no
+build step: the source and the served artifact are the same files, so keeping
+the repository private would have hidden nothing that is not already served.
+
+Progress is recorded in the manifest, not here — `status: "ready"` is the
+authority, and `node dev/check-site.mjs` prints every written unit. As of the
+last session **all fourteen units are written**: 1A–1F, 2A (both parts), 2B, 2C,
+2D, 3A, 3B and 3C.
+
+3B and 3C came out of two decks that are very nearly the same deck — the second is
+the first plus two slides carrying the plim proof of inconsistency, and both run
+the whole topic. The split on the site is the manifest's and the pedagogical one:
+**3B is the problem** (what endogeneity is, its three sources, bias against
+inconsistency, simultaneity and the reduced form) and **3C is the repair**
+(instruments, the IV estimator, 2SLS, systems, and identification). 3B ends on the
+identification problem that 3C's instruments solve.
+
+**`covered` is empty**, so the roadmap ticks nothing. That is not an oversight
+either: which units have been taught is the lecturer's to say. See "Marking a
+unit as covered in class" above.
+
+Three corrections drafts sit beside the decks in `../Econ3049/LectureNotes/`, for
+the lecturer to fold into the slides: `UNIT-2D-slide9-correction.md`,
+`UNIT-3A-corrections.md` and `UNIT-3B-3C-corrections.md`. The site already carries
+the corrected forms.
+
+**Every page named in the manifest is written.** Both reference pages — the
+glossary and the formula sheet — are `ready`, and nothing is `planned`. An
+EViews guide was carried as a planned page for a while and has been dropped;
+the software is taught where it comes up in the units instead.
+
+The calendar is set. Teaching runs **9 September to 20 November 2026**; the
+midterm is 7:00–9:00pm on Wednesday 4 November, the group assignment is due
+11:59am (midday) on Tuesday 24 November, and the final examination reads "To be
+confirmed" until the timetable lands. That last one is a `when` string, not a
+`null` — `null` renders an em dash, which says nothing about whether a date
+exists. Per-unit week numbers were removed in favour of `covered`, which
+records where the class actually got to rather than where a timetable said it
+would.
+
+Nothing about the calendar touches a page: it is all `teachingPeriod` and the
+`when` fields in `assessment`, and the home page renders itself from them.
+
+Assessment material — the midterm paper and its marking scheme, the Unit 1
+tutorial solutions, and the lecture decks with their speaker notes — lives in
+`../Econ3049/`, a sibling folder that is not a
+repository and has no remote. That is deliberate and not to be tidied: this
+repository is public and deploys on every push, so nothing that must not reach a
+student before its time can be committed here, even briefly.
