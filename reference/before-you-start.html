@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>/* Apply saved reader preferences before first paint, so a reader who
+chose dark does not get a white flash on every navigation. */
+try{var d=document.documentElement,s=localStorage,t=s.getItem("econ3049-theme"),
+z=s.getItem("econ3049-text");if(t&&t!=="auto")d.setAttribute("data-theme",t);
+if(z&&z!=="m")d.setAttribute("data-text",z);}catch(e){}</script>
+<title>Before you start · ECON 3049</title>
+<link rel="stylesheet" href="../assets/lesson.css?v=2d1afcc3">
+<link rel="stylesheet" href="../assets/course.css?v=2d1afcc3">
+<script src="../assets/course.js?v=2d1afcc3"></script>
+<script src="../assets/nav.js?v=2d1afcc3" defer></script>
+<script src="../assets/export.js?v=2d1afcc3" defer></script>
+<script src="../assets/reader.js?v=2d1afcc3" defer></script>
+</head>
+<body>
+<div class="masthead">
+  <span>
+    <a href="../index.html"><span data-course="code">ECON 3049</span></a> ·
+    <span class="course" data-course="title">Econometrics I</span>
+  </span>
+  <span>Reference · Before you start</span>
+</div>
+<div class="wrap">
+
+<div class="reader-bar"></div>
+
+<h1>Before you start</h1>
+<p class="subtitle">The mathematics this course assumes, and where each piece is used.</p>
+
+<div class="box key">
+  <span class="box-label">How to use this</span>
+  <strong>You have met all of this already</strong>, in ECON 2025 and ECON 2026. It is
+  gathered here so that you do not have to go looking for it in the middle of a derivation.
+  Every row says <em>where the course uses it</em>, so you can see what each piece buys you
+  rather than treating it as a hurdle. <strong>This sheet states results; it does not teach
+  them.</strong> If a row is genuinely unfamiliar rather than merely rusty, your Statistical
+  Methods notes are the place to go — not this page. The
+  <a href="glossary.html">glossary</a> defines the words this course adds, and the
+  <a href="formula-sheet.html">formula sheet</a> gives the results it derives.
+</div>
+
+<p class="fs-toc">
+  <a href="#summation">Summation</a>
+  <a href="#expectation">Expectation</a>
+  <a href="#variance">Variance and covariance</a>
+  <a href="#calculus">Differentiation</a>
+  <a href="#logs">Logarithms</a>
+  <a href="#matrices">Matrix algebra</a>
+  <a href="#distributions">The four distributions</a>
+  <a href="#testing">The vocabulary of testing</a>
+</p>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="summation">
+<h2>Summation</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">The operator</div>
+    <div class="fs-val">
+      <p class="math">Σ<sub>i=1</sub><sup>n</sup> X<sub>i</sub> = X<sub>1</sub> + X<sub>2</sub> + ⋯ + X<sub>n</sub></p>
+      <p class="fs-note">Where the range is obvious the limits are dropped, and this course drops them almost always: ΣX<sub>i</sub> means the sum over the whole sample.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The three rules</div>
+    <div class="fs-val">
+      <p class="math">Σ(X<sub>i</sub> + Y<sub>i</sub>) = ΣX<sub>i</sub> + ΣY<sub>i</sub></p>
+      <p class="math">ΣcX<sub>i</sub> = cΣX<sub>i</sub> &nbsp;·&nbsp; Σ<sub>i=1</sub><sup>n</sup> c = nc</p>
+      <p class="fs-note">c is a constant. The third rule is the one most often forgotten: summing a constant n times gives nc, not c.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Means and deviations</div>
+    <div class="fs-val">
+      <p class="math">X̄ = (1/n)ΣX<sub>i</sub> &nbsp;·&nbsp; x<sub>i</sub> = X<sub>i</sub> − X̄</p>
+      <p class="math">Σx<sub>i</sub> = Σ(X<sub>i</sub> − X̄) = 0</p>
+      <p class="fs-note">Deviations from the mean always sum to zero. This single fact does most of the work in the OLS derivation, and it is why the normal equations simplify as far as they do.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Two identities worth knowing cold</div>
+    <div class="fs-val">
+      <p class="math">Σx<sub>i</sub>y<sub>i</sub> = ΣX<sub>i</sub>Y<sub>i</sub> − nX̄Ȳ</p>
+      <p class="math">Σx<sub>i</sub><sup>2</sup> = ΣX<sub>i</sub><sup>2</sup> − nX̄<sup>2</sup></p>
+      <p class="fs-note">They convert between deviation form and raw sums, which is what you need when a question gives you ΣX<sub>i</sub>Y<sub>i</sub> and ΣX<sub>i</sub><sup>2</sup> and asks for a slope.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Where the course uses it</div>
+    <div class="fs-val">
+      <p class="fs-note"><a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a> derives β̂<sub>2</sub> = Σx<sub>i</sub>y<sub>i</sub> / Σx<sub>i</sub><sup>2</sup> entirely in this notation, and you will be asked to reproduce that derivation. Every sum of squares in <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a> — TSS, ESS and RSS — is a Σ.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="expectation">
+<h2>Expectation</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">What it is</div>
+    <div class="fs-val">
+      <p class="math">E(X) = Σ X p(X)</p>
+      <p class="fs-note">The probability-weighted average of the values a random variable can take — its long-run mean, not the mean of any particular sample.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Its algebra</div>
+    <div class="fs-val">
+      <p class="math">E(c) = c &nbsp;·&nbsp; E(cX) = cE(X)</p>
+      <p class="math">E(X + Y) = E(X) + E(Y)</p>
+      <p class="math">E(Σa<sub>i</sub>X<sub>i</sub>) = Σa<sub>i</sub>E(X<sub>i</sub>)</p>
+      <p class="fs-note">The second line holds whether or not X and Y are independent. Expectation passes straight through sums and constants — which is precisely why it is the tool used to show an estimator is unbiased.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Conditional expectation</div>
+    <div class="fs-val">
+      <p class="math">E(Y | X) — the mean of Y among observations sharing that value of X</p>
+      <p class="fs-note">Not an extra topic but the central one: a regression estimates a conditional mean, and the population regression function <em>is</em> E(Y | X).</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Where the course uses it</div>
+    <div class="fs-val">
+      <p class="fs-note">The population regression function in <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a> is written E(Y<sub>i</sub> | X<sub>i</sub>) = β<sub>1</sub> + β<sub>2</sub>X<sub>i</sub>. Assumption 3 is E(u<sub>i</sub> | X<sub>i</sub>) = 0. Every proof in <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a> and <a class="g-unit" href="../units/1d-multiple-regression.html">Unit 1D</a> that an estimator is correct on average is an exercise in the algebra above.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="variance">
+<h2>Variance and covariance</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">Variance</div>
+    <div class="fs-val">
+      <p class="math">var(X) = E[(X − E(X))<sup>2</sup>] = E(X<sup>2</sup>) − [E(X)]<sup>2</sup></p>
+      <p class="math">var(c) = 0 &nbsp;·&nbsp; var(cX) = c<sup>2</sup> var(X)</p>
+      <p class="fs-note">The constant comes out <em>squared</em>. Dropping the square is the single most common slip in a variance derivation, and it produces a standard error that is wrong by a factor of c.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Covariance</div>
+    <div class="fs-val">
+      <p class="math">cov(X, Y) = E[(X − E(X))(Y − E(Y))] = E(XY) − E(X)E(Y)</p>
+      <p class="math">cov(X, X) = var(X) &nbsp;·&nbsp; cov(c, X) = 0</p>
+      <p class="fs-note">Covariance has units — the product of the units of X and Y — so its size on its own says nothing. That is what the correlation coefficient is for.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Variance of a sum</div>
+    <div class="fs-val">
+      <p class="math">var(X + Y) = var(X) + var(Y) + 2cov(X, Y)</p>
+      <p class="fs-note">The cross term vanishes only when the covariance is zero. Much of Unit 2 is about what happens when a course of action assumes it away and it is not in fact zero.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Independence and correlation</div>
+    <div class="fs-val">
+      <p class="math">X, Y independent ⟹ cov(X, Y) = 0</p>
+      <p class="math">corr(X, Y) = cov(X, Y) / (σ<sub>X</sub> σ<sub>Y</sub>), &nbsp; −1 ≤ corr ≤ 1</p>
+      <p class="fs-note">The implication runs one way only. Zero covariance does not establish independence: it rules out a <em>linear</em> relation, and nothing more.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Where the course uses it</div>
+    <div class="fs-val">
+      <p class="fs-note">Two of the classical assumptions are statements in this notation — homoscedasticity is var(u<sub>i</sub>) = σ<sup>2</sup> for every i, and no autocorrelation is cov(u<sub>i</sub>, u<sub>j</sub>) = 0 for i ≠ j. <a class="g-unit" href="../units/2c-heteroscedasticity.html">Unit 2C</a> is what follows when the first fails and <a class="g-unit" href="../units/2d-autocorrelation.html">Unit 2D</a> when the second does. The variance of β̂<sub>2</sub> in <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a> is derived with the rules above and nothing else.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="calculus">
+<h2>Differentiation</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">The rules you need</div>
+    <div class="fs-val">
+      <p class="math">d(x<sup>n</sup>)/dx = n x<sup>n−1</sup> &nbsp;·&nbsp; d(ln x)/dx = 1/x &nbsp;·&nbsp; d(e<sup>x</sup>)/dx = e<sup>x</sup></p>
+      <p class="math">chain rule: &nbsp; d f(g(x))/dx = f′(g(x)) · g′(x)</p>
+      <p class="fs-note">Nothing beyond this is required. The course never asks you to integrate.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Partial derivatives</div>
+    <div class="fs-val">
+      <p class="math">∂f/∂x — differentiate with respect to x, treating every other variable as a constant</p>
+      <p class="fs-note">Written with ∂ rather than d purely to signal that the function has more than one argument.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Finding a minimum</div>
+    <div class="fs-val">
+      <p class="math">set ∂f/∂x = 0 for each argument in turn, then solve the resulting equations together</p>
+      <p class="fs-note">These are the first-order conditions. A positive second derivative confirms a minimum rather than a maximum; in this course the functions are well behaved and the check is rarely laboured.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Where the course uses it</div>
+    <div class="fs-val">
+      <p class="fs-note">This is how ordinary least squares is derived. <a class="g-unit" href="../units/1b-simple-linear-regression.html">Unit 1B</a> minimises Σû<sub>i</sub><sup>2</sup> by taking the partial derivatives with respect to β̂<sub>1</sub> and β̂<sub>2</sub>, setting both to zero, and solving the pair — those two equations are the normal equations. <a class="g-unit" href="../units/1e-normality-maximum-likelihood.html">Unit 1E</a> maximises a log-likelihood by exactly the same method.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="logs">
+<h2>Logarithms and exponentials</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">The rules</div>
+    <div class="fs-val">
+      <p class="math">ln(ab) = ln a + ln b &nbsp;·&nbsp; ln(a/b) = ln a − ln b</p>
+      <p class="math">ln(a<sup>b</sup>) = b ln a &nbsp;·&nbsp; ln 1 = 0 &nbsp;·&nbsp; ln e = 1 &nbsp;·&nbsp; e<sup>ln x</sup> = x</p>
+      <p class="fs-note">ln always means the natural logarithm, to base e. This course uses no other base.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Where it is undefined</div>
+    <div class="fs-val">
+      <p class="math">ln x exists only for x &gt; 0</p>
+      <p class="fs-note">Not a technicality. It is why logging the data is not always available as a remedy — a variable containing zeros, negative values or percentages cannot simply be logged.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Logs and proportional change</div>
+    <div class="fs-val">
+      <p class="math">for small r, &nbsp; ln(1 + r) ≈ r</p>
+      <p class="math">a change of 0.01 in ln Y ≈ a change of 1 per cent in Y</p>
+      <p class="fs-note">This approximation is the reason a coefficient in a logged model reads as a percentage, and the reason that reading is <em>approximate</em>. It degrades as the change grows, which is why the exact form is preferred for anything large.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Where the course uses it</div>
+    <div class="fs-val">
+      <p class="fs-note"><a class="g-unit" href="../units/2a-part2-functional-form.html">Unit 2A Part 2</a> is built on this section. Taking logs is what makes a Cobb–Douglas production function linear in the parameters, and the four functional forms — linear, double-log, log-lin and lin-log — differ only in which side has been logged. The exact semi-elasticity 100(e<sup>β̂</sup> − 1) comes straight from the rules above.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="matrices">
+<h2>Matrix algebra</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">Shapes</div>
+    <div class="fs-val">
+      <p class="math">an m × n matrix has m rows and n columns &nbsp;·&nbsp; a vector is a matrix with one row or one column</p>
+      <p class="fs-note">A matrix is square when m = n, and symmetric when it equals its own transpose.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Multiplication and conformability</div>
+    <div class="fs-val">
+      <p class="math">AB is defined only when the columns of A equal the rows of B</p>
+      <p class="math">(m × n)(n × p) = (m × p)</p>
+      <p class="fs-note">Order matters: AB and BA are different products, and one may not exist at all.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Transpose</div>
+    <div class="fs-val">
+      <p class="math">A′ — rows become columns &nbsp;·&nbsp; (AB)′ = B′A′</p>
+      <p class="fs-note">X′X is the cross-product matrix of the regressors. It is square and symmetric whatever shape X has.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Identity and inverse</div>
+    <div class="fs-val">
+      <p class="math">AI = IA = A &nbsp;·&nbsp; AA<sup>−1</sup> = A<sup>−1</sup>A = I</p>
+      <p class="fs-note">The inverse is the matrix analogue of dividing. It exists only if A is square <em>and</em> non-singular.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">When the inverse fails</div>
+    <div class="fs-val">
+      <p class="math">A singular &nbsp;⟺&nbsp; determinant of A = 0 &nbsp;⟺&nbsp; its columns are linearly dependent</p>
+      <p class="math">rank — the number of linearly independent columns</p>
+      <p class="fs-note">One column being an exact linear combination of the others is enough. The three statements are the same statement.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Where the course uses it</div>
+    <div class="fs-val">
+      <p class="fs-note">The row above <em>is</em> perfect multicollinearity. In <a class="g-unit" href="../units/2b-multicollinearity.html">Unit 2B</a> a regressor that is an exact linear combination of the others makes the columns of X linearly dependent, so X′X is singular, cannot be inverted, and the estimator does not exist — which is why the software returns an error rather than a number. <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a> reads the variance–covariance matrix of the estimates, with the variances on the diagonal and the covariances off it. <a class="g-unit" href="../units/3c-iv-2sls-simultaneous-equations.html">Unit 3C</a> states the rank condition for identification.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="distributions">
+<h2>The four distributions</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">Normal</div>
+    <div class="fs-val">
+      <p class="math">X ∼ N(μ, σ<sup>2</sup>) &nbsp;·&nbsp; Z = (X − μ)/σ ∼ N(0, 1)</p>
+      <p class="fs-note">Symmetric about μ, and fully described by its mean and variance. Standardising subtracts the mean and divides by the standard deviation.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Chi-square</div>
+    <div class="fs-val">
+      <p class="math">the sum of v independent squared standard normals ∼ χ<sup>2</sup>(v)</p>
+      <p class="fs-note">Non-negative and skewed to the right, with one degrees-of-freedom parameter. Because it is built from squares, tests based on it are right-tailed: departures in either direction make the statistic larger.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">t</div>
+    <div class="fs-val">
+      <p class="math">t(v) = Z / √(χ<sup>2</sup>(v)/v)</p>
+      <p class="fs-note">A standard normal divided by the square root of an independent chi-square over its degrees of freedom. Symmetric like the normal but with fatter tails, because the denominator is estimated rather than known; it approaches the normal as v grows.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">F</div>
+    <div class="fs-val">
+      <p class="math">F(v<sub>1</sub>, v<sub>2</sub>) = [χ<sup>2</sup>(v<sub>1</sub>)/v<sub>1</sub>] / [χ<sup>2</sup>(v<sub>2</sub>)/v<sub>2</sub>]</p>
+      <p class="fs-note">The ratio of two independent chi-squares, each divided by its own degrees of freedom — hence two df parameters, and hence a table that needs two entries to read.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Where the course uses it</div>
+    <div class="fs-val">
+      <p class="fs-note">Each one carries a specific job. The t tests a single coefficient in <a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a>; the F tests several restrictions at once there, and reappears as the Chow and RESET tests in Unit 2A. The chi-square carries every LM test in Unit 2 — Breusch–Pagan, White and Breusch–Godfrey are all nR<sup>2</sup> against a χ<sup>2</sup>. Knowing that t is built from a normal over a chi-square is what explains why it is the t and not the normal that appears once σ<sup>2</sup> has to be estimated.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="fs-sec" id="testing">
+<h2>The vocabulary of testing</h2>
+
+<div class="fs">
+  <div class="fs-row">
+    <div class="fs-key">Population and sample</div>
+    <div class="fs-val">
+      <p class="math">a parameter describes the population &nbsp;·&nbsp; a statistic is computed from a sample</p>
+      <p class="fs-note">A parameter is fixed and unknown. A statistic is known and random, because a different sample would have given a different value.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Sampling distribution</div>
+    <div class="fs-val">
+      <p class="math">the distribution of a statistic across repeated samples</p>
+      <p class="math">standard error — the standard deviation of that distribution</p>
+      <p class="fs-note">A standard error is not a property of your data; it is a property of the procedure that produced the estimate. Every test in this course is a statement about a sampling distribution.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The two hypotheses</div>
+    <div class="fs-val">
+      <p class="math">H<sub>0</sub> — the null, the claim under test &nbsp;·&nbsp; H<sub>1</sub> — the alternative</p>
+      <p class="fs-note">The null is what the arithmetic assumes while the statistic is computed. One-tailed or two-tailed is a property of the alternative, decided before you look at the data.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Making the decision</div>
+    <div class="fs-val">
+      <p class="math">significance level α &nbsp;·&nbsp; critical value &nbsp;·&nbsp; rejection region</p>
+      <p class="math">p-value — the probability of a statistic at least as extreme as the one observed, if H<sub>0</sub> is true</p>
+      <p class="fs-note">The p-value is a probability about the <em>statistic</em>, never about the hypothesis. Failing to reject is not the same as accepting: it means the data did not supply enough evidence, which is a statement about the sample as much as about the world.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">The two errors</div>
+    <div class="fs-val">
+      <p class="math">Type I — rejecting a true H<sub>0</sub>, with probability α</p>
+      <p class="math">Type II — failing to reject a false H<sub>0</sub></p>
+      <p class="fs-note">Choosing α fixes the first directly and the second only indirectly. Lowering α to be cautious about one error makes the other more likely.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Confidence intervals</div>
+    <div class="fs-val">
+      <p class="math">estimate ± (critical value × standard error)</p>
+      <p class="fs-note">The interval is random and the parameter is fixed, so the confidence attaches to the procedure across repeated samples, not to the one interval in front of you.</p>
+    </div>
+  </div>
+  <div class="fs-row">
+    <div class="fs-key">Where the course uses it</div>
+    <div class="fs-val">
+      <p class="fs-note"><a class="g-unit" href="../units/1f-statistical-inference.html">Unit 1F</a> applies all of it to regression coefficients, and the whole of Unit 2 assumes it: every diagnostic there reports a statistic, a distribution, a critical value and a decision, in that order. The examination expects the same five steps every time — null, alternative, statistic, critical value, and a conclusion in words.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="box warn" style="margin-top:2.5rem;">
+  <span class="box-label">What is deliberately not here</span>
+  <strong>The properties of estimators are not on this page.</strong> Unbiasedness, efficiency,
+  consistency, BLUE and the Gauss–Markov theorem are not assumed knowledge — they are what
+  <a class="g-unit" href="../units/1c-ols-assumptions-goodness-of-fit.html">Unit 1C</a> and
+  <a class="g-unit" href="../units/1e-normality-maximum-likelihood.html">Unit 1E</a> are for,
+  and a one-line summary of them here would do you more harm than good. The same goes for the
+  classical assumptions themselves. This page stops where the course begins.
+</div>
+
+<p style="font-size:0.85rem; color:var(--ink-soft); margin-top:2rem;">
+  See also the <a href="formula-sheet.html">formula sheet</a>, which states every result the
+  units derive, the <a href="glossary.html">glossary</a>, which defines every term they
+  introduce, and the <a href="../index.html">unit roadmap</a>.
+</p>
+
+</div>
+</body>
+</html>

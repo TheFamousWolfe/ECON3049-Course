@@ -54,6 +54,7 @@
     "≈":"\\approx","≠":"\\neq","≤":"\\leq","≥":"\\geq","±":"\\pm",
     "≫":"\\gg","≪":"\\ll",
     "⟹":"\\Rightarrow","⇒":"\\Rightarrow","→":"\\to","←":"\\leftarrow",
+    "⟺":"\\Leftrightarrow","⇔":"\\Leftrightarrow",   /* logical equivalence, not the arrow below */
     "⟷":"\\leftrightarrow","↔":"\\leftrightarrow","↑":"\\uparrow","↓":"\\downarrow",
     "×":"\\times","·":"\\cdot","∼":"\\sim","∞":"\\infty","≡":"\\equiv",
     "∈":"\\in","∀":"\\forall","∫":"\\int","…":"\\dots","⋯":"\\cdots",

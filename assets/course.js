@@ -78,6 +78,9 @@ window.COURSE = {
 
   /* --- Standalone reference pages, reference/<slug>.html --- */
   reference: [
+    { slug: "before-you-start", title: "Before you start",
+      blurb: "The mathematics ECON 2025 and 2026 left you with, and where this course uses it.",
+      status: "ready" },
     { slug: "formula-sheet", title: "Formula sheet",
       blurb: "Every result derived in the units, on one page.",
       status: "ready" },
