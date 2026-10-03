@@ -166,6 +166,12 @@ html[data-mode="presenter"] .deck-hud { bottom: auto; top: 61.5vh; right: 1.5vw;
   .slide:last-child { break-after: auto; }
   .fragment { visibility: visible; }
   .slide .viz svg { height: 11cm; }
+  /* A two-panel figure is two <svg> inside one .viz, and the rule above sizes
+     EACH of them: 22cm of figure on a 19cm page, so the slide spilled onto a
+     second one. Give the pair the height of a single panel. This is the same
+     trap as --fig-h on screen, which is also per panel and not per figure. */
+  .slide .viz:has(svg + svg) svg,
+  .slide .viz svg + svg { height: 6cm; }
   .viz-controls, .deck-progress, .deck-hud, .deck-help,
   .pres-next, .pres-notes, .pres-clock, aside.notes { display: none; }
   html[data-print-notes] aside.notes {
