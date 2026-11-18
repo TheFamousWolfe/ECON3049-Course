@@ -48,7 +48,7 @@ window.COURSE = {
          node dev/covered.mjs 1A 1B     mark as covered
          node dev/covered.mjs --undo 1B  unmark
          node dev/covered.mjs            list                             */
-  covered: ["1A", "1B", "1C", "1D", "1E", "1F", "2A Part 1", "2A Part 2", "2B", "2C"],
+  covered: ["1A", "1B", "1C", "1D", "1E", "1F", "2A Part 1", "2A Part 2", "2B", "2C", "2D", "3A"],
 
   assessment: [
     { name: "Midterm",          weight: 25,
